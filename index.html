@@ -10,7 +10,7 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0e0f11;
+      background-color: #0d2e1a;
       color: #f2f2f2;
     }
     header {
@@ -23,7 +23,14 @@
       justify-content: center;
       padding: 2rem;
       text-align: center;
-      background: linear-gradient(to right, #000428, #004e92);
+      background:
+        radial-gradient(
+          circle 17rem at calc(100% - var(--centro-ondas-x)) calc(100% - var(--centro-ondas-y)),
+          #000428CC 0,
+          #004e92CC 100%,
+          transparent 100%
+        ),
+        linear-gradient(to right, #000428, #004e92);
       --centro-ondas-x: 7rem;
       --centro-ondas-y: 4rem;
     }
@@ -88,6 +95,10 @@
       font-size: 2.5rem;
       margin: 0;
     }
+    .home-link {
+      color: inherit;
+      text-decoration: none;
+    }
     .explanation {
       max-width: 42rem;
       margin: 0.6rem auto 0;
@@ -113,7 +124,11 @@
     nav a:hover {
       background-color: #3f51b5;
     }
-    nav a:focus-visible, footer summary:focus-visible, footer a:focus-visible, main a:focus-visible {
+    nav a:focus-visible,
+    header a:focus-visible,
+    footer summary:focus-visible,
+    footer a:focus-visible,
+    main a:focus-visible {
       outline: 2px solid #f6d365;
       outline-offset: 3px;
     }
@@ -163,7 +178,7 @@
 <body>
   <header>
     <span class="onda-distante" aria-hidden="true"></span>
-    <h1>Rebojar</h1>
+    <h1><a class="home-link" href="/" aria-label="Voltar à página inicial do Rebojar">Rebojar</a></h1>
     <p>Vibração orgânica. Arte, natureza e tato digital.</p>
     <p class="explanation">Espaço autoral para projetos independentes em pesquisa, arte e ferramentas abertas.</p>
   </header>
@@ -183,7 +198,7 @@
     <p><a href="https://github.com/rebojar/rebojar.github.io">Código desta página no GitHub ↗</a></p>
     <details>
       <summary>Outros trabalhos</summary>
-      <p>Tatuagem — <a href="https://linktr.ee/garatujas.tattoo">arquivo de trabalhos anteriores ↗</a></p>
+      <p>Tatuagem — <a href="https://linktr.ee/garatujas.tattoo">linktr.ee@garatujas.tattoo ↗</a></p>
     </details>
     <p>&copy; 2025 Rebojar. Feito com carinho e café. 🌌</p>
   </footer>
