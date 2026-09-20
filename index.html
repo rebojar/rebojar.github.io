@@ -28,9 +28,17 @@
       justify-content: center;
       padding: 2rem;
       text-align: center;
+      --raio-interno: 1.25rem;
+      --raio-medio: 17rem;
+      --raio-distante: 45rem;
+      --expansao-curta: 1.8rem;
+      --expansao-longa: 4.5rem;
+      --expansao-media-1: 3rem;
+      --expansao-media-2: 7rem;
+      --expansao-media-3: 14rem;
       background:
         radial-gradient(
-          circle 17rem at calc(100% - var(--centro-ondas-x)) calc(100% - var(--centro-ondas-y)),
+          circle var(--raio-medio) at calc(100% - var(--centro-ondas-x)) calc(100% - var(--centro-ondas-y)),
           #000428CC 0,
           #004e92CC 100%,
           transparent 100%
@@ -46,14 +54,14 @@
       right: var(--centro-ondas-x);
       bottom: var(--centro-ondas-y);
       transform: translate(50%, 50%);
-      width: 34rem;
-      height: 34rem;
+      width: calc(var(--raio-medio) + var(--raio-medio));
+      height: calc(var(--raio-medio) + var(--raio-medio));
       border: 1px solid rgba(190, 224, 255, 0.15);
       border-radius: 50%;
       box-shadow:
-        0 0 0 3rem rgba(190, 224, 255, 0.035),
-        0 0 0 7rem rgba(190, 224, 255, 0.025),
-        0 0 0 14rem rgba(190, 224, 255, 0.025);
+        0 0 0 var(--expansao-media-1) rgba(190, 224, 255, 0.035),
+        0 0 0 var(--expansao-media-2) rgba(190, 224, 255, 0.025),
+        0 0 0 var(--expansao-media-3) rgba(190, 224, 255, 0.025);
       content: "";
       pointer-events: none;
     }
@@ -65,13 +73,13 @@
       right: var(--centro-ondas-x);
       bottom: var(--centro-ondas-y);
       transform: translate(50%, 50%);
-      width: 2.5rem;
-      height: 2.5rem;
+      width: calc(var(--raio-interno) + var(--raio-interno));
+      height: calc(var(--raio-interno) + var(--raio-interno));
       border: 1px solid rgba(190, 224, 255, 0.18);
       border-radius: 50%;
       box-shadow:
-        0 0 0 1.8rem rgba(190, 224, 255, 0.10),
-        0 0 0 4.5rem rgba(190, 224, 255, 0.05);
+        0 0 0 var(--expansao-curta) rgba(190, 224, 255, 0.10),
+        0 0 0 var(--expansao-longa) rgba(190, 224, 255, 0.05);
       pointer-events: none;
     }
     /* Onda distante */
@@ -81,15 +89,69 @@
       right: var(--centro-ondas-x);
       bottom: var(--centro-ondas-y);
       transform: translate(50%, 50%);
-      width: 90rem;
-      height: 90rem;
+      width: calc(var(--raio-distante) + var(--raio-distante));
+      height: calc(var(--raio-distante) + var(--raio-distante));
       box-sizing: border-box;
       border: 1px solid rgba(190, 224, 255, 0.18);
       border-radius: 50%;
       box-shadow:
-        0 0 0 1.8rem rgba(190, 224, 255, 0.10),
-        0 0 0 4.5rem rgba(190, 224, 255, 0.05);
+        0 0 0 var(--expansao-curta) rgba(190, 224, 255, 0.10),
+        0 0 0 var(--expansao-longa) rgba(190, 224, 255, 0.05);
       pointer-events: none;
+    }
+    /* Camada de interação: cada traço responde separadamente sem cobrir os demais. */
+    .ondas-interativas {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .onda-hit,
+    .onda-brilho {
+      cx: calc(100% - var(--centro-ondas-x));
+      cy: calc(100% - var(--centro-ondas-y));
+      r: var(--raio-hit);
+      fill: none;
+    }
+    .onda-hit {
+      stroke: rgba(190, 224, 255, 0.01);
+      stroke-width: var(--largura-hit, 1.4rem);
+      pointer-events: stroke;
+    }
+    .onda-brilho {
+      stroke: transparent;
+      stroke-width: 1px;
+      transform-box: fill-box;
+      transform-origin: center;
+      pointer-events: none;
+      transition:
+        stroke 220ms ease,
+        stroke-width 220ms ease,
+        filter 220ms ease,
+        transform 420ms cubic-bezier(0.2, 0.75, 0.25, 1);
+    }
+    .onda-alvo:hover .onda-brilho,
+    .onda-link:focus-visible .onda-brilho {
+      stroke: rgba(214, 238, 255, 0.82);
+      stroke-width: 2.5px;
+      stroke-dasharray: 7 12;
+      filter: drop-shadow(0 0 7px rgba(157, 211, 255, 0.72));
+      transform: scale(1.018);
+      animation: onda-viva 1.4s linear infinite;
+    }
+    .onda-link:focus-visible {
+      outline: none;
+    }
+    .onda-link .onda-hit {
+      cursor: pointer;
+    }
+    @keyframes onda-viva {
+      to {
+        stroke-dashoffset: -38px;
+      }
     }
     header h1,
     header p {
@@ -178,11 +240,67 @@
         min-height: 24rem;
       }
     }
+    @media (prefers-reduced-motion: reduce) {
+      .onda-brilho {
+        transition: stroke 120ms ease, stroke-width 120ms ease;
+      }
+      .onda-alvo:hover .onda-brilho,
+      .onda-link:focus-visible .onda-brilho {
+        transform: none;
+        animation: none;
+      }
+    }
   </style>
 </head>
 <body>
   <header>
     <span class="onda-distante" aria-hidden="true"></span>
+    <svg class="ondas-interativas" role="navigation" aria-label="Navegação visual do Rebojar">
+      <a class="onda-alvo onda-link" data-anel="1" style="--raio-hit: 0.625rem; --largura-hit: 1.25rem" href="https://github.com/rebojar/rebojar.github.io" aria-label="Abrir o repositório desta página no GitHub">
+        <circle class="onda-hit"></circle>
+        <circle class="onda-brilho"></circle>
+      </a>
+      <g class="onda-alvo" data-anel="2" style="--raio-hit: 2.15rem; --largura-hit: 1.8rem" aria-hidden="true">
+        <circle class="onda-hit"></circle>
+        <circle class="onda-brilho"></circle>
+      </g>
+      <a class="onda-alvo onda-link" data-anel="3" style="--raio-hit: 4.4rem; --largura-hit: 2.7rem" href="#garatujas" aria-label="Abrir Garatujas">
+        <circle class="onda-hit"></circle>
+        <circle class="onda-brilho"></circle>
+      </a>
+      <g class="onda-alvo" data-anel="4" style="--raio-hit: 11.375rem; --largura-hit: 11.25rem" aria-hidden="true">
+        <circle class="onda-hit"></circle>
+        <circle class="onda-brilho"></circle>
+      </g>
+      <g class="onda-alvo" data-anel="5" style="--raio-hit: 18.5rem; --largura-hit: 3rem" aria-hidden="true">
+        <circle class="onda-hit"></circle>
+        <circle class="onda-brilho"></circle>
+      </g>
+      <g class="onda-alvo" data-anel="6" style="--raio-hit: 22rem; --largura-hit: 4rem" aria-hidden="true">
+        <circle class="onda-hit"></circle>
+        <circle class="onda-brilho"></circle>
+      </g>
+      <g class="onda-alvo" data-anel="7" style="--raio-hit: 27.5rem; --largura-hit: 7rem" aria-hidden="true">
+        <circle class="onda-hit"></circle>
+        <circle class="onda-brilho"></circle>
+      </g>
+      <g class="onda-alvo" data-anel="8" style="--raio-hit: 38rem; --largura-hit: 14rem" aria-hidden="true">
+        <circle class="onda-hit"></circle>
+        <circle class="onda-brilho"></circle>
+      </g>
+      <g class="onda-alvo" data-anel="9" style="--raio-hit: 45.9rem; --largura-hit: 1.8rem" aria-hidden="true">
+        <circle class="onda-hit"></circle>
+        <circle class="onda-brilho"></circle>
+      </g>
+      <g class="onda-alvo" data-anel="10" style="--raio-hit: 48.15rem; --largura-hit: 2.7rem" aria-hidden="true">
+        <circle class="onda-hit"></circle>
+        <circle class="onda-brilho"></circle>
+      </g>
+      <g class="onda-alvo" data-anel="11" style="--raio-hit: 52.75rem; --largura-hit: 6.5rem" aria-hidden="true">
+        <circle class="onda-hit"></circle>
+        <circle class="onda-brilho"></circle>
+      </g>
+    </svg>
     <h1><a class="home-link" href="/" aria-label="Voltar à página inicial do Rebojar">Rebojar</a></h1>
     <p>Vibração orgânica. Arte, natureza e tato digital.</p>
     <p class="explanation">Espaço autoral para projetos independentes em pesquisa, arte e ferramentas abertas.</p>
