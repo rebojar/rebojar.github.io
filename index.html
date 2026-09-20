@@ -23,14 +23,19 @@
       justify-content: center;
       padding: 2rem;
       text-align: center;
-      background:
+      background-color: #000428;
+      background-image:
         radial-gradient(
           circle 17rem at calc(100% - var(--centro-ondas-x)) calc(100% - var(--centro-ondas-y)),
-          #000428CC 0,
-          #004e92CC 100%,
+          rgba(0, 4, 40, 0.46) 0,
+          rgba(0, 78, 146, 0.24) 100%,
           transparent 100%
         ),
-        linear-gradient(to right, #000428, #004e92);
+        linear-gradient(to right, rgba(0, 4, 40, 0.74), rgba(0, 78, 146, 0.34)),
+        url("assets/fundo-rebojar-colorido.png");
+      background-position: center, center, center;
+      background-repeat: no-repeat;
+      background-size: auto, auto, cover;
       --centro-ondas-x: 7rem;
       --centro-ondas-y: 4rem;
     }
@@ -90,6 +95,7 @@
     header p {
       position: relative;
       z-index: 1;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
     }
     header h1 {
       font-size: 2.5rem;
