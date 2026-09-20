@@ -229,6 +229,36 @@
       color: #b7d9ff;
       text-underline-offset: 0.25em;
     }
+    .footer-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .footer-actions p {
+      margin: 0;
+    }
+    .sponsor-button {
+      display: block;
+      width: 114px;
+      height: 32px;
+      border: 0;
+      border-radius: 6px;
+    }
+    footer details.sponsor-card {
+      width: min(100%, 600px);
+      margin: 0 auto 1.5rem;
+      text-align: center;
+    }
+    .sponsor-card-frame {
+      display: block;
+      width: min(100%, 600px);
+      height: 225px;
+      margin: 0.8rem auto 0;
+      border: 0;
+    }
     @media (max-width: 38rem) {
       header {
         min-height: 24rem;
@@ -312,7 +342,14 @@
     </section>
   </main>
   <footer>
-    <p><a href="https://github.com/rebojar/rebojar.github.io">Código desta página no GitHub ↗</a></p>
+    <div class="footer-actions">
+      <p><a href="https://github.com/rebojar/rebojar.github.io">Código desta página no GitHub ↗</a></p>
+      <iframe class="sponsor-button" src="https://github.com/sponsors/rebojar/button" title="Apoiar Rebojar pelo GitHub Sponsors" height="32" width="114"></iframe>
+    </div>
+    <details class="sponsor-card">
+      <summary>Conhecer formas de apoiar o Rebojar</summary>
+      <iframe class="sponsor-card-frame" src="https://github.com/sponsors/rebojar/card" title="Cartão de apoio ao Rebojar no GitHub Sponsors" height="225" width="600" loading="lazy"></iframe>
+    </details>
     <details>
       <summary>Outros trabalhos</summary>
       <p>Tatuagem — <a href="https://linktr.ee/garatujas.tattoo">linktr.ee@garatujas.tattoo ↗</a></p>
