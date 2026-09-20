@@ -28,17 +28,9 @@
       justify-content: center;
       padding: 2rem;
       text-align: center;
-      --raio-interno: 1.25rem;
-      --raio-medio: 17rem;
-      --raio-distante: 45rem;
-      --expansao-curta: 1.8rem;
-      --expansao-longa: 4.5rem;
-      --expansao-media-1: 3rem;
-      --expansao-media-2: 7rem;
-      --expansao-media-3: 14rem;
       background:
         radial-gradient(
-          circle var(--raio-medio) at calc(100% - var(--centro-ondas-x)) calc(100% - var(--centro-ondas-y)),
+          circle 17rem at calc(100% - var(--centro-ondas-x)) calc(100% - var(--centro-ondas-y)),
           #000428CC 0,
           #004e92CC 100%,
           transparent 100%
@@ -54,14 +46,14 @@
       right: var(--centro-ondas-x);
       bottom: var(--centro-ondas-y);
       transform: translate(50%, 50%);
-      width: calc(var(--raio-medio) + var(--raio-medio));
-      height: calc(var(--raio-medio) + var(--raio-medio));
+      width: 34rem;
+      height: 34rem;
       border: 1px solid rgba(190, 224, 255, 0.15);
       border-radius: 50%;
       box-shadow:
-        0 0 0 var(--expansao-media-1) rgba(190, 224, 255, 0.035),
-        0 0 0 var(--expansao-media-2) rgba(190, 224, 255, 0.025),
-        0 0 0 var(--expansao-media-3) rgba(190, 224, 255, 0.025);
+        0 0 0 3rem rgba(190, 224, 255, 0.035),
+        0 0 0 7rem rgba(190, 224, 255, 0.025),
+        0 0 0 14rem rgba(190, 224, 255, 0.025);
       content: "";
       pointer-events: none;
     }
@@ -73,13 +65,13 @@
       right: var(--centro-ondas-x);
       bottom: var(--centro-ondas-y);
       transform: translate(50%, 50%);
-      width: calc(var(--raio-interno) + var(--raio-interno));
-      height: calc(var(--raio-interno) + var(--raio-interno));
+      width: 2.5rem;
+      height: 2.5rem;
       border: 1px solid rgba(190, 224, 255, 0.18);
       border-radius: 50%;
       box-shadow:
-        0 0 0 var(--expansao-curta) rgba(190, 224, 255, 0.10),
-        0 0 0 var(--expansao-longa) rgba(190, 224, 255, 0.05);
+        0 0 0 1.8rem rgba(190, 224, 255, 0.10),
+        0 0 0 4.5rem rgba(190, 224, 255, 0.05);
       pointer-events: none;
     }
     /* Onda distante */
@@ -89,14 +81,14 @@
       right: var(--centro-ondas-x);
       bottom: var(--centro-ondas-y);
       transform: translate(50%, 50%);
-      width: calc(var(--raio-distante) + var(--raio-distante));
-      height: calc(var(--raio-distante) + var(--raio-distante));
+      width: 90rem;
+      height: 90rem;
       box-sizing: border-box;
       border: 1px solid rgba(190, 224, 255, 0.18);
       border-radius: 50%;
       box-shadow:
-        0 0 0 var(--expansao-curta) rgba(190, 224, 255, 0.10),
-        0 0 0 var(--expansao-longa) rgba(190, 224, 255, 0.05);
+        0 0 0 1.8rem rgba(190, 224, 255, 0.10),
+        0 0 0 4.5rem rgba(190, 224, 255, 0.05);
       pointer-events: none;
     }
     /* Camada de interação: cada traço responde separadamente sem cobrir os demais. */
@@ -117,7 +109,8 @@
       fill: none;
     }
     .onda-hit {
-      stroke: rgba(190, 224, 255, 0.01);
+      stroke: #000;
+      stroke-opacity: 0;
       stroke-width: var(--largura-hit, 1.4rem);
       pointer-events: stroke;
     }
