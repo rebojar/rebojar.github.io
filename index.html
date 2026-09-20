@@ -241,11 +241,17 @@
       margin: 0;
     }
     .sponsor-button {
-      display: block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       width: 114px;
       height: 32px;
-      border: 0;
+      border: 1px solid #18B0C4;
       border-radius: 6px;
+      background: #18B0C4;
+      color: #062b31;
+      font-weight: 700;
+      text-decoration: none;
     }
     footer details.sponsor-card {
       width: min(100%, 600px);
@@ -344,7 +350,7 @@
   <footer>
     <div class="footer-actions">
       <p><a href="https://github.com/rebojar/rebojar.github.io">Código desta página no GitHub ↗</a></p>
-      <iframe class="sponsor-button" src="https://github.com/sponsors/rebojar/button" title="Apoiar Rebojar pelo GitHub Sponsors" height="32" width="114"></iframe>
+      <a class="sponsor-button" href="https://github.com/sponsors/rebojar" aria-label="Apoiar Rebojar pelo GitHub Sponsors">Apoiar ♡</a>
     </div>
     <details class="sponsor-card">
       <summary>Conhecer formas de apoiar o Rebojar</summary>
