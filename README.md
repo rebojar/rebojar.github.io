@@ -10,6 +10,11 @@ O Rebojar reúne portas de entrada para trabalhos que nasceram separadamente e p
 
 Ele não funciona como feed, rede social ou diário de desenvolvimento. Também não pretende ser um portfólio convencional formado apenas por trabalhos acabados. A página cresce por marcos: uma nova porta pode aparecer quando existe algo público, compreensível e em condições de ser encontrado.
 
+## Portas publicadas
+
+- [Bancada visual · Qwen3.5-9B](https://rebojar.github.io/demonstracao-labvisual/) — demonstração estática e interativa de uma execução sintética pré-calculada. O código instalável da bancada está no repositório [LabVisual](https://github.com/rebojar/LabVisual).
+- [Garatujas](https://garatujas.tumblr.com/) — desenhos reunidos em um blog no Tumblr.
+
 ## O que há neste repositório
 
 Este repositório contém o código e os arquivos usados pela página pública `rebojar.github.io`.

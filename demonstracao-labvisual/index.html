@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Demonstração pública da Bancada Visual do Qwen3.5-9B com uma execução sintética pré-calculada.">
+  <title>Bancada Visual · Qwen3.5-9B — Rebojar</title>
+  <link rel="icon" type="image/png" href="../assets/labvisual-icon.png">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="product-brand">
+      <a class="brand" href="./" aria-label="Início da demonstração LabVisual">
+      <span class="brand-mark" aria-hidden="true"></span>
+        <span>LabVisual</span>
+      </a>
+      <span class="brand-separator" aria-hidden="true">|</span>
+      <a class="rebojar-link" href="../">Rebojar ↗</a>
+    </div>
+    <nav aria-label="Links da demonstração">
+      <a href="https://github.com/rebojar/LabVisual" target="_blank" rel="noopener noreferrer">Código aberto ↗</a>
+      <a href="https://github.com/sponsors/rebojar" target="_blank" rel="noopener noreferrer">Apoiar ♡</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Demonstração pública · dados pré-calculados</p>
+        <h1>Bancada Visual <span>Qwen3.5-9B</span></h1>
+        <p class="lead">Uma leitura interativa de representações produzidas pela torre visual do Qwen3.5-9B, com os pesos congelados.</p>
+        <div class="hero-actions">
+          <button class="button primary" type="button" data-open-entry-picker>Explorar demonstração</button>
+          <a class="button secondary" href="https://github.com/rebojar/LabVisual#comece-por-aqui" target="_blank" rel="noopener noreferrer">Instalar a bancada ↗</a>
+        </div>
+      </div>
+      <div class="hero-orbit" aria-hidden="true"><span></span></div>
+    </section>
+
+    <aside class="public-note" aria-label="Limites desta demonstração">
+      <span class="note-icon" aria-hidden="true">◇</span>
+      <p><strong>Esta página não executa o modelo.</strong> Ela reutiliza números de uma execução sintética registrada. Não há upload, servidor local, acesso ao seu computador nem envio de dados.</p>
+    </aside>
+
+    <dialog id="entryDialog" class="entry-dialog" aria-labelledby="entry-dialog-title">
+      <form method="dialog" class="entry-dialog-shell">
+        <div class="entry-dialog-heading">
+          <div>
+            <p class="step">Base pré-calculada</p>
+            <h2 id="entry-dialog-title">Escolha uma entrada para explorar</h2>
+          </div>
+          <button class="dialog-close" value="cancel" aria-label="Fechar seleção de entrada">×</button>
+        </div>
+        <p class="entry-dialog-intro">Cada opção corresponde a uma execução já registrada. Escolher uma entrada não envia arquivos nem executa novamente o modelo.</p>
+        <div class="entry-options" id="entryOptions">
+          <button class="entry-option" type="submit" value="synthetic" data-entry-id="synthetic">
+            <canvas id="entryPattern" width="160" height="120" aria-hidden="true"></canvas>
+            <span class="entry-option-copy">
+              <strong>Padrão geométrico controlado</strong>
+              <span>Entrada sintética · 320 × 240 px</span>
+              <small>Execução disponível</small>
+            </span>
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <section class="overview" aria-labelledby="execucao-title" id="entrada-atual">
+      <div class="input-card panel">
+        <div class="section-heading">
+          <div>
+            <button class="step input-selector" type="button" data-open-entry-picker>Entrada sintética <span aria-hidden="true">▾</span></button>
+            <h2 id="execucao-title">Um padrão geométrico controlado</h2>
+          </div>
+          <span class="badge">320 × 240 px</span>
+        </div>
+        <canvas id="pattern" width="320" height="240" role="img" aria-label="Padrão geométrico em azul e laranja usado como entrada da demonstração"></canvas>
+        <p class="small">O padrão foi criado dentro da própria bancada. Nenhuma fotografia ou arquivo pessoal participa desta demonstração.</p>
+      </div>
+
+      <div class="panel record-card">
+        <button class="step execution-replay" type="button" id="replayExecution"><span id="executionButtonLabel">Execução registrada</span><span aria-hidden="true">↻</span></button>
+        <h2>O que aconteceu</h2>
+        <p id="executionStatus" class="execution-status" aria-live="polite">Execução pronta para exploração.</p>
+        <dl class="record-list">
+          <div><dt>Modelo visual</dt><dd><a href="https://huggingface.co/Qwen/Qwen3.5-9B/tree/c202236235762e1c871ad0ccb60c8ee5ba337b9a" target="_blank" rel="noopener noreferrer">Qwen/Qwen3.5-9B ↗</a></dd></div>
+          <div><dt>Dispositivo</dt><dd>CPU · FP32</dd></div>
+          <div><dt>Pesos</dt><dd>Congelados</dd></div>
+          <div><dt>Treinamento</dt><dd>Não houve</dd></div>
+          <div><dt>Inferência registrada</dt><dd id="recordedTime">—</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <section class="flow panel" aria-labelledby="flow-title">
+      <div class="section-heading">
+        <div>
+          <p class="step">Percurso dos números</p>
+          <h2 id="flow-title">Da imagem às representações</h2>
+        </div>
+        <span class="badge">27 blocos visuais</span>
+      </div>
+      <div class="flow-grid">
+        <article>
+          <span class="flow-number">1</span>
+          <h3>Preparação</h3>
+          <p>288 × 192 pixels preparados e organizados em 216 patches de entrada.</p>
+        </article>
+        <span class="arrow" aria-hidden="true">→</span>
+        <article>
+          <span class="flow-number">2</span>
+          <h3>Antes do merger</h3>
+          <p>216 tokens, cada um com 1.152 coordenadas.</p>
+        </article>
+        <span class="arrow" aria-hidden="true">→</span>
+        <article>
+          <span class="flow-number">3</span>
+          <h3>Merger aprendido</h3>
+          <p>Parte fixa do modelo: reúne posições e projeta a representação.</p>
+        </article>
+        <span class="arrow" aria-hidden="true">→</span>
+        <article>
+          <span class="flow-number">4</span>
+          <h3>Depois do merger</h3>
+          <p>54 tokens, cada um com 4.096 coordenadas.</p>
+        </article>
+      </div>
+      <figure class="patch-figure" aria-labelledby="patch-title">
+        <div class="patch-copy">
+          <p class="patch-label">Preparação visualizada</p>
+          <h3 id="patch-title">Grade de entrada em 216 patches</h3>
+          <p>Os 288 × 192 pixels preparados formam uma grade de 18 × 12 células. Cada célula corresponde a um patch de 16 × 16 pixels antes da representação em tokens.</p>
+        </div>
+        <div>
+          <div class="patch-frame">
+            <canvas id="patchPattern" width="288" height="192" aria-label="Representação esquemática da entrada preparada, dividida em 18 colunas e 12 linhas de patches"></canvas>
+            <span class="patch-grid-overlay" aria-hidden="true"></span>
+          </div>
+          <figcaption>Visualização esquemática da grade; ela torna a divisão espacial legível, sem reexecutar o processador do modelo.</figcaption>
+        </div>
+      </figure>
+    </section>
+
+    <section id="explorar" class="explorer panel" aria-labelledby="explorer-title">
+      <div class="section-heading explorer-heading">
+        <div>
+          <p class="step">Exploração interativa</p>
+          <h2 id="explorer-title">Escolha como ler os tokens salvos</h2>
+        </div>
+        <span class="status"><i aria-hidden="true"></i> Dados carregados no navegador</span>
+      </div>
+
+      <p class="method-note">Estas escolhas recalculam somente a leitura analítica dos números já publicados. Elas não modificam o merger aprendido, não treinam pesos e não executam novamente o encoder.</p>
+
+      <div class="controls">
+        <label>
+          <span>Representação</span>
+          <select id="stage">
+            <option value="after">Depois do merger</option>
+            <option value="before">Antes do merger</option>
+          </select>
+        </label>
+        <label>
+          <span>Agregação dos tokens</span>
+          <select id="pooling">
+            <option value="mean">Média</option>
+            <option value="max">Máximo</option>
+            <option value="median">Mediana</option>
+          </select>
+        </label>
+        <label>
+          <span>Normalização do vetor</span>
+          <select id="normalization">
+            <option value="l2">L2</option>
+            <option value="l1">L1</option>
+            <option value="linf">L∞</option>
+            <option value="none">Sem normalização</option>
+          </select>
+        </label>
+      </div>
+      <p id="recipeReading" class="analysis-readout" aria-live="polite"></p>
+
+      <div class="metrics" aria-label="Resumo numérico">
+        <article><span>Tokens reunidos</span><strong id="tokenCount">—</strong></article>
+        <article><span>Coordenadas</span><strong id="dimensionCount">—</strong></article>
+        <article><span>Divisor aplicado</span><strong id="divisor">—</strong></article>
+        <article><span>Maior magnitude</span><strong id="peak">—</strong></article>
+      </div>
+
+      <section class="chart-section" aria-labelledby="bars-title">
+        <div class="chart-heading">
+          <div>
+            <h3 id="bars-title">48 coordenadas por vez</h3>
+            <p>Azul: valor positivo. Laranja: negativo. O sinal não representa acerto, erro ou confiança.</p>
+          </div>
+          <label class="range-control">
+            <span>Primeira coordenada</span>
+            <input id="barStart" type="range" min="0" max="1" value="0">
+          </label>
+        </div>
+        <svg id="barChart" viewBox="0 0 960 280" role="img" aria-labelledby="bars-title barRange"></svg>
+        <p id="barRange" class="small" aria-live="polite"></p>
+        <p id="barReading" class="reading" aria-live="polite">Passe o ponteiro ou use Tab nas barras para consultar os valores.</p>
+      </section>
+
+      <section class="chart-section" aria-labelledby="line-title">
+        <div class="chart-heading">
+          <div>
+            <h3 id="line-title">O vetor ao longo das coordenadas</h3>
+            <p>A linha liga valores pela ordem dos índices. A proximidade horizontal não significa proximidade de sentido.</p>
+          </div>
+          <div class="line-controls">
+            <label><span>Trecho visível</span><select id="lineWindow"></select></label>
+            <label><span>Início do trecho</span><input id="lineStart" type="range" min="0" max="0" value="0"></label>
+          </div>
+        </div>
+        <svg id="lineChart" viewBox="0 0 1000 280" role="img" aria-labelledby="line-title lineRange"></svg>
+        <p id="lineRange" class="small" aria-live="polite"></p>
+        <p id="lineReading" class="reading" aria-live="polite">Mova o ponteiro sobre a linha para consultar uma coordenada.</p>
+      </section>
+
+      <div class="interpretation-grid">
+        <article>
+          <h3>O que pode ser observado</h3>
+          <p>Como as escolhas de agregação e normalização transformam a visualização dos mesmos tokens salvos.</p>
+        </article>
+        <article>
+          <h3>O que não pode ser concluído</h3>
+          <p>Uma coordenada isolada não identifica um objeto, conceito, qualidade da imagem ou explicação semântica.</p>
+        </article>
+      </div>
+
+      <details class="record-details">
+        <summary>Ver parâmetros preservados da execução</summary>
+        <pre id="record"></pre>
+      </details>
+    </section>
+
+    <section class="next panel">
+      <div>
+        <p class="step">Para executar com seus próprios arquivos</p>
+        <h2>A bancada completa é local</h2>
+        <p>O repositório contém o código, as instruções de instalação e as condições técnicas para executar o encoder na sua própria máquina.</p>
+      </div>
+      <a class="button primary" href="https://github.com/rebojar/LabVisual" target="_blank" rel="noopener noreferrer">Abrir LabVisual no GitHub ↗</a>
+    </section>
+  </main>
+
+  <footer>
+    <p><a href="../">Rebojar ↗</a> · <a href="https://github.com/rebojar/LabVisual" target="_blank" rel="noopener noreferrer">Código da bancada ↗</a> · <a href="https://github.com/rebojar/LabVisual/blob/main/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener noreferrer">Avisos de terceiros ↗</a> · <a href="https://github.com/sponsors/rebojar" target="_blank" rel="noopener noreferrer">Apoiar ♡</a></p>
+    <p>Esta demonstração descreve uma execução registrada; não oferece um serviço remoto de inferência.</p>
+    <p class="copyright">© 2026 Rebojar</p>
+  </footer>
+
+  <div id="pointerGuide" class="pointer-guide" role="status" aria-live="polite" hidden></div>
+
+  <script src="dados.js"></script>
+  <script src="demo.js"></script>
+</body>
+</html>
