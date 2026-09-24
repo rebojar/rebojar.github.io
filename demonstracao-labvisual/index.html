@@ -123,10 +123,7 @@
             <p class="small">O formato da imagem é preservado aproximadamente. As dimensões se ajustam a múltiplos de 32.</p>
             <label>
               <span>Versão da imagem</span>
-              <select id="workflowImageVariant">
-                <option value="original">Cores originais</option>
-                <option value="cinza">Tons de cinza</option>
-              </select>
+              <!--🔹INICIO OPÇÕES DE SELEÇÃO🔹--><select id="workflowImageVariant"><option value="original">Cores originais</option><option value="cinza">Tons de cinza</option></select><!--🔻FIM OPÇÕES DE SELEÇÃO🔻-->
             </label>
           </div>
           <button id="workflowPrepare" class="button secondary workflow-action" type="button" disabled>Preparar imagem</button>
@@ -237,23 +234,14 @@
             <div class="analysis-control">
               <label>
                 <span class="analysis-field-label"><strong>Como resumir os tokens</strong> | Agregação por coordenada</span>
-                <select id="pooling">
-                  <option value="mean">Média</option>
-                  <option value="max">Máximo</option>
-                  <option value="median">Mediana</option>
-                </select>
+                <!--🔹INICIO OPÇÕES DE SELEÇÃO🔹--><select id="pooling"><option value="mean">Média</option><option value="max">Máximo</option><option value="median">Mediana</option></select><!--🔻FIM OPÇÕES DE SELEÇÃO🔻-->
               </label>
               <p id="poolingExplanation" class="analysis-choice-caption"></p>
             </div>
             <div class="analysis-control">
               <label>
                 <span class="analysis-field-label"><strong>Como normalizar</strong> | Normalização do vetor</span>
-                <select id="normalization">
-                  <option value="l2">L2</option>
-                  <option value="l1">L1</option>
-                  <option value="linf">L∞</option>
-                  <option value="none">Sem normalização</option>
-                </select>
+                <!--🔹INICIO OPÇÕES DE SELEÇÃO🔹--><select id="normalization"><option value="l2">L2</option><option value="l1">L1</option><option value="linf">L∞</option><option value="none">Sem normalização</option></select><!--🔻FIM OPÇÕES DE SELEÇÃO🔻-->
               </label>
               <p id="normalizationExplanation" class="analysis-choice-caption"></p>
             </div>
@@ -273,11 +261,9 @@
             <strong id="comparison-stage-title">Como comparar<span id="analysisMetricChoice" class="workflow-recipe-choice" hidden>Cosseno</span></strong>
           </div>
           <div class="workflow-recipe-step">
-            <label><span>Medida de comparação</span><select id="metric">
-              <option value="cosine">Cosseno</option>
-              <option value="euclidean">Distância euclidiana</option>
-              <option value="dot">Produto escalar</option>
-            </select></label>
+            <label><span>Medida de comparação</span>
+            <!--🔹INICIO OPÇÕES DE SELEÇÃO🔹--><select id="metric"><option value="cosine">Cosseno</option><option value="euclidean">Distância euclidiana</option><option value="dot">Produto escalar</option></select><!--🔻FIM OPÇÕES DE SELEÇÃO🔻-->
+           </label>
             <p id="analysisMetricExplanation" class="small"></p>
           </div>
         </section>
