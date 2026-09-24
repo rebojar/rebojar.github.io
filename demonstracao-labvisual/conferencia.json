@@ -1,0 +1,23 @@
+{
+  "date": "2026-09-23",
+  "status": "passed",
+  "scope": "Conferência de saídas locais e dos cálculos usados pela demonstração.",
+  "origin": {
+    "checks": 104,
+    "passed": 104,
+    "failed": 0
+  },
+  "browser_math": {
+    "normalizations": 504,
+    "coordinates": 1322496,
+    "ranking_lists": 6912,
+    "max_vector_absolute_error": 0,
+    "max_divisor_relative_error": 2.384596118845396e-15,
+    "max_score_relative_error": 1.0940482903899486e-14,
+    "score_tolerance": 1e-11,
+    "reference": "analysis.py da bancada local validada",
+    "reference_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e",
+    "cases": "21 entradas/variantes × 2 estágios × 3 agregações × 4 normalizações; rankings dos 8 fundos × 12 âncoras × 2 estágios × 3 agregações × 4 normalizações × 3 medidas."
+  },
+  "failures": []
+}
