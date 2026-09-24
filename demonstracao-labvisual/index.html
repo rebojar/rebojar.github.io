@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Demonstração pública da Bancada Visual do Qwen3.5-9B com uma execução sintética pré-calculada.">
+  <meta name="description" content="Demonstração pública do LabVisual com imagens, lote, vizinhos e sequências pré-calculadas da Bancada Visual do Qwen3.5-9B.">
   <title>Bancada Visual · Qwen3.5-9B — Rebojar</title>
   <link rel="icon" type="image/png" href="../assets/labvisual-icon.png">
-  <link rel="stylesheet" href="demo.css">
+    <link rel="stylesheet" href="demo.css?v=20260924-54">
 </head>
 <body>
   <header class="topbar">
@@ -16,7 +16,7 @@
         <span>LabVisual</span>
       </a>
       <span class="brand-separator" aria-hidden="true">|</span>
-      <a class="rebojar-link" href="../">Rebojar ↗</a>
+      <a class="rebojar-link" href="https://rebojar.github.io/">Rebojar ↗</a>
     </div>
     <nav aria-label="Links da demonstração">
       <a href="https://github.com/rebojar/LabVisual" target="_blank" rel="noopener noreferrer">Código aberto ↗</a>
@@ -29,7 +29,7 @@
       <div>
         <p class="eyebrow">Demonstração pública · dados pré-calculados</p>
         <h1>Bancada Visual <span>Qwen3.5-9B</span></h1>
-        <p class="lead">Uma leitura interativa de representações produzidas pela torre visual do Qwen3.5-9B, com os pesos congelados.</p>
+        <p class="lead">Uma leitura interativa de representações produzidas pela torre visual do Qwen3.5-9B.</p>
         <div class="hero-actions">
           <button class="button primary" type="button" data-open-entry-picker>Explorar demonstração</button>
           <a class="button secondary" href="https://github.com/rebojar/LabVisual#comece-por-aqui" target="_blank" rel="noopener noreferrer">Instalar a bancada ↗</a>
@@ -40,43 +40,293 @@
 
     <aside class="public-note" aria-label="Limites desta demonstração">
       <span class="note-icon" aria-hidden="true">◇</span>
-      <p><strong>Esta página não executa o modelo.</strong> Ela reutiliza números de uma execução sintética registrada. Não há upload, servidor local, acesso ao seu computador nem envio de dados.</p>
+      <p><strong>Esta página não executa o modelo.</strong> Ela reutiliza arquivos de demonstração e números de execuções já registradas. Não há upload, servidor local, acesso ao seu computador nem envio de dados.</p>
     </aside>
+
+    <nav class="view-tabs" role="tablist" aria-label="Modo da demonstração">
+      <button id="singleTab" type="button" role="tab" aria-selected="true" aria-controls="singleView">Uma imagem</button>
+      <button id="batchTab" type="button" role="tab" aria-selected="false" aria-controls="batchView" tabindex="-1">Lote de imagens</button>
+      <button id="neighborsTab" type="button" role="tab" aria-selected="false" aria-controls="neighborsView" tabindex="-1">Vizinhos</button>
+      <button id="videoTab" type="button" role="tab" aria-selected="false" aria-controls="videoView" tabindex="-1">Vídeo / GIF</button>
+    </nav>
 
     <dialog id="entryDialog" class="entry-dialog" aria-labelledby="entry-dialog-title">
       <form method="dialog" class="entry-dialog-shell">
-        <div class="entry-dialog-heading">
-          <div>
-            <p class="step">Base pré-calculada</p>
-            <h2 id="entry-dialog-title">Escolha uma entrada para explorar</h2>
+        <button class="dialog-close" value="cancel" aria-label="Fechar seleção de entrada">×</button>
+        <div class="entry-dialog-scroll">
+          <section id="entryLocalInstall" class="entry-local-install" aria-labelledby="entry-local-title" hidden>
+            <div class="entry-local-copy">
+              <h2 id="entry-local-title">A bancada completa é local</h2>
+              <p>O repositório contém o código, as instruções de instalação e as condições técnicas para executar o encoder na sua própria máquina.</p>
+            </div>
+            <div class="entry-local-actions">
+              <div class="entry-local-meta">
+                <p class="step">Para executar com seus próprios arquivos</p>
+                <a class="entry-support-button" href="https://github.com/sponsors/rebojar" target="_blank" rel="noopener noreferrer">Apoiar ♡</a>
+              </div>
+              <a class="entry-install-button" href="https://github.com/rebojar/LabVisual" target="_blank" rel="noopener noreferrer">Abrir Bancada Visual Qwen3.5-9B no GitHub ↗</a>
+            </div>
+          </section>
+          <div class="entry-dialog-heading">
+            <div>
+              <p class="step">Base pré-calculada</p>
+              <h2 id="entry-dialog-title">Escolha uma entrada para explorar</h2>
+            </div>
           </div>
-          <button class="dialog-close" value="cancel" aria-label="Fechar seleção de entrada">×</button>
-        </div>
-        <p class="entry-dialog-intro">Cada opção corresponde a uma execução já registrada. Escolher uma entrada não envia arquivos nem executa novamente o modelo.</p>
-        <div class="entry-options" id="entryOptions">
-          <button class="entry-option" type="submit" value="synthetic" data-entry-id="synthetic">
-            <canvas id="entryPattern" width="160" height="120" aria-hidden="true"></canvas>
-            <span class="entry-option-copy">
-              <strong>Padrão geométrico controlado</strong>
-              <span>Entrada sintética · 320 × 240 px</span>
-              <small>Execução disponível</small>
-            </span>
-          </button>
+          <p class="entry-dialog-intro">Cada opção corresponde a uma execução já registrada. Escolher uma entrada não envia arquivos nem executa novamente o modelo.</p>
+          <div class="entry-options" id="entryOptions">
+            <button class="entry-option" type="submit" value="synthetic" data-entry-id="synthetic">
+              <canvas id="entryPattern" width="160" height="120" aria-hidden="true"></canvas>
+              <span class="entry-option-copy">
+                <strong>Padrão geométrico controlado</strong>
+                <span>Entrada sintética · 320 × 240 px</span>
+                <small>Execução disponível</small>
+              </span>
+            </button>
+          </div>
         </div>
       </form>
     </dialog>
 
-    <section class="overview" aria-labelledby="execucao-title" id="entrada-atual">
-      <div class="input-card panel">
-        <div class="section-heading">
-          <div>
-            <button class="step input-selector" type="button" data-open-entry-picker>Entrada sintética <span aria-hidden="true">▾</span></button>
-            <h2 id="execucao-title">Um padrão geométrico controlado</h2>
-          </div>
-          <span class="badge">320 × 240 px</span>
+    <section id="singleView" class="demo-view" role="tabpanel" aria-labelledby="singleTab">
+    <section id="demoWorkflow" class="workflow panel" aria-labelledby="workflow-title">
+      <div class="section-heading workflow-heading">
+        <div class="workflow-mode-row">
+          <h2 id="workflow-title" class="workflow-mode-title">Simulação guiada</h2>
         </div>
-        <canvas id="pattern" width="320" height="240" role="img" aria-label="Padrão geométrico em azul e laranja usado como entrada da demonstração"></canvas>
-        <p class="small">O padrão foi criado dentro da própria bancada. Nenhuma fotografia ou arquivo pessoal participa desta demonstração.</p>
+        <div class="workflow-heading-status">
+          <span class="badge">Pesos congelados · sem upload</span>
+          <span class="status"><i aria-hidden="true"></i> Dados carregados no navegador</span>
+        </div>
+        <h3 class="workflow-path-title">Explore o caminho de uma imagem</h3>
+        <button id="workflowEntrySelector" class="step input-selector workflow-entry-selector" type="button" data-open-entry-picker><span id="inputSelectorLabel">Entrada sintética</span> <span aria-hidden="true">▾</span></button>
+        <p class="workflow-path-copy">Escolha uma entrada pública, prepare seus pixels e então revele a execução registrada do encoder.</p>
+      </div>
+
+      <div class="workflow-layout">
+        <article class="workflow-card workflow-choose-card">
+          <div class="workflow-card-title"><span class="workflow-number workflow-number-1">1</span><h3>Escolha a entrada</h3></div>
+          <p>Esta demonstração usa somente arquivos públicos já processados. Nada é enviado do seu computador.</p>
+          <button id="workflowChoose" class="button primary workflow-action" type="button">Escolher imagem</button>
+        <button id="workflowUseSynthetic" class="workflow-test-link" type="button">Usar padrão geométrico de teste</button>
+          <p id="workflowChooseStatus" class="workflow-status" aria-live="polite">Nenhuma imagem escolhida.</p>
+          <div class="workflow-preparation-controls" aria-label="Condições de preparação da imagem">
+            <label>
+              <span>Orçamento de pixels</span>
+              <select id="workflowPixelBudget">
+                <option value="65536">65.536 pixels</option>
+                <option value="147456">147.456 pixels</option>
+                <option value="262144">262.144 pixels</option>
+                <option value="0">Limites do checkpoint</option>
+              </select>
+            </label>
+            <p class="small">O formato da imagem é preservado aproximadamente. As dimensões se ajustam a múltiplos de 32.</p>
+            <label>
+              <span>Versão da imagem</span>
+              <select id="workflowImageVariant">
+                <option value="original">Cores originais</option>
+                <option value="cinza">Tons de cinza</option>
+              </select>
+            </label>
+          </div>
+          <button id="workflowPrepare" class="button secondary workflow-action" type="button" disabled>Preparar imagem</button>
+          <p id="workflowPrepareStatus" class="small" aria-live="polite">Escolha uma imagem para habilitar a preparação.</p>
+        </article>
+
+        <article class="workflow-card workflow-preview-card">
+          <div class="workflow-card-title workflow-preview-title">
+            <span class="workflow-number workflow-number-2">2</span><h3>Veja o que entra</h3><span id="workflowFileName" class="workflow-file-name">Nenhuma imagem escolhida</span>
+          </div>
+          <div class="workflow-previews">
+            <section>
+              <h3>Original</h3>
+              <div id="workflowOriginalFrame" class="workflow-image-frame">
+                <div id="workflowOriginalPlaceholder" class="workflow-placeholder"><span aria-hidden="true">▧</span><p>Escolha uma imagem no painel ao lado.</p></div>
+                <canvas id="workflowOriginalPattern" width="320" height="240" hidden aria-label="Entrada sintética original"></canvas>
+                <img id="workflowOriginalImage" alt="" hidden>
+              </div>
+              <p id="workflowOriginalCaption" class="small">A entrada escolhida aparecerá aqui.</p>
+            </section>
+            <section>
+              <h3>Entrada preparada</h3>
+              <div id="workflowPreparedFrame" class="workflow-image-frame workflow-prepared-frame">
+                <div id="workflowPreparedPlaceholder" class="workflow-placeholder"><span aria-hidden="true">▦</span><p>Prepare a imagem para ver os pixels e patches usados.</p></div>
+                <canvas id="workflowPreparedPattern" width="288" height="192" hidden aria-label="Entrada sintética preparada"></canvas>
+                <img id="workflowPreparedImage" alt="" hidden>
+                <span id="workflowPatchGrid" class="workflow-patch-grid" hidden aria-hidden="true"></span>
+                <span id="workflowMergeGrid" class="workflow-merge-grid" hidden aria-hidden="true"></span>
+              </div>
+              <p id="workflowPreparedCaption" class="small">A preparação ainda não foi revelada.</p>
+            </section>
+          </div>
+          <fieldset class="background-picker" id="backgroundPicker" hidden>
+            <legend>Fundo aplicado à transparência</legend>
+            <div id="backgroundChoices" class="background-choices" role="radiogroup" aria-label="Fundo registrado para pixels transparentes"></div>
+            <p id="backgroundStatus" class="small" aria-live="polite"></p>
+          </fieldset>
+          <section id="preparationInsight" class="preparation-insight" aria-label="Leitura da preparação da imagem">
+            <details class="preparation-detail preparation-overview">
+              <summary>Entenda a preparação da imagem</summary>
+              <div class="preparation-overview-body">
+                <label class="preparation-toggle preparation-opacity-toggle">
+                  <input id="workflowOpacityMask" type="checkbox">
+                  <span>Ver máscara de opacidade no original</span>
+                </label>
+                <p class="preparation-checker-note">O xadrez no original indica transparência. Ele não entra no encoder.</p>
+                <div class="preparation-toggle-row">
+                  <label class="preparation-toggle">
+                    <input id="workflowShowPatches" type="checkbox" checked>
+                    <span>Mostrar patches de 16 × 16</span>
+                  </label>
+                  <label class="preparation-toggle">
+                    <input id="workflowShowGroups" type="checkbox">
+                    <span>Destacar grupos de 2 × 2</span>
+                  </label>
+                </div>
+                <dl class="preparation-metrics">
+                  <div>
+                    <dt>Patches de entrada</dt>
+                    <dd id="preparationPatchCount">—</dd>
+                  </div>
+                  <div>
+                    <dt>Números por patch</dt>
+                    <dd id="preparationPatchValues">—</dd>
+                  </div>
+                  <div>
+                    <dt>Grade temporal × altura × largura</dt>
+                    <dd id="preparationGrid">—</dd>
+                  </div>
+                  <div>
+                    <dt>Intervalo após normalização</dt>
+                    <dd id="preparationInterval">—</dd>
+                  </div>
+                </dl>
+                <div class="preparation-explanation">
+                  <p>Cada patch reúne números de cor. Uma imagem estática é repetida no eixo temporal usado pela arquitetura; isso não cria movimento.</p>
+                  <p>O processador normaliza as cores com média e desvio do checkpoint.</p>
+                </div>
+              </div>
+            </details>
+            <details class="preparation-detail">
+              <summary>Ver o código desta etapa</summary>
+              <pre id="preparationRecord" aria-label="Parâmetros registrados da preparação"></pre>
+            </details>
+            <details class="preparation-detail">
+              <summary>O que a grade permite entender?</summary>
+              <p>Ela mostra a divisão espacial em patches. Depois da projeção inicial, a atenção mistura informações entre posições. Esta grade não é um mapa de atenção nem mostra quais partes são mais importantes.</p>
+            </details>
+          </section>
+        </article>
+      </div>
+
+      <article class="workflow-card workflow-analysis-card" aria-labelledby="workflow-analysis-title">
+        <div class="workflow-card-title">
+          <span class="workflow-number workflow-number-3">3</span>
+          <h3 id="workflow-analysis-title">Escolha como analisar os tokens salvos</h3>
+          <div class="explorer-status-stack">
+           <span class="step">Exploração interativa</span>
+            <span class="badge">Metodologia da bancada</span>        
+          </div>
+        </div>
+        <div class="analysis-stage-body">         
+          <p class="method-note">Média, máximo e mediana foram calculados sobre os tokens reais e salvos antes da normalização.</p>
+          <p class="method-note">Aqui sua escolha atua sobre as saídas do encoder, recalculando sua normalização.</p>
+          <p class="method-note">Os pesos e o merger aprendido do Qwen permanecem os mesmos; o encoder não é executado novamente.</p>
+
+          <div class="controls controls-analysis">
+            <div class="analysis-control">
+              <label>
+                <span class="analysis-field-label"><strong>Como resumir os tokens</strong> | Agregação por coordenada</span>
+                <select id="pooling">
+                  <option value="mean">Média</option>
+                  <option value="max">Máximo</option>
+                  <option value="median">Mediana</option>
+                </select>
+              </label>
+              <p id="poolingExplanation" class="analysis-choice-caption"></p>
+            </div>
+            <div class="analysis-control">
+              <label>
+                <span class="analysis-field-label"><strong>Como normalizar</strong> | Normalização do vetor</span>
+                <select id="normalization">
+                  <option value="l2">L2</option>
+                  <option value="l1">L1</option>
+                  <option value="linf">L∞</option>
+                  <option value="none">Sem normalização</option>
+                </select>
+              </label>
+              <p id="normalizationExplanation" class="analysis-choice-caption"></p>
+            </div>
+          </div>
+          <p id="recipeReading" class="analysis-readout" aria-live="polite"></p>
+
+          <div class="metrics" aria-label="Resumo numérico">
+            <article><span>Tokens reunidos</span><strong id="tokenCount">—</strong></article>
+            <article><span>Coordenadas</span><strong id="dimensionCount">—</strong></article>
+            <article><span>Divisor aplicado</span><strong id="divisor">—</strong></article>
+            <article><span>Maior magnitude</span><strong id="peak">—</strong></article>
+          </div>
+        </div>
+        <p id="workflowAnalysisStatus" class="small" aria-live="polite">Prepare uma imagem para liberar estas escolhas.</p>
+        <section class="workflow-comparison-stage" aria-labelledby="comparison-stage-title">
+          <div class="workflow-chart-marker-heading">
+            <strong id="comparison-stage-title">Como comparar<span id="analysisMetricChoice" class="workflow-recipe-choice" hidden>Cosseno</span></strong>
+          </div>
+          <div class="workflow-recipe-step">
+            <label><span>Medida de comparação</span><select id="metric">
+              <option value="cosine">Cosseno</option>
+              <option value="euclidean">Distância euclidiana</option>
+              <option value="dot">Produto escalar</option>
+            </select></label>
+            <p id="analysisMetricExplanation" class="small"></p>
+          </div>
+        </section>
+      </article>
+
+      <article class="workflow-card workflow-execute-card">
+        <div class="workflow-card-title"><span class="workflow-number workflow-number-4">4</span><h3>Execute o encoder</h3><span>CPU · FP32 · sem gradientes</span></div>
+        <div class="workflow-execute-grid">
+          <p class="workflow-execute-intro">Os números atravessaram os 27 blocos visuais na execução registrada. Agora esta demonstração pode revelar os vetores usando a receita escolhida acima.</p>
+          <div class="workflow-execute-recipe">
+            <p id="analysisRecipeSummary" class="workflow-recipe-summary">Receita escolhida: Média → L2 → Cosseno</p>
+            <p class="small explorer-comparison-status">Esta receita está aplicada aos resultados exibidos abaixo.</p>
+          </div>
+          <div class="workflow-execute-actions">
+            <button id="workflowExecute" class="button workflow-execute-button" type="button" disabled>Executar encoder</button>
+            <p id="workflowExecuteStatus" class="workflow-status" aria-live="polite">Prepare uma imagem para habilitar a execução registrada.</p>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <div id="singleResults" hidden>
+    <details class="outcome-details">
+      <summary>O que aconteceu?</summary>
+      <div class="outcome-details-body">
+    <section class="overview" aria-labelledby="patch-title" id="entrada-atual">
+      <div class="input-card panel">
+        <div class="entry-source-state input-preview" hidden aria-hidden="true">
+          <h2 id="execucao-title">Um padrão geométrico controlado</h2>
+          <span id="inputDimensions">320 × 240 px</span>
+          <canvas id="pattern" width="320" height="240" aria-label="Padrão geométrico em azul e laranja usado como entrada da demonstração"></canvas>
+          <img id="selectedImage" alt="" hidden>
+          <p id="inputDescription">O padrão foi criado dentro da própria bancada. Nenhuma fotografia ou arquivo pessoal participa desta demonstração.</p>
+        </div>
+        <figure class="patch-figure" aria-labelledby="patch-title">
+          <div class="patch-copy">
+            <p class="patch-label">Preparação visualizada</p>
+            <h3 id="patch-title">Grade de entrada em 216 patches</h3>
+            <p id="patchDescription">Os 288 × 192 pixels preparados formam uma grade de 18 × 12 células. Cada célula corresponde a um patch de 16 × 16 pixels antes da representação em tokens.</p>
+          </div>
+          <div>
+            <div class="patch-frame">
+              <canvas id="patchPattern" width="288" height="192" aria-label="Representação esquemática da entrada preparada, dividida em 18 colunas e 12 linhas de patches"></canvas>
+              <img id="preparedImage" alt="" hidden>
+              <span class="patch-grid-overlay" aria-hidden="true"></span>
+            </div>
+            <figcaption id="patchCaption">Visualização esquemática da grade; ela torna a divisão espacial legível, sem reexecutar o processador do modelo.</figcaption>
+          </div>
+        </figure>
       </div>
 
       <div class="panel record-card">
@@ -105,13 +355,13 @@
         <article>
           <span class="flow-number">1</span>
           <h3>Preparação</h3>
-          <p>288 × 192 pixels preparados e organizados em 216 patches de entrada.</p>
+          <p id="preparationSummary">288 × 192 pixels preparados e organizados em 216 patches de entrada.</p>
         </article>
         <span class="arrow" aria-hidden="true">→</span>
         <article>
           <span class="flow-number">2</span>
           <h3>Antes do merger</h3>
-          <p>216 tokens, cada um com 1.152 coordenadas.</p>
+          <p id="beforeSummary">216 tokens, cada um com 1.152 coordenadas.</p>
         </article>
         <span class="arrow" aria-hidden="true">→</span>
         <article>
@@ -123,85 +373,55 @@
         <article>
           <span class="flow-number">4</span>
           <h3>Depois do merger</h3>
-          <p>54 tokens, cada um com 4.096 coordenadas.</p>
+          <p id="afterSummary">54 tokens, cada um com 4.096 coordenadas.</p>
         </article>
       </div>
-      <figure class="patch-figure" aria-labelledby="patch-title">
-        <div class="patch-copy">
-          <p class="patch-label">Preparação visualizada</p>
-          <h3 id="patch-title">Grade de entrada em 216 patches</h3>
-          <p>Os 288 × 192 pixels preparados formam uma grade de 18 × 12 células. Cada célula corresponde a um patch de 16 × 16 pixels antes da representação em tokens.</p>
-        </div>
-        <div>
-          <div class="patch-frame">
-            <canvas id="patchPattern" width="288" height="192" aria-label="Representação esquemática da entrada preparada, dividida em 18 colunas e 12 linhas de patches"></canvas>
-            <span class="patch-grid-overlay" aria-hidden="true"></span>
-          </div>
-          <figcaption>Visualização esquemática da grade; ela torna a divisão espacial legível, sem reexecutar o processador do modelo.</figcaption>
-        </div>
-      </figure>
     </section>
-
-    <section id="explorar" class="explorer panel" aria-labelledby="explorer-title">
-      <div class="section-heading explorer-heading">
-        <div>
-          <p class="step">Exploração interativa</p>
-          <h2 id="explorer-title">Escolha como ler os tokens salvos</h2>
-        </div>
-        <span class="status"><i aria-hidden="true"></i> Dados carregados no navegador</span>
       </div>
+    </details>
 
-      <p class="method-note">Estas escolhas recalculam somente a leitura analítica dos números já publicados. Elas não modificam o merger aprendido, não treinam pesos e não executam novamente o encoder.</p>
-
-      <div class="controls">
-        <label>
-          <span>Representação</span>
-          <select id="stage">
-            <option value="after">Depois do merger</option>
-            <option value="before">Antes do merger</option>
-          </select>
-        </label>
-        <label>
-          <span>Agregação dos tokens</span>
-          <select id="pooling">
-            <option value="mean">Média</option>
-            <option value="max">Máximo</option>
-            <option value="median">Mediana</option>
-          </select>
-        </label>
-        <label>
-          <span>Normalização do vetor</span>
-          <select id="normalization">
-            <option value="l2">L2</option>
-            <option value="l1">L1</option>
-            <option value="linf">L∞</option>
-            <option value="none">Sem normalização</option>
-          </select>
-        </label>
-      </div>
-      <p id="recipeReading" class="analysis-readout" aria-live="polite"></p>
-
-      <div class="metrics" aria-label="Resumo numérico">
-        <article><span>Tokens reunidos</span><strong id="tokenCount">—</strong></article>
-        <article><span>Coordenadas</span><strong id="dimensionCount">—</strong></article>
-        <article><span>Divisor aplicado</span><strong id="divisor">—</strong></article>
-        <article><span>Maior magnitude</span><strong id="peak">—</strong></article>
-      </div>
-
+    <section id="explorar" class="explorer panel" aria-label="Comparação e gráficos da representação registrada">
+      <span class="workflow-stage-label workflow-stage-execution explorer-execution-label">Execução registrada</span>
       <section class="chart-section" aria-labelledby="bars-title">
         <div class="chart-heading">
           <div>
-            <h3 id="bars-title">48 coordenadas por vez</h3>
-            <p>Azul: valor positivo. Laranja: negativo. O sinal não representa acerto, erro ou confiança.</p>
+            <h3 id="bars-title"><span id="barWindowTitle">48</span> coordenadas por vez</h3>
           </div>
-          <label class="range-control">
-            <span>Primeira coordenada</span>
-            <input id="barStart" type="range" min="0" max="1" value="0">
-          </label>
+          <div class="bar-controls">
+            <label class="bar-stage-control">
+              <span>Representação exibida</span>
+              <select id="stage">
+                <option value="after">Depois do merger</option>
+                <option value="before">Antes do merger</option>
+              </select>
+            </label>
+            <label class="bar-window-control"><span>Quantidade de coordenadas por trecho visível</span><select id="barWindow"></select></label>
+            <button id="barAuto" class="chart-auto" type="button">Automático</button>
+            <label class="zoom-readout zoom-editor" for="barZoomInput">
+              <span class="zoom-editor-line"><span>Zoom:</span><input id="barZoomInput" type="text" inputmode="decimal" value="1,00" aria-label="Zoom do gráfico de barras"><span aria-hidden="true">×</span></span>
+              <small id="barZoomDetail" class="zoom-detail" aria-live="polite">eixos vinculados</small>
+            </label>
+          </div>
         </div>
-        <svg id="barChart" viewBox="0 0 960 280" role="img" aria-labelledby="bars-title barRange"></svg>
-        <p id="barRange" class="small" aria-live="polite"></p>
-        <p id="barReading" class="reading" aria-live="polite">Passe o ponteiro ou use Tab nas barras para consultar os valores.</p>
+        <svg id="barChart" viewBox="0 0 960 280" role="img" aria-labelledby="bars-title barRange" aria-describedby="barGestureHint"></svg>
+        <label class="chart-pan bar-pan"><span>Deslocar pelas coordenadas</span><input id="barStart" type="range" min="0" max="1" value="0"></label>
+        <p id="barGestureHint" class="gesture-hint">Faça o gesto de pinça sobre o gráfico para ampliar. Deslize horizontalmente sobre ele ou use a barra para percorrer o vetor.</p>
+        <p id="barRange" class="small chart-range-note" aria-live="polite"></p>
+        <div class="bar-reading-row">
+          <p id="barReading" class="reading" aria-live="polite">Passe o ponteiro ou use Tab nas barras para consultar os valores.</p>
+          <div class="bar-legend" aria-label="Legenda das barras">
+            <span><i class="bar-legend-swatch bar-legend-positive" aria-hidden="true"></i>Valor positivo</span>
+            <span><i class="bar-legend-swatch bar-legend-negative" aria-hidden="true"></i>Valor negativo</span>
+          </div>
+        </div>
+        <details class="chart-explanation">
+          <summary>Como interpretar positivo e negativo?</summary>
+          <div>
+            <p>Cada barra é uma coordenada do vetor, como uma posição em um eixo: azul fica acima de zero, laranja abaixo. O sinal não indica acerto, erro, confiança ou presença de um objeto. As operações aprendidas da rede podem produzir valores dos dois sinais; dividir pela norma positiva preserva esses sinais.</p>
+            <p>A altura representa o valor absoluto nesta coordenada. Uma barra maior não prova que ela seja mais importante. A janela mostra a quantidade escolhida de coordenadas, na ordem dos índices, no estágio selecionado. A rolagem permite percorrer o vetor e a pinça amplia os dois eixos pelo mesmo fator.</p>
+            <p id="barScaleNote" class="small"></p>
+          </div>
+        </details>
       </section>
 
       <section class="chart-section" aria-labelledby="line-title">
@@ -211,13 +431,22 @@
             <p>A linha liga valores pela ordem dos índices. A proximidade horizontal não significa proximidade de sentido.</p>
           </div>
           <div class="line-controls">
-            <label><span>Trecho visível</span><select id="lineWindow"></select></label>
-            <label><span>Início do trecho</span><input id="lineStart" type="range" min="0" max="0" value="0"></label>
+            <label><span>Quantidade de coordenadas por trecho visível</span><select id="lineWindow"></select></label>
+            <button id="lineAuto" class="chart-auto" type="button">Automático</button>
+            <label class="zoom-readout zoom-editor" for="lineZoomInput">
+              <span class="zoom-editor-line"><span>Zoom:</span><input id="lineZoomInput" type="text" inputmode="decimal" value="1,00" aria-label="Zoom do gráfico"><span aria-hidden="true">×</span></span>
+              <small id="lineZoomDetail" class="zoom-detail" aria-live="polite">eixos vinculados</small>
+            </label>
           </div>
         </div>
-        <svg id="lineChart" viewBox="0 0 1000 280" role="img" aria-labelledby="line-title lineRange"></svg>
-        <p id="lineRange" class="small" aria-live="polite"></p>
-        <p id="lineReading" class="reading" aria-live="polite">Mova o ponteiro sobre a linha para consultar uma coordenada.</p>
+        <svg id="lineChart" viewBox="0 0 1000 448" role="img" aria-labelledby="line-title lineRange" aria-describedby="lineGestureHint"></svg>
+        <label class="chart-pan"><span>Deslocar pelas coordenadas</span><input id="lineStart" type="range" min="0" max="0" value="0"></label>
+        <p id="lineGestureHint" class="gesture-hint">Faça o gesto de pinça sobre o gráfico para ampliar. Deslize horizontalmente sobre ele ou use a barra para percorrer o vetor.</p>
+        <p id="lineRange" class="small chart-range-note" aria-live="polite"></p>
+        <div class="chart-coordinate-readings">
+          <p id="linePinnedReading" class="pinned-reading" aria-live="polite">Clique em uma coordenada para fixá-la no gráfico.</p>
+          <p id="lineReading" class="reading" aria-live="polite">Mova o ponteiro sobre a linha para consultar uma coordenada.</p>
+        </div>
       </section>
 
       <div class="interpretation-grid">
@@ -236,26 +465,167 @@
         <pre id="record"></pre>
       </details>
     </section>
+    </div>
+    </section>
 
+    <section id="batchView" class="demo-view" role="tabpanel" aria-labelledby="batchTab" hidden>
+      <div class="mode-intro panel">
+        <div class="mode-intro-top">
+          <p class="step">Lote registrado</p>
+          <span class="badge">12 imagens · resultados reais</span>
+        </div>
+        <h2>Um conjunto de imagens já processadas</h2>
+        <p>Estas doze entradas foram preparadas e atravessaram o mesmo encoder. Escolha uma delas para abrir seu registro na área “Uma imagem”.</p>
+      </div>
+      <section class="panel mode-panel" aria-labelledby="batch-gallery-title">
+        <div class="section-heading">
+          <div>
+            <p class="step">Base da demonstração</p>
+            <h2 id="batch-gallery-title">Forma, cor, posição e transparência</h2>
+          </div>
+          <span id="batchSummary" class="status"><i aria-hidden="true"></i> Carregando a base</span>
+        </div>
+        <div id="batchGallery" class="batch-gallery" aria-label="Entradas do lote"></div>
+        <p class="mode-footnote">Clicar numa imagem não executa o modelo: apenas abre os números e arquivos preparados que já foram registrados para ela.</p>
+      </section>
+    </section>
+
+    <section id="neighborsView" class="demo-view" role="tabpanel" aria-labelledby="neighborsTab" hidden>
+      <div class="mode-intro panel">
+        <div class="mode-intro-top">
+          <p class="step">Comparação no lote</p>
+          <span id="neighborsRecipeBadge" class="badge">Média · L2 · cosseno</span>
+        </div>
+        <h2>Vizinhos da imagem escolhida</h2>
+        <p>Compare como as proximidades mudam antes e depois do merger. Os vizinhos são procurados somente entre as doze entradas desta demonstração.</p>
+        <div class="controls" aria-label="Receita da comparação no lote">
+          <label><span>Resumo dos tokens no lote</span><select id="neighborPooling"><option value="mean">Média</option><option value="max">Máximo</option><option value="median">Mediana</option></select></label>
+          <label><span>Normalização no lote</span><select id="neighborNormalization"><option value="l2">L2</option><option value="l1">L1</option><option value="linf">L∞</option><option value="none">Sem normalização</option></select></label>
+          <label><span>Comparação no lote</span><select id="neighborMetric"><option value="cosine">Cosseno</option><option value="euclidean">Distância euclidiana</option><option value="dot">Produto escalar</option></select></label>
+        </div>
+        <p class="small">Esta receita pertence à comparação do lote. L1, L2 e L∞ preservam a direção: o cosseno não muda matematicamente; arredondamentos podem afetar empates muito próximos.</p>
+        <p id="neighborsDatasetNote" class="small"></p>
+      </div>
+      <section class="panel mode-panel" aria-labelledby="neighbor-title">
+        <div class="neighbor-picker">
+          <span class="neighbor-picker-label">Imagem de referência</span>
+          <button id="neighborSource" class="neighbor-picker-button" type="button"><strong id="neighborSourceLabel">Escolher imagem</strong><span aria-hidden="true">▾</span></button>
+        </div>
+        <div class="neighbor-anchor">
+          <img id="neighborAnchorImage" alt="">
+          <div>
+            <p class="step">Referência selecionada</p>
+            <h2 id="neighbor-title">—</h2>
+            <button id="openNeighborEntry" class="button secondary compact" type="button">Abrir em “Uma imagem”</button>
+          </div>
+        </div>
+        <div class="neighbor-columns-public">
+          <section>
+            <h3>Antes do merger</h3>
+            <p>1.152 coordenadas por vetor agregado.</p>
+            <div id="neighborsBefore" class="neighbor-list"></div>
+          </section>
+          <section>
+            <h3>Depois do merger</h3>
+            <p>4.096 coordenadas por vetor agregado.</p>
+            <div id="neighborsAfter" class="neighbor-list"></div>
+          </section>
+        </div>
+        <p id="neighborsMetricNote" class="mode-footnote">Cosseno próximo de 1 indica vetores mais alinhados dentro deste pequeno lote. Não é porcentagem de compreensão, confiança ou semelhança visual humana.</p>
+      </section>
+    </section>
+
+    <section id="videoView" class="demo-view" role="tabpanel" aria-labelledby="videoTab" hidden>
+      <div class="mode-intro panel">
+        <div class="mode-intro-top">
+          <p class="step">Sequência registrada</p>
+          <span class="badge">Somente visão · sem áudio</span>
+        </div>
+        <h2>O que entra quando a imagem se move</h2>
+        <p>Alterne entre o GIF e o vídeo usados no ensaio, veja os quatro quadros selecionados e percorra a representação salva da sequência.</p>
+      </div>
+      <section class="panel mode-panel" aria-labelledby="sequence-title">
+        <div class="sequence-toolbar">
+          <label for="sequenceFormat">Formato registrado</label>
+          <select id="sequenceFormat"></select>
+        </div>
+        <div class="sequence-overview">
+          <div>
+            <h2 id="sequence-title">Arquivo original</h2>
+            <div id="sequenceOriginal" class="sequence-original"></div>
+            <p id="sequenceMeta" class="small"></p>
+          </div>
+          <div>
+            <h3>Quadro preparado em foco</h3>
+            <img id="sequenceFocus" class="sequence-focus" alt="">
+            <label class="range-control sequence-range">
+              <span>Instante selecionado</span>
+              <input id="sequenceFrame" type="range" min="0" max="3" value="0">
+            </label>
+            <p id="sequenceFrameReading" class="reading" aria-live="polite"></p>
+          </div>
+        </div>
+        <div id="sequenceFrames" class="sequence-frames-public"></div>
+        <section class="chart-section sequence-chart-section" aria-labelledby="sequence-chart-title">
+          <div class="chart-heading">
+            <div>
+              <h3 id="sequence-chart-title">Representação registrada da sequência</h3>
+              <p>A linha percorre as 4.096 coordenadas da média global dos tokens depois do merger, normalizada em L2. Selecionar um quadro muda somente a prévia: o gráfico continua representando a sequência inteira amostrada, sem áudio.</p>
+            </div>
+            <div class="line-controls">
+              <label><span>Quantidade de coordenadas por trecho visível</span><select id="sequenceLineWindow"></select></label>
+              <button id="sequenceLineAuto" class="chart-auto" type="button">Automático</button>
+              <label class="zoom-readout zoom-editor" for="sequenceZoomInput">
+                <span class="zoom-editor-line"><span>Zoom:</span><input id="sequenceZoomInput" type="text" inputmode="decimal" value="1,00" aria-label="Zoom do gráfico da sequência"><span aria-hidden="true">×</span></span>
+                <small id="sequenceZoomDetail" class="zoom-detail" aria-live="polite">eixos vinculados</small>
+              </label>
+            </div>
+          </div>
+          <svg id="sequenceChart" viewBox="0 0 1000 448" role="img" aria-labelledby="sequence-chart-title sequenceChartRange" aria-describedby="sequenceGestureHint"></svg>
+          <label class="chart-pan"><span>Deslocar pelas coordenadas</span><input id="sequenceLineStart" type="range" min="0" max="0" value="0"></label>
+          <p id="sequenceGestureHint" class="gesture-hint">Faça o gesto de pinça sobre o gráfico para ampliar. Deslize horizontalmente sobre ele ou use a barra para percorrer o vetor.</p>
+          <p id="sequenceChartRange" class="small chart-range-note"></p>
+          <div class="chart-coordinate-readings">
+            <p id="sequencePinnedReading" class="pinned-reading" aria-live="polite">Clique em uma coordenada para fixá-la no gráfico.</p>
+            <p id="sequenceChartReading" class="reading" aria-live="polite">Mova o ponteiro sobre a linha para consultar uma coordenada.</p>
+          </div>
+        </section>
+        <p class="mode-footnote">A sequência é amostrada: ela não contém todos os quadros do arquivo. O áudio não participa da torre visual.</p>
+        <details class="record-details"><summary>Ver parâmetros preservados da sequência</summary><pre id="sequenceRecord"></pre></details>
+      </section>
+    </section>
+
+    <details class="record-details panel">
+      <summary>De onde vêm os números desta demonstração?</summary>
+      <p>São saídas reais da torre visual Qwen3.5-9B executada localmente, com os pesos congelados. As formas geométricas são entradas controladas; os vetores não foram inventados.</p>
+      <p>A conferência de 23/09/2026 comparou as 12 imagens, os oito fundos da entrada transparente, o padrão geométrico e as duas sequências com os registros da bancada. Os agregados foram calculados sobre os tokens completos. O navegador aplica a normalização e calcula os vizinhos.</p>
+      <p><a href="proveniencia.json" download>Baixar origem dos dados e identificadores dos arquivos</a> · <a href="conferencia.json" download>Baixar resultados da conferência numérica</a></p>
+    </details>
     <section class="next panel">
-      <div>
+      <div class="next-heading">
         <p class="step">Para executar com seus próprios arquivos</p>
         <h2>A bancada completa é local</h2>
-        <p>O repositório contém o código, as instruções de instalação e as condições técnicas para executar o encoder na sua própria máquina.</p>
       </div>
-      <a class="button primary" href="https://github.com/rebojar/LabVisual" target="_blank" rel="noopener noreferrer">Abrir LabVisual no GitHub ↗</a>
+      <a class="button primary" href="https://github.com/rebojar/LabVisual" target="_blank" rel="noopener noreferrer">Abrir Bancada Visual Qwen3.5-9B no GitHub ↗</a>
+      <p class="next-copy">O repositório contém o código, as instruções de instalação e as condições técnicas para executar o encoder na sua própria máquina.</p>
     </section>
   </main>
 
-  <footer>
-    <p><a href="../">Rebojar ↗</a> · <a href="https://github.com/rebojar/LabVisual" target="_blank" rel="noopener noreferrer">Código da bancada ↗</a> · <a href="https://github.com/rebojar/LabVisual/blob/main/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener noreferrer">Avisos de terceiros ↗</a> · <a href="https://github.com/sponsors/rebojar" target="_blank" rel="noopener noreferrer">Apoiar ♡</a></p>
+  <footer id="pageFooter">
+    <p><a href="https://rebojar.github.io/">Rebojar ↗</a> · <a href="https://github.com/rebojar/LabVisual" target="_blank" rel="noopener noreferrer">Código da bancada ↗</a> · <a href="https://github.com/rebojar/LabVisual/blob/main/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener noreferrer">Avisos de terceiros ↗</a> · <a href="https://github.com/sponsors/rebojar" target="_blank" rel="noopener noreferrer">Apoiar ♡</a></p>
     <p>Esta demonstração descreve uma execução registrada; não oferece um serviço remoto de inferência.</p>
     <p class="copyright">© 2026 Rebojar</p>
   </footer>
 
   <div id="pointerGuide" class="pointer-guide" role="status" aria-live="polite" hidden></div>
 
-  <script src="dados.js"></script>
-  <script src="demo.js"></script>
+  <script src="dados.js?v=auditoria-20260923"></script>
+  <script src="dados-padrao-branco.js?v=auditoria-20260923"></script>
+  <script src="dados-exemplos.js?v=auditoria-20260923"></script>
+  <script src="dados-fundos.js?v=auditoria-20260923"></script>
+  <script src="dados-sequencias.js?v=auditoria-20260923"></script>
+  <script src="analise.js?v=auditoria-20260923"></script>
+  <script src="demo.js?v=auditoria-20260923-39"></script>
+  <script src="demo-modos.js?v=auditoria-20260923-29"></script>
 </body>
 </html>
