@@ -1,0 +1,225 @@
+{
+  "date": "2026-09-23",
+  "scope": "Execuções locais da bancada; exemplos geométricos, sem imagens pessoais.",
+  "encoder": {
+    "adapter": "qwen3.5-9b-v1",
+    "checkpoint": "Qwen/Qwen3.5-9B",
+    "files_sha256": {
+      "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+      "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+      "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+      "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+    }
+  },
+  "engine_sha256": "c275eb4f603ac0f9366f86079a2bfbd90070acd4308f8c0ae6848114d9eb7cf4",
+  "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e",
+  "numerics": {
+    "extraction": "FP32 na CPU",
+    "aggregation": "NumPy, eixo dos tokens, média/máximo/mediana",
+    "storage": "Agregados FP32 anteriores à normalização; todos os tokens permanecem no registro local.",
+    "normalization": "Divisor calculado em precisão dupla, divisão em FP32 como na bancada validada.",
+    "ranking": "Comparação em precisão dupla; cosseno limitado a [-1,1]; empate exato segue a ordem da galeria.",
+    "indices": "Coordenadas numeradas a partir de 1 na interface."
+  },
+  "origin_checks": {
+    "passed": 104,
+    "failed": 0,
+    "reproduction_tolerance": 5e-07
+  },
+  "images": {
+    "circulo_azul": {
+      "source_sha256": "d3c808202d4276fb0f5bb916524549e4113463e0a47fb06218ca3ac9f3d672ce",
+      "tokens_sha256": "9be8e6f54d22f181b58d1db1e18ebb8b019f3a2360eaeba1abc282ee5609b7bd",
+      "record_sha256": "a0676199188480bb366ca7cb977cb8f2df6bd1761849333ae8d49155da6a3026",
+      "prepared_sha256": "f7d02a67877c1faa616e252fb103731b6599a1b6c11f6418229ef694b9e2bcb7",
+      "comparison_to_20260918_max_abs_error": {
+        "before": 5.587935447692871e-09,
+        "after": 5.587935447692871e-09
+      }
+    },
+    "quadrado_azul": {
+      "source_sha256": "3ae2180d43f79c4c85e84d7cb0387fcc74b463716d219394a7fe679bb58711fc",
+      "tokens_sha256": "d2683a1ea193803115ff76a11dbd2dbc2944c6f5eb69c4c4e7c7d16bb7f9134f",
+      "record_sha256": "80cec16834bf5123c6f801df085de7a3b96c8747ae20bc4bbc03f9c78de13dfb",
+      "prepared_sha256": "5efe2bb49dfb290c93b465b7d090c612c8a175a8edfb4fc998f5d04aafd23281",
+      "comparison_to_20260918_max_abs_error": {
+        "before": 7.450580596923828e-09,
+        "after": 5.587935447692871e-09
+      }
+    },
+    "triangulo_azul": {
+      "source_sha256": "188c2800c5982ec67f068d5f3db1acf3c1a2ac7028b91c818ff855c339757cf2",
+      "tokens_sha256": "0061fbcb6beaeff8a2d2682acf2355a1209e7ab40dc9fa2cbf4fc44e0b553f53",
+      "record_sha256": "443f4a00fcf7ae3e624d20aeb852019ce572ba07443d389580e0a7a46f0168b8",
+      "prepared_sha256": "8d219b7278a73e97a4fcff0e0d245a130f18161ec41e59774ed7b706f78c9b87",
+      "comparison_to_20260918_max_abs_error": {
+        "before": 1.1920928955078125e-07,
+        "after": 5.960464477539063e-08
+      }
+    },
+    "circulo_laranja": {
+      "source_sha256": "7cc64ae50e596156c9cecbb35d00035c26217649cb0bae4e239ecccdad5f04b2",
+      "tokens_sha256": "69e3c89cc387d08d4e720ae65acce8a7e7b65bc6eecb32648db24f8efc958bef",
+      "record_sha256": "06068942501d959de2ca5c64d3e151a0eb3e8096f9985039eccd61d4db0a3e3c",
+      "prepared_sha256": "9b5b7fa7b7939a4b3c19c45df619ca6524d838e8f51ef678e47c051b9bb0a2ca",
+      "comparison_to_20260918_max_abs_error": {
+        "before": 5.587935447692871e-09,
+        "after": 5.960464477539063e-08
+      }
+    },
+    "quadrado_laranja": {
+      "source_sha256": "b5a8017c8bf98c984e471311fea307535b973012a7012c68da4e42c46204160e",
+      "tokens_sha256": "37e0452f9d902916c38c6fcfe01597c8fc35e2b8b187e4745b98b75737ef6477",
+      "record_sha256": "e3f2a764c48dee3d8209c2b219cb106636295b01ea65e3b206ce26458582d638",
+      "prepared_sha256": "daf9c7c1424c59d1e1211b7cdf2afbe4ffcbbb4217f6ede4124ecaf02c645fce",
+      "comparison_to_20260918_max_abs_error": {
+        "before": 5.587935447692871e-09,
+        "after": 7.450580596923828e-09
+      }
+    },
+    "triangulo_laranja": {
+      "source_sha256": "6fb4abc59b5696c9f0a14ccc5178cb224b2fc4d793df00426848832523402147",
+      "tokens_sha256": "bdd8760aba6337482db5dbbcd6669f2f0656173cc73fa925634e1119a5ae0222",
+      "record_sha256": "e1a8afefa152971149958b6bb528b6ca090b3296bf557b1274f214e4cad1ee67",
+      "prepared_sha256": "631ca435c3ae47630b32ee68b35590473faff76323a575b460d63b3d6b8152e2",
+      "comparison_to_20260918_max_abs_error": {
+        "before": 5.587935447692871e-09,
+        "after": 5.960464477539063e-08
+      }
+    },
+    "circulo_deslocado": {
+      "source_sha256": "2e9bd9237848682b90e5789f87d55386efdd8aaeafce395665dafd9b307950a6",
+      "tokens_sha256": "f8e884f16e81d5addff22c218ee75b22e3fabca270aac25b85c7f898e8bdcd00",
+      "record_sha256": "f5e2de54521d6d7fff86865699c7a73c463b4eb8b2e9d3f72086feefd96ecd3a",
+      "prepared_sha256": "55a96287b5ccb0931dbaf8447fdc7ee05bb77494c7e16d1d293bcfbfa976303f",
+      "comparison_to_20260918_max_abs_error": {
+        "before": 5.587935447692871e-09,
+        "after": 5.960464477539063e-08
+      }
+    },
+    "dois_circulos": {
+      "source_sha256": "62776b55d9b77e32aabb89d2d1ade51153c8fff92e15056ac431a75ec036ab62",
+      "tokens_sha256": "fa6884e499eb5f23c2b6c88ff7460c946be08fd5654acf3d9b77034f0daac709",
+      "record_sha256": "16e7f3af8542fe70689d3ae285b864fd6935d520d060e2d5023c448eb42c3cdd",
+      "prepared_sha256": "da29788b5c3f2b5d22c86352daa4b0a1ef25bf855b8445ee3e76bf546a8d2da0",
+      "comparison_to_20260918_max_abs_error": {
+        "before": 7.450580596923828e-09,
+        "after": 7.450580596923828e-09
+      }
+    },
+    "listras": {
+      "source_sha256": "b7b5b498339e11e4b9fffcd3934e85be71f92dd318a9af3c767461030a234441",
+      "tokens_sha256": "7a4474cfaa7998302808a68e00ba979edd827a4ecb29dc846495e391c301a1ec",
+      "record_sha256": "0afec71b38c307605d0b5b4204bcd3cb91201f8c5116aafd623b59ce790ca7ce",
+      "prepared_sha256": "22fd0dd31b20ae126157bad4412e2be368d3f3d55a97eb5f9c6bf50be9cd353e",
+      "comparison_to_20260918_max_abs_error": {
+        "before": 5.960464477539063e-08,
+        "after": 7.450580596923828e-09
+      }
+    },
+    "anel": {
+      "source_sha256": "d8511d3d951bc8bc006bbd970fd3ce1f40730dcf0102143f9ec99b132ee7c2f0",
+      "tokens_sha256": "caa12371a589ec08c00c42a2137ef5e9448d47d7a5fe5349c09483b70287e411",
+      "record_sha256": "5910a3a03d702ae52c7ae70309e458c46c1b3cd86e010a78ff80f89879dad34c",
+      "prepared_sha256": "95003ffcd865e9d2b34bc32a428632c33e942eb0e559e991a80ef6eb3e828bbb",
+      "comparison_to_20260918_max_abs_error": {
+        "before": 5.960464477539063e-08,
+        "after": 7.450580596923828e-09
+      }
+    },
+    "branco_transparente": {
+      "source_sha256": "6d044e671bba3803bd91df8993f4da4306da984ec36e658bf3bab4a45e0ec3da",
+      "tokens_sha256": "ca454badd61c097b0c817a907114159c066456112c848a8e8e4904c7e76802c0",
+      "record_sha256": "d65255ee26ac2b31a8befa1c75bc34fa7bcdd72226a37ec02e7b48079a66bc4a",
+      "prepared_sha256": "d18910410d858751d73294c1d5fb1977c938a11573ecf1db8636b970c775bdfd",
+      "comparison_to_20260918_max_abs_error": {
+        "before": 5.960464477539063e-08,
+        "after": 5.587935447692871e-09
+      }
+    },
+    "diagonal": {
+      "source_sha256": "0ae0f640acff595b5c49f7f4e46808e3ee26e0f5e187703dad6e820ead25c00f",
+      "tokens_sha256": "b3fa5bef4a5ef0b24e6d545803bc6f3653be727ac6d9cd91bfaab6cebfeb075f",
+      "record_sha256": "26ba17299d799c8de70bd3b109746ae3700e06ff7525e8a389bee8c5a553e719",
+      "prepared_sha256": "4a532a03007763bd8a73e8d7d7b0415363a88bd82fc0ef5d3132565566071d8a",
+      "comparison_to_20260918_max_abs_error": {
+        "before": 5.587935447692871e-09,
+        "after": 5.960464477539063e-08
+      }
+    }
+  },
+  "backgrounds": {
+    "#c41838": {
+      "source_sha256": "6d044e671bba3803bd91df8993f4da4306da984ec36e658bf3bab4a45e0ec3da",
+      "tokens_sha256": "e097d677278e1c2c0a93ec95e1fb543c7671ba70d22c81662eafe14f65c9ba30",
+      "record_sha256": "f7cffe156765c46d7c2a9f31a58cd1c8d5edc64bbf5ff89068bca4cc63add159",
+      "prepared_sha256": "820dd471c02161565cdcd1a632a31b784856479cf60ea4426ab889b144a707d5"
+    },
+    "#e8d73a": {
+      "source_sha256": "6d044e671bba3803bd91df8993f4da4306da984ec36e658bf3bab4a45e0ec3da",
+      "tokens_sha256": "53dcb3378c468170b83f397131610bf7a46841e306ff1bed65fc169c2c1dff97",
+      "record_sha256": "fc6e40473f936846fbd29d6afdef756dd6df4768c5bda94873dfc10e772a670c",
+      "prepared_sha256": "fa7b53c9a2c38c9b1d3bdc85ba4b808f746637774aed299331fbd750c1d59434"
+    },
+    "#2eaee8": {
+      "source_sha256": "6d044e671bba3803bd91df8993f4da4306da984ec36e658bf3bab4a45e0ec3da",
+      "tokens_sha256": "d63cc9fcfc6f55667cca47ac80d6e9cab85812bc09884873992199e6af8dbc0b",
+      "record_sha256": "dc737510d64214c1968b9e1d2018bf35f07be830693789d28e8048896bfd5b1f",
+      "prepared_sha256": "a7f3a7990197239ba5b6d31b0d996e3d3c5da0654b3204487f68867c10dbe2dd"
+    },
+    "#f2992e": {
+      "source_sha256": "6d044e671bba3803bd91df8993f4da4306da984ec36e658bf3bab4a45e0ec3da",
+      "tokens_sha256": "78ee6cd4051701ba65d5094b7228647ac6cf0153c53ac8fa8a228e88a72ba6b2",
+      "record_sha256": "4208a9f2a37534e3721a801e4c42e7fe2e58f21e66c1f5831e9bc55500edf7c9",
+      "prepared_sha256": "3ed8c9e3441152be4ae37f97a014154a9274eacc2dfa16f26e92c5b05db2b321"
+    },
+    "#17482a": {
+      "source_sha256": "6d044e671bba3803bd91df8993f4da4306da984ec36e658bf3bab4a45e0ec3da",
+      "tokens_sha256": "7eef372897de2383366fa6467e7a24dd99c3ba6fcd4897544b07faa5f6f222c6",
+      "record_sha256": "aa8894b81011c7bc13e36e65526ef02ce62b40487d184c5874cd0219ca7eb277",
+      "prepared_sha256": "42cb97acd05242bede17b04d5afc23274ae8e926b2e0547f9b5914792f1b24d4"
+    },
+    "#6d2768": {
+      "source_sha256": "6d044e671bba3803bd91df8993f4da4306da984ec36e658bf3bab4a45e0ec3da",
+      "tokens_sha256": "92eabf2d0ca7facd89872ae2417c6d49728b3a5625348e7d720b447931d90636",
+      "record_sha256": "bb4b7f4425668e41bf90951f2967e493384a78ffa3c4aa490fc4726893434c99",
+      "prepared_sha256": "718272c90a0825805c82817262f2ea675e7153a58019e19e4bd9d3624a542f2b"
+    },
+    "#000000": {
+      "source_sha256": "6d044e671bba3803bd91df8993f4da4306da984ec36e658bf3bab4a45e0ec3da",
+      "tokens_sha256": "650923680b4dc0c2e6824bf2cc4279a0815a47e6c6e5473242979bfb5d7bc514",
+      "record_sha256": "f92e80ad4077431d683dfbb9f618c05e09a67379406375dbf0eed67b93c96c18",
+      "prepared_sha256": "33f70105f18351690b647a99f33619b08423074d55706e27dfdeb1990b699c73"
+    },
+    "#ffffff": {
+      "source_sha256": "6d044e671bba3803bd91df8993f4da4306da984ec36e658bf3bab4a45e0ec3da",
+      "tokens_sha256": "edd8f9c8e5f2438251d8c1f82cfa653df26a3b9fd7a734a01f3935638b3d2df9",
+      "record_sha256": "6286255b9278541422751169f50ebd41eac727ce474896f6a777b614b61a4d30",
+      "prepared_sha256": "73d7ed9877bc3b373ef42a3cec0d2e94ee1b2f32c7296c6067032d2b3b949d3e"
+    }
+  },
+  "pattern": {
+    "source_sha256": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391",
+    "tokens_sha256": "b2befdead0db3b429fd3ba1eb3dbc661ffcf731e725cd93100ea4af69b4c6dfa",
+    "record_sha256": "1c9db6321f07d5f8cc2079c37076ec1b97e85a740d2333b31ac5864f75a438df",
+    "prepared_sha256": "ab5ebc46dc94ff1ba670868ca8f9166bc3916a70e28c4b0a8c00be91a2536e97"
+  },
+  "sequences": {
+    "movimento_branco_gif": {
+      "source_sha256": "7bee0ca0efb6f90bfcf7420376c69f316e7520439ffe45aa3b1d7e05301f4385",
+      "tokens_sha256": "f45fbf3056808c4e218861673079452e7bd27983fe9e0160c815ee29a6568c7e",
+      "record_sha256": "feb63ed7f2945832ef1e540c4aaa97d2bd2cc4fd69fcd6f03f22344a72682d2f"
+    },
+    "movimento_branco_mp4": {
+      "source_sha256": "b36f59a473ee591199b58e5d97b9d5fe0b79037f0e4214120fddf5a38542259c",
+      "tokens_sha256": "331c4fabbd492710a294dcd2d0cbd785ca1a1254c3aace7719a7760ac3a2ba8b",
+      "record_sha256": "28d6d0b199ad43fce2413c703a69dd73ec3c6c2d1d6800ed7795e730f4c8814a"
+    }
+  },
+  "limits": [
+    "Nenhuma inferência acontece no navegador.",
+    "O lote permite uma variante de fundo por vez para a entrada transparente; a seleção muda o conjunto comparado.",
+    "O vídeo mostra a média global dos tokens, normalizada em L2, depois do merger. Trocar o quadro em foco só muda a prévia.",
+    "Resultados descrevem este checkpoint e esta metodologia; não são porcentagens nem significados semânticos das coordenadas."
+  ]
+}
