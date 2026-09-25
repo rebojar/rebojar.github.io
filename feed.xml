@@ -17,11 +17,47 @@
     </image>
 
     <item>
-      <title>Bancada Visual · Qwen3.5-9B</title>
+      <title>Demo · Bancada Visual · Qwen3.5-9B</title>
       <link>https://rebojar.github.io/demonstracao-labvisual/</link>
       <guid isPermaLink="true">https://rebojar.github.io/demonstracao-labvisual/</guid>
       <dc:creator>Rebojar</dc:creator>
-      <description>Demonstração pública da Bancada Visual do Qwen3.5-9B no LabVisual.</description>
+      <category>LabVisual</category>
+      <category>Demonstração pública</category>
+      <description><![CDATA[
+        <p>
+          <img src="https://rebojar.github.io/assets/labvisual-icon.png"
+               alt="Ícone do LabVisual"
+               width="96"
+               height="96">
+        </p>
+
+        <p><strong>Demonstração pública · dados pré-calculados</strong></p>
+
+        <p>
+          Uma leitura interativa de representações produzidas pela torre visual do Qwen3.5-9B.
+          A página apresenta execuções já registradas e permite explorar imagens, lotes,
+          vizinhos e sequências sem enviar arquivos nem executar o modelo no navegador.
+        </p>
+
+        <p>
+          <strong>Estado:</strong> pública · estática e interativa · não executa o modelo<br>
+          <strong>Projeto:</strong> LabVisual<br>
+          <strong>Autor editorial:</strong> Rebojar<br>
+          <strong>Publicado:</strong> 23/09/2026
+        </p>
+
+        <p>
+          <a href="https://rebojar.github.io/demonstracao-labvisual/">Abrir demonstração</a>
+          ·
+          <a href="https://github.com/rebojar/LabVisual">Código do LabVisual</a>
+          ·
+          <a href="https://rebojar.github.io/">Portal Rebojar</a>
+        </p>
+      ]]></description>
+      <enclosure
+        url="https://rebojar.github.io/assets/labvisual-icon.png"
+        length="1328131"
+        type="image/png" />
       <pubDate>Wed, 23 Sep 2026 00:00:00 -0300</pubDate>
     </item>
   </channel>
