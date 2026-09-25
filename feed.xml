@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Rebojar</title>
+    <link>https://rebojar.github.io/</link>
+    <description>Novas portas e marcos públicos de projetos independentes em arte, pesquisa e ferramentas abertas.</description>
+    <language>pt-BR</language>
+    <atom:link href="https://rebojar.github.io/feed.xml" rel="self" type="application/rss+xml" />
+
+    <item>
+      <title>Bancada Visual · Qwen3.5-9B</title>
+      <link>https://rebojar.github.io/demonstracao-labvisual/</link>
+      <guid isPermaLink="true">https://rebojar.github.io/demonstracao-labvisual/</guid>
+      <description>Demonstração pública da Bancada Visual do Qwen3.5-9B no LabVisual.</description>
+      <pubDate>Wed, 23 Sep 2026 00:00:00 -0300</pubDate>
+    </item>
+  </channel>
+</rss>
