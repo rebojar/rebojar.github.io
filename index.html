@@ -42,7 +42,7 @@
       --centro-ondas-y: 4rem;
     }
     /* Ondas externas */
-    header::after {
+    .agua-superficie::after {
       position: absolute;
       z-index: 0;
       right: var(--centro-ondas-x);
@@ -60,7 +60,7 @@
       pointer-events: none;
     }
     /* Ondas internas */
-    header::before {
+    .agua-superficie::before {
       content: "";
       position: absolute;
       z-index: 0;
@@ -281,12 +281,78 @@
         animation: none;
       }
     }
+    /* Ajuste mínimo: altura da primeira tela e índigo do menu.
+       Centro das ondas fixado na coordenada original em relação ao topo:
+       27rem - 4rem no desktop; 24rem - 4rem no mobile. */
+    .primeira-tela {
+      display: grid;
+      grid-template-rows: minmax(min-content, 1fr) auto;
+      min-height: 100vh;
+      min-height: 100svh;
+    }
+    .primeira-tela > header {
+      --centro-ondas-y: calc(100% - 23rem);
+    }
+    .primeira-tela > nav { background-color: #11273C; }
+    @media (max-width: 38rem) {
+      .primeira-tela > header { --centro-ondas-y: calc(100% - 20rem); }
+    }
+
+    /* Água: revelar o desenho sobre o menu sem ampliar ou mover seus círculos. */
+    .primeira-tela { isolation: isolate; }
+    .primeira-tela > header { overflow: visible; z-index: 2; }
+    .primeira-tela > nav { position: relative; z-index: 1; }
+    /* Revela também os pontilhados, mantendo o SVG e seus centros imóveis. */
+    .ondas-interativas {
+      overflow: visible;
+      clip-path: inset(0);
+      transition: clip-path 460ms cubic-bezier(.22,.61,.36,1);
+    }
+    .onda-hit { clip-path: url(#limite-interacao-ondas); }
+    .agua-superficie {
+      position: absolute;
+      inset: 0 0 auto;
+      height: calc(100% + var(--altura-menu, 0px));
+      overflow: hidden;
+      background: inherit;
+      pointer-events: none;
+      clip-path: inset(0 0 var(--altura-menu, 0px) 0);
+      transition: clip-path 460ms cubic-bezier(.22,.61,.36,1);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      header:has(.onda-alvo:hover) .agua-superficie {
+        clip-path: inset(0);
+      }
+      header:has(.onda-alvo:hover) .ondas-interativas {
+        clip-path: inset(0 0 calc(0px - var(--altura-menu, 0px)) 0);
+      }
+    }
+    /* Foco nos links do menu sempre revela a navegação novamente. */
+    .primeira-tela:has(> nav:focus-within) .agua-superficie {
+      clip-path: inset(0 0 var(--altura-menu, 0px) 0);
+      transition: none;
+    }
+    .primeira-tela:has(> nav:focus-within) .ondas-interativas {
+      clip-path: inset(0);
+      transition: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .agua-superficie, .ondas-interativas { transition: none; }
+    }
   </style>
 </head>
 <body>
+  <div class="primeira-tela">
   <header>
-    <span class="onda-distante" aria-hidden="true"></span>
+    <div class="agua-superficie" aria-hidden="true">
+      <span class="onda-distante"></span>
+    </div>
     <svg class="ondas-interativas" role="navigation" aria-label="Navegação visual do Rebojar">
+      <defs>
+        <clipPath id="limite-interacao-ondas" clipPathUnits="userSpaceOnUse">
+          <rect width="100%" height="100%"></rect>
+        </clipPath>
+      </defs>
       <a class="onda-alvo onda-link" data-anel="1" style="--raio-hit: 0.625rem; --largura-hit: 1.25rem" href="https://github.com/rebojar/rebojar.github.io" aria-label="Abrir o repositório desta página no GitHub">
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
@@ -340,6 +406,7 @@
     <a href="demonstracao-labvisual/">LabVisual</a>
     <a href="#garatujas">Garatujas</a>
   </nav>
+  </div>
   <main>
     <h2>Bem-vinde ao Rebojar 🌿</h2>
     <p>Um espaço onde os ciclos naturais se encontram com a exploração curiosa e artística num mesmo fluxo.</p>
@@ -370,5 +437,19 @@
     </details>
     <p>&copy; 2025 Rebojar. Feito com carinho e café. 🌌</p>
   </footer>
+
+  <script>
+    // Só mede a faixa. Não altera eventos, raios nem áreas de captura das ondas.
+    (() => {
+      const tela = document.querySelector('.primeira-tela');
+      const menu = tela.querySelector(':scope > nav');
+      const medirMenu = () => {
+        tela.style.setProperty('--altura-menu', `${menu.getBoundingClientRect().height}px`);
+      };
+      medirMenu();
+      if ('ResizeObserver' in window) new ResizeObserver(medirMenu).observe(menu);
+      else window.addEventListener('resize', medirMenu, { passive: true });
+    })();
+  </script>
 </body>
 </html>
