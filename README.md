@@ -14,7 +14,6 @@ Ele não funciona como feed, rede social ou diário de desenvolvimento. Também 
 
 - [Bancada visual · Qwen3.5-9B](https://rebojar.github.io/demonstracao-labvisual/) — demonstração estática e interativa de uma execução sintética pré-calculada. O código instalável da bancada está no repositório [LabVisual](https://github.com/rebojar/LabVisual).
 - [Garatujas](https://garatujas.tumblr.com/) — desenhos reunidos em um blog no Tumblr.
-- [Caderno de Bordo](https://rebojar.github.io/caderno-de-bordo/) — página pública interativa que restaura o estado publicado ao ser recarregada.
 
 ## O que há neste repositório
 
@@ -36,4 +35,6 @@ Imagens, desenhos, textos e demais criações artísticas presentes na página n
 
 ## Caderno de Bordo
 
-A pasta `caderno-de-bordo/` é uma cópia de publicação gerada a partir da mesma interface do aplicativo em desenvolvimento. O quinto arco abre o caderno diretamente; o nome no menu abre primeiro sua apresentação no portal. Visitantes podem editar textos, fotografias e páginas durante a visita; nenhuma dessas mudanças é salva, e recarregar restaura o estado editorial publicado. A fonte da interface permanece no projeto privado; esta pasta é um espelho de publicação, evitando duas implementações independentes.
+O quinto arco abre diretamente `caderno-de-bordo/`. O nome no menu abre primeiro uma apresentação dentro do portal, seguindo o mesmo percurso de Garatujas; a apresentação contém o link de entrada. Visitantes podem editar textos, fotografias e páginas durante a visita; nenhuma dessas mudanças é salva, e recarregar restaura o estado editorial publicado. A fonte da interface permanece em `caderno-local`; a pasta publicada é um espelho gerado, evitando duas implementações independentes.
+
+A apresentação do Caderno contém a declaração específica em `#privacidade-caderno-de-bordo`. Ela informa que o Rebojar não recebe o conteúdo inserido no caderno, explica a diferença entre a demonstração e a versão pessoal e encaminha para a declaração do GitHub, responsável pela hospedagem e por eventuais dados técnicos da visita.
