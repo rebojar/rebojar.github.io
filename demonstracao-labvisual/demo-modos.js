@@ -47,29 +47,47 @@
   explain();return{value,set(r){for(const f of ['pooling','normalization','metric'])$(prefix+f).value=r[f];explain();},disable(on){controls.querySelectorAll('select').forEach(e=>e.disabled=on);}};
  }
  function collection(color){return originalImages.map(item=>item.id==='branco_transparente'?{...item,...backgrounds.transparent_entries[item.id].variants[color],_selectedBackground:color,_hasTransparentPixels:true}:({...item}));}
+ const batchPreparationIds=['batchLimit','batchVariant','batchBackground'];
+ function batchPreparation(){const limit=Number($('batchLimit').value);return{resolution_profile:limit?'orcamento':'checkpoint',max_pixels:limit?limit*limit:null,variant:$('batchVariant').value,background:$('batchBackground').value};}
+ function matchingBatchImages(){
+  const conditions=batchPreparation();
+  if(!backgrounds.transparent_entries.branco_transparente.variants[conditions.background])return null;
+  const images=collection(conditions.background);
+  return images.every(item=>item.preparation.perfil_resolucao===conditions.resolution_profile&&item.preparation.max_pixels===conditions.max_pixels&&item.preparation.variante===conditions.variant)?images:null;
+ }
  const sets=[{id:'base',label:'Coleção pública · fundo azul · média/L2',images:collection('#2eaee8'),recipe:{...defaults}}];
  let activeSet=sets[0],anchor=0,history=[],neighborResult=null,lastBatch=null,building=false,stop=false,batchChecked=false;
  const batchRecipe=recipeControl('batch',()=>{if(!building)$('batchState').textContent='Receita alterada. Reúna um novo lote para aplicar estas escolhas.';});
  const neighborRecipe=recipeControl('neighbor',()=>renderNeighbors());
  function setOptions(){$('neighborDataset').replaceChildren(...sets.map(set=>new Option(set.label,set.id)));$('neighborDataset').value=activeSet.id;}
  function selectSet(set){activeSet=set;anchor=0;history=[];neighborRecipe.set(set.recipe);setOptions();renderNeighbors();}
- function gallery(container,items,select,selectedId=null){
-  container.replaceChildren(...items.map(({item,index})=>{const b=button('',()=>select(index),'batch-card');b.append(image(item),node('strong',`${String(index+1).padStart(2,'0')} · ${item.label}`),node('small',`${item.tokens_before} → ${item.tokens_after} tokens`));if(item.id===selectedId)b.setAttribute('aria-current','true');return b;}));
+ function gallery(container,items,select,selectedId=null,prepared=true){
+  container.replaceChildren(...items.map(({item,index})=>{const b=button('',()=>select(index),'batch-card'),pic=image(item);if(!prepared){pic.src=item.file;b.disabled=true;}b.append(pic,node('strong',`${String(index+1).padStart(2,'0')} · ${item.label}`),node('small',prepared?`${item.tokens_before} → ${item.tokens_after} tokens`:'Entrada original · sem execução nestas condições'));if(item.id===selectedId)b.setAttribute('aria-current','true');return b;}));
  }
  function batchInputs(){
-  const images=collection($('batchBackground').value);$('batchConditions').textContent=`${images.length} imagens · cores originais · até 65.536 pixels · CPU FP32 · pesos congelados.`;$('batchSummary').textContent=images.length+' entradas registradas';
-  gallery($('batchGallery'),images.map((item,index)=>({item,index})),index=>openImage(images[index]));
-  json('batchInputRecord',{images:images.map(i=>({id:i.id,file:i.file,preparation:i.preparation,provenance:i.provenance})),count:images.length});return images;
+  const images=matchingBatchImages();$('batchConditions').textContent=`${originalImages.length} imagens públicas · 1 com transparência · CPU FP32 · pesos congelados.`;
+  $('batchPreparationStatus').textContent=images?'Condições disponíveis: 65.536 pixels, cores originais e fundo selecionado. As oito cores sugeridas no seletor têm execuções registradas.':'Esta combinação ainda não tem execuções registradas para o lote. A demo reúne resultados em cores originais, com 65.536 pixels e os oito fundos sugeridos no seletor.';
+  $('batchUseRecorded').hidden=!!images;$('batchSummary').textContent=images?images.length+' entradas registradas':'Sem execução nestas condições';
+  if(images)gallery($('batchGallery'),images.map((item,index)=>({item,index})),index=>openImage(images[index]));
+  else gallery($('batchGallery'),originalImages.map((item,index)=>({item,index})),()=>{},null,false);
+  json('batchInputRecord',{conditions:batchPreparation(),matching_execution:!!images,images:(images||originalImages).map(i=>({id:i.id,file:i.file,...(images?{preparation:i.preparation,provenance:i.provenance}:{})})),count:originalImages.length});return images;
  }
- function batchRecord(){if(!lastBatch)return null;return{schema:1,math_core:window.LabVisualMath.version,mode:'lote de demonstração',status:lastBatch.status,recipe:lastBatch.recipe,count:lastBatch.images.length,requested:12,processed:lastBatch.rows.length,results:lastBatch.rows,notes:$('batchNotes').value,images:lastBatch.images.map((i,index)=>({index,id:i.id,file:i.file,preparation:i.preparation,provenance:i.provenance})),matrices:{before:[lastBatch.images.length,1152],after:[lastBatch.images.length,4096]},source:'Agregados registrados, normalizados no navegador. O encoder não foi executado nesta página.'};}
+ function batchRecord(){if(!lastBatch)return null;return{schema:1,math_core:window.LabVisualMath.version,mode:'lote de demonstração',status:lastBatch.status,conditions:lastBatch.conditions,recipe:lastBatch.recipe,count:lastBatch.images.length,requested:12,processed:lastBatch.rows.length,results:lastBatch.rows,notes:$('batchNotes').value,images:lastBatch.images.map((i,index)=>({index,id:i.id,file:i.file,preparation:i.preparation,provenance:i.provenance})),matrices:{before:[lastBatch.images.length,1152],after:[lastBatch.images.length,4096]},source:'Agregados registrados, normalizados no navegador. O encoder não foi executado nesta página.'};}
+ function invalidateBatchPreparation(){
+  if(building)return;batchChecked=false;lastBatch=null;$('batchStart').disabled=true;$('batchDownloads').hidden=true;$('batchRecord').replaceChildren();$('batchAppliedRecipe').hidden=true;
+  $('batchProgress').value=0;$('batchCounts').textContent='0 de 12 concluídas · 0 válidas · 0 com erro';$('batchCurrent').textContent='O andamento aparece ao reunir as representações.';
+  const row=node('tr'),cell=node('td','Nenhuma imagem concluída nestas condições.');cell.colSpan=4;row.append(cell);$('batchRows').replaceChildren(row);
+  const images=batchInputs(),message=images?'As condições mudaram; confira a coleção novamente.':'Escolha condições com execuções registradas para reunir o lote.';
+  $('batchCheckStatus').textContent=message;$('batchState').textContent=message;
+ }
  function appendBatchRow(item,error){
   const row=node('tr',undefined,error?'batch-row-error':undefined);
   for(const text of [item.file.split('/').pop(),error?'Erro: '+error:'Concluída',error?'—':format(item.tokens_before),error?'—':format(item.tokens_after)])row.append(node('td',text));
   $('batchRows').append(row);
  }
  async function buildBatch(){
-  if(!batchChecked||building)return;building=true;stop=false;batchRecipe.disable(true);$('batchBackground').disabled=true;$('batchCheck').disabled=true;$('batchStart').disabled=true;$('batchStop').hidden=false;$('batchStop').disabled=false;$('batchDownloads').hidden=true;
-  const images=collection($('batchBackground').value),recipe=batchRecipe.value(),done=[],before=[],after=[],rows=[];let errors=0;
+  const images=matchingBatchImages();if(!batchChecked||building||!images)return;building=true;stop=false;batchRecipe.disable(true);batchPreparationIds.forEach(id=>$(id).disabled=true);$('batchCheck').disabled=true;$('batchStart').disabled=true;$('batchStop').hidden=false;$('batchStop').disabled=false;$('batchDownloads').hidden=true;
+  const conditions=batchPreparation(),recipe=batchRecipe.value(),done=[],before=[],after=[],rows=[];let errors=0;
   lastBatch=null;$('batchProgress').value=0;$('batchProgress').max=images.length;$('batchRows').replaceChildren();$('batchRecord').replaceChildren();
   $('batchAppliedRecipe').hidden=false;$('batchAppliedRecipe').textContent='Receita deste lote: '+R.describe(recipe);
   $('batchCounts').textContent=`0 de ${images.length} concluídas · 0 válidas · 0 com erro`;
@@ -86,18 +104,18 @@
     if(stop)break;
    }
    const status=rows.length<images.length?'interrompido':errors?'concluído com erros':'concluído';
-   lastBatch={id:'lote-'+Date.now(),label:`Lote ${sets.length} · ${done.length} imagens · ${R.describe(recipe)}`,images:done,recipe,vectors:{before,after},rows,status};
+   lastBatch={id:'lote-'+Date.now(),label:`Lote ${sets.length} · ${done.length} imagens · ${R.describe(recipe)}`,images:done,conditions,recipe,vectors:{before,after},rows,status};
    if(done.length){sets.push(lastBatch);if(sets.length>9){const removable=sets.findIndex((set,i)=>i>0&&set!==activeSet&&set!==lastBatch);if(removable>0)sets.splice(removable,1);}setOptions();}
    $('batchState').textContent=`${status[0].toUpperCase()+status.slice(1)}: ${rows.length} de ${images.length} imagens conferidas.`;
    $('batchCurrent').textContent='Leitura dos registros encerrada. O encoder não foi executado.';
    json('batchRecord',batchRecord());$('batchDownloads').hidden=false;$('batchNpz').disabled=!done.length;$('batchNeighbors').disabled=!done.length;
   }catch(error){$('batchState').textContent='Não foi possível reunir o lote: '+error.message;}
-  finally{building=false;batchRecipe.disable(false);$('batchBackground').disabled=false;$('batchCheck').disabled=false;$('batchStart').disabled=false;$('batchStop').hidden=true;}
+  finally{building=false;batchRecipe.disable(false);batchPreparationIds.forEach(id=>$(id).disabled=false);$('batchCheck').disabled=false;$('batchStart').disabled=!batchChecked||!matchingBatchImages();$('batchStop').hidden=true;}
  }
- for(const c of backgrounds.palette)$('batchBackground').append(new Option(c.label,c.hex||c.value||c.color));
- if(![...$('batchBackground').options].some(o=>o.value==='#2eaee8'))$('batchBackground').replaceChildren(...Object.keys(backgrounds.transparent_entries.branco_transparente.variants).map(c=>new Option(c.toUpperCase(),c)));
- $('batchBackground').value='#2eaee8';$('batchBackground').addEventListener('change',()=>{batchChecked=false;$('batchStart').disabled=true;$('batchCheckStatus').textContent='O fundo mudou; confira a coleção novamente.';batchInputs();});
- $('batchCheck').addEventListener('click',()=>{batchChecked=true;const images=batchInputs();$('batchCheckStatus').textContent=`${images.length} imagens conferidas · ${images.filter(i=>i._hasTransparentPixels).length} com transparência · todas com representações disponíveis.`;$('batchStart').disabled=false;});
+ for(const c of backgrounds.palette)$('batchBackgroundColors').append(new Option(c.label,c.hex||c.value||c.color));
+ for(const id of batchPreparationIds)$(id).addEventListener('input',invalidateBatchPreparation);
+ $('batchUseRecorded').addEventListener('click',()=>{$('batchLimit').value='256';$('batchVariant').value='original';if(!backgrounds.transparent_entries.branco_transparente.variants[$('batchBackground').value])$('batchBackground').value='#2eaee8';invalidateBatchPreparation();});
+ $('batchCheck').addEventListener('click',()=>{const images=batchInputs();batchChecked=!!images;$('batchCheckStatus').textContent=images?`${images.length} imagens conferidas · ${images.filter(i=>i._hasTransparentPixels).length} com transparência · todas com representações disponíveis.`:'A coleção tem 12 imagens, mas faltam execuções para as condições escolhidas no passo 2.';$('batchStart').disabled=!batchChecked;});
  $('batchStart').addEventListener('click',buildBatch);$('batchStop').addEventListener('click',()=>{stop=true;$('batchStop').disabled=true;});
  $('batchNpz').addEventListener('click',()=>{if(lastBatch)R.download('lote_embeddings.npz',R.npz({antes_merger:lastBatch.vectors.before,depois_merger:lastBatch.vectors.after}));});
  $('batchJson').addEventListener('click',()=>R.json('lote_registro.json',batchRecord()));

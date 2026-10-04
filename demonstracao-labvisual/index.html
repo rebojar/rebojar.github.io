@@ -6,7 +6,7 @@
   <meta name="description" content="Demonstração pública do LabVisual com imagens, lote, vizinhos e sequências pré-calculadas da Bancada Visual do Qwen3.5-9B.">
   <title>Bancada Visual · Qwen3.5-9B — Rebojar</title>
   <link rel="icon" type="image/png" href="../assets/labvisual-icon.png">
-    <link rel="stylesheet" href="demo.css?v=referencia-maior-20261004">
+    <link rel="stylesheet" href="demo.css?v=condicoes-lote-20261004">
 </head>
 <body>
   <header class="topbar">
@@ -478,13 +478,23 @@
       <section class="panel mode-panel batch-entry-panel">
       <div class="mode-intro mode-entry-intro"><div class="mode-guide-row"><h2 class="workflow-mode-title mode-guide-title">Simulação guiada</h2><p class="step">Lote de imagens · execuções registradas</p></div><div class="mode-intro-top"><h2>Da coleção ao conjunto de representações</h2></div><p>Confira as entradas, escolha uma receita e reúna os vetores. O navegador aplica essa leitura às saídas reais já calculadas pelo encoder.</p></div>
         <h3>1. Confira as entradas</h3><p>Doze imagens públicas de formas, cores, posições e transparência. A galeria permanece completa, com rolagem contínua.</p>
-        <label>Fundo registrado para a entrada transparente<select id="batchBackground"></select></label>
-        <p class="small">As outras onze imagens são opacas. Esta escolha pertence ao lote; mudar o fundo em Uma imagem não altera um conjunto já reunido.</p>
         <div class="batch-check-row"><p id="batchConditions"></p><button id="batchCheck" type="button" class="button secondary compact">Conferir a coleção</button></div><p id="batchCheckStatus" role="status"></p>
         <details class="record-details"><summary>Ver o código e os parâmetros da conferência</summary><p class="small">Trecho explicativo do percurso local. Aqui os arquivos já estão registrados.</p><pre id="batchCheckCode"></pre><pre id="batchInputRecord"></pre></details>
       </section>
-      <section class="panel mode-panel"><h3>2. Defina a receita do lote</h3><div id="batchRecipeControls"></div>
-        <p class="small">No laboratório, a receita é definida antes do processamento. Nesta demonstração, média, máximo e mediana já foram calculados sobre os tokens reais; a preparação e os pesos não mudam.</p>
+      <section class="panel mode-panel" aria-labelledby="batch-settings-title">
+        <h3 id="batch-settings-title">2. Defina as condições do lote</h3>
+        <p class="small">Estas escolhas são independentes das da aba “Uma imagem”. Usaremos as mesmas condições em todas as imagens deste lote.</p>
+        <div class="batch-preparation-controls" role="group" aria-label="Condições de preparação do lote">
+          <div><label for="batchLimit">Resolução</label><select id="batchLimit"><option value="256" selected>65.536 pixels · teste leve</option><option value="384">147.456 pixels</option><option value="512">262.144 pixels</option><option value="0">Limites do checkpoint · como no script</option></select></div>
+          <div><label for="batchVariant">Versão</label><select id="batchVariant"><option value="original">Cores originais</option><option value="cinza">Tons de cinza</option></select></div>
+          <div><label for="batchBackground">Fundo para transparência</label><input id="batchBackground" type="color" value="#2eaee8" list="batchBackgroundColors"><datalist id="batchBackgroundColors"></datalist></div>
+        </div>
+        <p class="small">Na bancada local, “Como no script” usa os limites de resolução do checkpoint. Para imagens transparentes, o fundo escolhido é composto antes do encoder e a opacidade original fica registrada. Aqui, uma das doze entradas tem transparência.</p>
+        <p id="batchPreparationStatus" class="small" role="status"></p>
+        <button id="batchUseRecorded" type="button" class="button secondary compact" hidden>Usar condições registradas</button>
+        <div class="batch-analysis-heading section-heading"><h4>Escolha como analisar</h4><span class="badge">Metodologia da bancada</span></div>
+        <div id="batchRecipeControls"></div>
+        <p class="small">No laboratório, a receita é definida antes do processamento. Nesta demonstração, média, máximo e mediana já foram calculados sobre os tokens reais. A receita altera a leitura dessas saídas; os pesos permanecem congelados.</p>
         <div class="action-row batch-run-actions"><button id="batchStart" type="button" class="button primary compact" disabled>Reunir representações</button></div>
         <details class="record-details"><summary>Entenda o processamento e veja o código</summary><p>Um vetor por estágio e por imagem. Mudar a agregação não recupera tokens de uma média: seleciona outro agregado, calculado previamente a partir de todos os tokens.</p><pre id="batchCode"></pre></details>
       </section>
@@ -591,6 +601,6 @@
   <script src="recursos.js?v=canonico-0.5"></script>
   <script src="dados-extensoes.js?v=interativa-20260928"></script>
   <script src="demo.js?v=hipotese-20261003"></script>
-  <script src="demo-modos.js?v=vizinhos-20261004"></script>
+  <script src="demo-modos.js?v=condicoes-lote-20261004"></script>
 </body>
 </html>

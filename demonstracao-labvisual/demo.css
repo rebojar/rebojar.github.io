@@ -902,6 +902,12 @@ footer::after { content: ''; position: absolute; right: 0; bottom: 0; left: 0; d
 .mode-panel progress::-webkit-progress-value { background:var(--celeste); border-radius:99rem; }
 .mode-panel progress::-moz-progress-bar { background:var(--celeste); border-radius:99rem; }
 .batch-run-actions { justify-content:flex-end; }
+.batch-preparation-controls { display:grid; grid-template-columns:minmax(0,2fr) repeat(2,minmax(0,1fr)); gap:1rem; margin:1.7rem 0 1rem; }
+.batch-preparation-controls label { margin-bottom:.5rem; font-size:.9rem; font-weight:700; }
+.batch-preparation-controls input[type="color"] { display:block; width:100%; min-width:0; height:2.75rem; padding:.3rem; border:1px solid var(--line); border-radius:.58rem; background:var(--paper); cursor:pointer; }
+.batch-analysis-heading { margin-top:1.4rem; padding-top:1.2rem; border-top:1px solid var(--line); }
+.batch-analysis-heading h4 { margin:0; font-size:1.15rem; }
+@media (max-width:850px) { .batch-preparation-controls { grid-template-columns:1fr; } }
 .sequence-preparation-controls { gap:1.5rem 1rem; }
 .sequence-preparation-controls label { margin-bottom:.5rem; font-size:.9rem; font-weight:700; }
 .sequence-preparation-controls input { display:block; width:100%; min-width:0; height:2.75rem; padding:.55rem .7rem; border:1px solid var(--line); border-radius:.58rem; background:var(--paper); color:var(--text); font:inherit; }

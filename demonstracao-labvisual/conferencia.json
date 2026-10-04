@@ -128,10 +128,10 @@
     }
   },
   "checked_ui_sha256": {
-    "index.html": "7a4eb815693e21f2300f74c625f543f10cfb6bd5efb738b458817c4c25c4ab4c",
-    "demo.css": "efe3ae8a3f2b72069b34e46633ab78b0855110948553d938cf67d3967f966dc9",
+    "index.html": "db81c485ddcb38be9a78e038b71c2d4c3817287de832c1eba51374b8860cedca",
+    "demo.css": "f136cbe29328f3629ec88a8f75929170a3acf6d30142b9dc30e57e3df7fc7824",
     "demo.js": "78fbb3d44268567786aa861b48d2db48420e419e6fc791811948a6dc38268daf",
-    "demo-modos.js": "73088a7d5a88ab519033d87bd84eb806a12e66b2164010146a0c46c9970e247b",
+    "demo-modos.js": "61d399856f7ca4e47bfda469f1c1e33a36a5be38988b5767f4fb8f1a43ea73f7",
     "graficos.js": "c9eb0166cafac0258b4ab8ac6dff2eb7bc4171690d52380bca915a1bdadc6b6b",
     "recursos.js": "045488550a4182ee156341b5f28bc3ffe286f3b3c2e223d0d1f05e772d01636d"
   },
@@ -296,6 +296,30 @@
       ],
       "hypothesis_export": "passed: texto com acentos/quebra de linha e valor vazio; notas e vetores preservados na função de exportação. Não confirma o salvamento pelo navegador.",
       "batch_progress": "passed: função real conferida em conclusão 12/12, parada após imagem, duas falhas parciais e todas as entradas com erro; vetores somente das válidas e controles liberados ao terminar."
+    }
+  },
+  "batch_preparation_review": {
+    "date": "2026-10-04",
+    "changes": [
+      "Passo 2 Defina as condições do lote: resolução, versão e seletor nativo de fundo antes de Escolha como analisar, com mesma organização da bancada local.",
+      "Campos independentes de Uma imagem. O fundo foi transferido do passo 1, sem duplicar controles.",
+      "Apenas combinações com registros correspondentes podem reunir vetores; oito fundos em cores originais com orçamento de 65.536 pixels. Outras escolhas exibem o limite e permitem restaurar condições registradas.",
+      "Alterar condições limpa resultados anteriores na guia, preserva conjuntos já reunidos em Vizinhos e mantém as doze entradas originais na galeria.",
+      "O registro exportado inclui uma cópia das condições usadas na execução do lote."
+    ],
+    "validation": {
+      "javascript_syntax": "passed",
+      "unique_html_ids": 228,
+      "local_html_links": "passed",
+      "record_matching": "72 combinações conferidas contra os dados reais: somente oito combinações registradas aceitas; proveniência do fundo correspondente preservada.",
+      "batch_lifecycle": "Função real conferida com lote completo, interrupção após três imagens, duas falhas e todas as entradas com erro; controles liberados; exportação conserva as condições executadas.",
+      "browser": [
+        "Lote de 12 imagens concluído com fundo vermelho; registro contém condições e preparação correspondente da imagem transparente.",
+        "Tons de cinza, limites do checkpoint e cor sem registro bloqueiam reunião; alteração de condições oculta downloads anteriores; restauração recupera escolhas registradas.",
+        "Versão cinza no lote não altera versão original em Uma imagem.",
+        "Campos dispostos em 2:1:1 em desktop e empilhados em 390 px, sem transbordamento horizontal; viewport restaurado; nenhum erro JavaScript observado."
+      ],
+      "data_and_math_unchanged": true
     }
   }
 }
