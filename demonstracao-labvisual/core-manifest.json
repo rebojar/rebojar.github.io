@@ -1,0 +1,9 @@
+{
+  "release": "0.5.0-receitas-canonicas",
+  "files": {
+    "analysis_core.py": "2fa9e7a32831dbf54d0fef94f6f3b059481139ab989e8cbdc9bd26503612e5ab",
+    "analysis-core.js": "0e4b476eeea1a5076ad76aa5c252c3dbd9c46ec8cb1ad778cfc92ea00bc916c3",
+    "analise.js": "434883b3b86523e6eeb0e3366a96adc03cd1883ec42cf50737c60378320f6d9a",
+    "LICENSE-LabVisual.txt": "0d96a4ff68ad6d4b6f1f30f713b18d5184912ba8dd389f86aa7710db079abcb0"
+  }
+}

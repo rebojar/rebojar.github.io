@@ -1,6 +1,6 @@
 {
-  "date": "2026-09-23",
-  "scope": "Execuções locais da bancada; exemplos geométricos, sem imagens pessoais.",
+  "date": "2026-09-28",
+  "scope": "Execuções reais da torre visual sobre entradas geométricas públicas; interface estática com análise interativa.",
   "encoder": {
     "adapter": "qwen3.5-9b-v1",
     "checkpoint": "Qwen/Qwen3.5-9B",
@@ -16,7 +16,7 @@
   "numerics": {
     "extraction": "FP32 na CPU",
     "aggregation": "NumPy, eixo dos tokens, média/máximo/mediana",
-    "storage": "Agregados FP32 anteriores à normalização; todos os tokens permanecem no registro local.",
+    "storage": "Agregados FP32 anteriores à normalização. Os tokens completos dos exemplos geométricos desta demonstração estão disponíveis para download; nenhum arquivo pessoal foi incluído.",
     "normalization": "Divisor calculado em precisão dupla, divisão em FP32 como na bancada validada.",
     "ranking": "Comparação em precisão dupla; cosseno limitado a [-1,1]; empate exato segue a ordem da galeria.",
     "indices": "Coordenadas numeradas a partir de 1 na interface."
@@ -217,9 +217,1671 @@
     }
   },
   "limits": [
-    "Nenhuma inferência acontece no navegador.",
-    "O lote permite uma variante de fundo por vez para a entrada transparente; a seleção muda o conjunto comparado.",
-    "O vídeo mostra a média global dos tokens, normalizada em L2, depois do merger. Trocar o quadro em foco só muda a prévia.",
-    "Resultados descrevem este checkpoint e esta metodologia; não são porcentagens nem significados semânticos das coordenadas."
-  ]
+    "Nenhuma inferência acontece no navegador. As entradas são geométricas construídas para o ensaio, e os valores vêm de execuções reais do encoder.",
+    "O lote reúne vetores de uma coleção pública registrada. Sua receita e fundo são independentes da imagem individual. O progresso mede apenas a reunião no navegador.",
+    "Vizinhos permite editar a receita diretamente usando agregados previamente registrados. Essa automação ainda não está na interface instalável da versão indicada; a receita original do lote permanece preservada.",
+    "Vídeo/GIF oferece seis cenários registrados, sem áudio. Intervalo, resolução, fundo ou amostragem diferentes exigem nova inferência no laboratório; selecionar um quadro na prévia não muda o vetor.",
+    "As notas e os conjuntos reunidos ficam somente na memória desta página até o visitante baixar os arquivos; recarregar a página os descarta.",
+    "Os NPZ e CSV exportam matrizes para inspeção. O JSON correspondente preserva receita e contexto; não são um lote instalável automaticamente no LabVisual.",
+    "Os resultados descrevem este checkpoint e estas escolhas metodológicas; coordenadas, cosseno e picos não constituem porcentagens de semelhança ou rótulos semânticos."
+  ],
+  "compatible_lab": {
+    "repository": "https://github.com/rebojar/LabVisual",
+    "commit": "fa3cb5439d22186ae324f605e70bf5986971849d",
+    "methodology_version": 1
+  },
+  "extension": {
+    "generated_on": "2026-09-24",
+    "data_file": "dados-extensoes.js",
+    "data_sha256": "8e8fa4d2f14d7a3c8112c5a9dc0b94a3f82de123f86d2f3659ab5aebbc39509d",
+    "pattern_cases": {
+      "65536:original": {
+        "source": "assets/padrao_geometrico_branco.png",
+        "preparation": {
+          "original_wh": [
+            320,
+            240
+          ],
+          "preparada_wh": [
+            288,
+            192
+          ],
+          "pixel_values_shape": [
+            216,
+            1536
+          ],
+          "grid_thw": [
+            1,
+            12,
+            18
+          ],
+          "patch_size": 16,
+          "merge_size": 2,
+          "temporal_patch_size": 2,
+          "dtype": "torch.float32",
+          "intervalo": [
+            -1.0,
+            1.0
+          ],
+          "image_mean": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "image_std": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "processor": "Qwen2VLImageProcessor",
+          "max_pixels": 65536,
+          "min_pixels": 65536,
+          "variante": "original",
+          "fundo_rgb": "#ffffff",
+          "perfil_resolucao": "orcamento",
+          "pixels_preparados": 55296,
+          "tem_transparencia": false,
+          "percentual_transparente": 0.0,
+          "percentual_semitransparente": 0.0,
+          "alpha_enviado_ao_encoder": false,
+          "input_sha256": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391"
+        },
+        "execution": {
+          "antes_shape": [
+            216,
+            1152
+          ],
+          "depois_shape": [
+            54,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 13.69790267944336,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 1.738,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          }
+        },
+        "tokens_file": "assets/analise/padrao_256_original_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "b1be5346a29d4597d2059340b2af3a1f6a7fa22e7558587326cf1e8c7c7c5683",
+          "source_tokens_sha256": "b2befdead0db3b429fd3ba1eb3dbc661ffcf731e725cd93100ea4af69b4c6dfa",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/padrao_geometrico_branco.png": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391",
+          "assets/analise/padrao_256_original_preparada.png": "ab5ebc46dc94ff1ba670868ca8f9166bc3916a70e28c4b0a8c00be91a2536e97"
+        }
+      },
+      "65536:cinza": {
+        "source": "assets/padrao_geometrico_branco.png",
+        "preparation": {
+          "original_wh": [
+            320,
+            240
+          ],
+          "preparada_wh": [
+            288,
+            192
+          ],
+          "pixel_values_shape": [
+            216,
+            1536
+          ],
+          "grid_thw": [
+            1,
+            12,
+            18
+          ],
+          "patch_size": 16,
+          "merge_size": 2,
+          "temporal_patch_size": 2,
+          "dtype": "torch.float32",
+          "intervalo": [
+            -0.7098039388656616,
+            1.0
+          ],
+          "image_mean": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "image_std": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "processor": "Qwen2VLImageProcessor",
+          "max_pixels": 65536,
+          "min_pixels": 65536,
+          "variante": "cinza",
+          "fundo_rgb": "#ffffff",
+          "perfil_resolucao": "orcamento",
+          "pixels_preparados": 55296,
+          "tem_transparencia": false,
+          "percentual_transparente": 0.0,
+          "percentual_semitransparente": 0.0,
+          "alpha_enviado_ao_encoder": false,
+          "input_sha256": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391"
+        },
+        "execution": {
+          "antes_shape": [
+            216,
+            1152
+          ],
+          "depois_shape": [
+            54,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 14.044384002685547,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 7.76,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          }
+        },
+        "tokens_file": "assets/analise/padrao_256_cinza_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "09d295181256b282106e63b118bce1c3af143e05bb03a477868fe1720c4b1130",
+          "source_tokens_sha256": "829a25f978ac7f084830e3fefab82d02f462036791e18e458f7f3d7244dbfc15",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/padrao_geometrico_branco.png": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391",
+          "assets/analise/padrao_256_cinza_preparada.png": "b37ad024e0a39599742988d7a9a6c9f2517bd3751508f2fb3ce06c0b12c3312b"
+        }
+      },
+      "147456:original": {
+        "source": "assets/padrao_geometrico_branco.png",
+        "preparation": {
+          "original_wh": [
+            320,
+            240
+          ],
+          "preparada_wh": [
+            320,
+            256
+          ],
+          "pixel_values_shape": [
+            320,
+            1536
+          ],
+          "grid_thw": [
+            1,
+            16,
+            20
+          ],
+          "patch_size": 16,
+          "merge_size": 2,
+          "temporal_patch_size": 2,
+          "dtype": "torch.float32",
+          "intervalo": [
+            -1.0,
+            1.0
+          ],
+          "image_mean": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "image_std": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "processor": "Qwen2VLImageProcessor",
+          "max_pixels": 147456,
+          "min_pixels": 65536,
+          "variante": "original",
+          "fundo_rgb": "#ffffff",
+          "perfil_resolucao": "orcamento",
+          "pixels_preparados": 81920,
+          "tem_transparencia": false,
+          "percentual_transparente": 0.0,
+          "percentual_semitransparente": 0.0,
+          "alpha_enviado_ao_encoder": false,
+          "input_sha256": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391"
+        },
+        "execution": {
+          "antes_shape": [
+            320,
+            1152
+          ],
+          "depois_shape": [
+            80,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 16.187463760375977,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 2.593,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          }
+        },
+        "tokens_file": "assets/analise/padrao_384_original_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "5f01df6d28726f34ed2d346b73a4d86e3a634fb229e3cf455ef2b14884ea2aec",
+          "source_tokens_sha256": "ac19279ea7cd8cd7b65861d88614465513f74b7d9406ce580a4edcd0833ad6b5",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/padrao_geometrico_branco.png": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391",
+          "assets/analise/padrao_384_original_preparada.png": "eb8cabc259cbdd92f8ed6fc5b4fa065b8b7b757a54e877f344f5f6765670bf35"
+        }
+      },
+      "147456:cinza": {
+        "source": "assets/padrao_geometrico_branco.png",
+        "preparation": {
+          "original_wh": [
+            320,
+            240
+          ],
+          "preparada_wh": [
+            320,
+            256
+          ],
+          "pixel_values_shape": [
+            320,
+            1536
+          ],
+          "grid_thw": [
+            1,
+            16,
+            20
+          ],
+          "patch_size": 16,
+          "merge_size": 2,
+          "temporal_patch_size": 2,
+          "dtype": "torch.float32",
+          "intervalo": [
+            -0.6235294342041016,
+            1.0
+          ],
+          "image_mean": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "image_std": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "processor": "Qwen2VLImageProcessor",
+          "max_pixels": 147456,
+          "min_pixels": 65536,
+          "variante": "cinza",
+          "fundo_rgb": "#ffffff",
+          "perfil_resolucao": "orcamento",
+          "pixels_preparados": 81920,
+          "tem_transparencia": false,
+          "percentual_transparente": 0.0,
+          "percentual_semitransparente": 0.0,
+          "alpha_enviado_ao_encoder": false,
+          "input_sha256": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391"
+        },
+        "execution": {
+          "antes_shape": [
+            320,
+            1152
+          ],
+          "depois_shape": [
+            80,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 15.197078704833984,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 2.54,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          }
+        },
+        "tokens_file": "assets/analise/padrao_384_cinza_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "58bd3a32e7fccca76d7c7a16b152b55ebc699b185a03098a992baf0e849344d2",
+          "source_tokens_sha256": "09076ece4ebeb8c3c3613f9600cfae585bacc5bd054549e37ca0134d42199189",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/padrao_geometrico_branco.png": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391",
+          "assets/analise/padrao_384_cinza_preparada.png": "03680cdfaf1a3b091b4643bd88a9e6f23938a135fb704db72a5c28f484dd676b"
+        }
+      },
+      "262144:original": {
+        "source": "assets/padrao_geometrico_branco.png",
+        "preparation": {
+          "original_wh": [
+            320,
+            240
+          ],
+          "preparada_wh": [
+            320,
+            256
+          ],
+          "pixel_values_shape": [
+            320,
+            1536
+          ],
+          "grid_thw": [
+            1,
+            16,
+            20
+          ],
+          "patch_size": 16,
+          "merge_size": 2,
+          "temporal_patch_size": 2,
+          "dtype": "torch.float32",
+          "intervalo": [
+            -1.0,
+            1.0
+          ],
+          "image_mean": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "image_std": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "processor": "Qwen2VLImageProcessor",
+          "max_pixels": 262144,
+          "min_pixels": 65536,
+          "variante": "original",
+          "fundo_rgb": "#ffffff",
+          "perfil_resolucao": "orcamento",
+          "pixels_preparados": 81920,
+          "tem_transparencia": false,
+          "percentual_transparente": 0.0,
+          "percentual_semitransparente": 0.0,
+          "alpha_enviado_ao_encoder": false,
+          "input_sha256": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391"
+        },
+        "execution": {
+          "antes_shape": [
+            320,
+            1152
+          ],
+          "depois_shape": [
+            80,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 16.187463760375977,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 3.215,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          }
+        },
+        "tokens_file": "assets/analise/padrao_512_original_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "5f01df6d28726f34ed2d346b73a4d86e3a634fb229e3cf455ef2b14884ea2aec",
+          "source_tokens_sha256": "6ece2a60b1c17adf3673bc595aa8ea38ff5ca55cd8a9110e28574122c2319f0a",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/padrao_geometrico_branco.png": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391",
+          "assets/analise/padrao_512_original_preparada.png": "eb8cabc259cbdd92f8ed6fc5b4fa065b8b7b757a54e877f344f5f6765670bf35"
+        }
+      },
+      "262144:cinza": {
+        "source": "assets/padrao_geometrico_branco.png",
+        "preparation": {
+          "original_wh": [
+            320,
+            240
+          ],
+          "preparada_wh": [
+            320,
+            256
+          ],
+          "pixel_values_shape": [
+            320,
+            1536
+          ],
+          "grid_thw": [
+            1,
+            16,
+            20
+          ],
+          "patch_size": 16,
+          "merge_size": 2,
+          "temporal_patch_size": 2,
+          "dtype": "torch.float32",
+          "intervalo": [
+            -0.6235294342041016,
+            1.0
+          ],
+          "image_mean": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "image_std": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "processor": "Qwen2VLImageProcessor",
+          "max_pixels": 262144,
+          "min_pixels": 65536,
+          "variante": "cinza",
+          "fundo_rgb": "#ffffff",
+          "perfil_resolucao": "orcamento",
+          "pixels_preparados": 81920,
+          "tem_transparencia": false,
+          "percentual_transparente": 0.0,
+          "percentual_semitransparente": 0.0,
+          "alpha_enviado_ao_encoder": false,
+          "input_sha256": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391"
+        },
+        "execution": {
+          "antes_shape": [
+            320,
+            1152
+          ],
+          "depois_shape": [
+            80,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 15.197078704833984,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 2.891,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          }
+        },
+        "tokens_file": "assets/analise/padrao_512_cinza_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "58bd3a32e7fccca76d7c7a16b152b55ebc699b185a03098a992baf0e849344d2",
+          "source_tokens_sha256": "b38f4ccd1c6c3d9c8ecee202229c54d62b9a59873cf40122a0ace103921c57ac",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/padrao_geometrico_branco.png": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391",
+          "assets/analise/padrao_512_cinza_preparada.png": "03680cdfaf1a3b091b4643bd88a9e6f23938a135fb704db72a5c28f484dd676b"
+        }
+      },
+      "0:original": {
+        "source": "assets/padrao_geometrico_branco.png",
+        "preparation": {
+          "original_wh": [
+            320,
+            240
+          ],
+          "preparada_wh": [
+            320,
+            256
+          ],
+          "pixel_values_shape": [
+            320,
+            1536
+          ],
+          "grid_thw": [
+            1,
+            16,
+            20
+          ],
+          "patch_size": 16,
+          "merge_size": 2,
+          "temporal_patch_size": 2,
+          "dtype": "torch.float32",
+          "intervalo": [
+            -1.0,
+            1.0
+          ],
+          "image_mean": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "image_std": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "processor": "Qwen2VLImageProcessor",
+          "max_pixels": 16777216,
+          "min_pixels": 65536,
+          "variante": "original",
+          "fundo_rgb": "#ffffff",
+          "perfil_resolucao": "checkpoint",
+          "pixels_preparados": 81920,
+          "tem_transparencia": false,
+          "percentual_transparente": 0.0,
+          "percentual_semitransparente": 0.0,
+          "alpha_enviado_ao_encoder": false,
+          "input_sha256": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391"
+        },
+        "execution": {
+          "antes_shape": [
+            320,
+            1152
+          ],
+          "depois_shape": [
+            80,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 16.187463760375977,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 2.783,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          }
+        },
+        "tokens_file": "assets/analise/padrao_0_original_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "5f01df6d28726f34ed2d346b73a4d86e3a634fb229e3cf455ef2b14884ea2aec",
+          "source_tokens_sha256": "ca18bf5eac96b1c7428eadee78b442a5f0554241457598f68c91f60d10e63aa4",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/padrao_geometrico_branco.png": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391",
+          "assets/analise/padrao_0_original_preparada.png": "eb8cabc259cbdd92f8ed6fc5b4fa065b8b7b757a54e877f344f5f6765670bf35"
+        }
+      },
+      "0:cinza": {
+        "source": "assets/padrao_geometrico_branco.png",
+        "preparation": {
+          "original_wh": [
+            320,
+            240
+          ],
+          "preparada_wh": [
+            320,
+            256
+          ],
+          "pixel_values_shape": [
+            320,
+            1536
+          ],
+          "grid_thw": [
+            1,
+            16,
+            20
+          ],
+          "patch_size": 16,
+          "merge_size": 2,
+          "temporal_patch_size": 2,
+          "dtype": "torch.float32",
+          "intervalo": [
+            -0.6235294342041016,
+            1.0
+          ],
+          "image_mean": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "image_std": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "processor": "Qwen2VLImageProcessor",
+          "max_pixels": 16777216,
+          "min_pixels": 65536,
+          "variante": "cinza",
+          "fundo_rgb": "#ffffff",
+          "perfil_resolucao": "checkpoint",
+          "pixels_preparados": 81920,
+          "tem_transparencia": false,
+          "percentual_transparente": 0.0,
+          "percentual_semitransparente": 0.0,
+          "alpha_enviado_ao_encoder": false,
+          "input_sha256": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391"
+        },
+        "execution": {
+          "antes_shape": [
+            320,
+            1152
+          ],
+          "depois_shape": [
+            80,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 15.197078704833984,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 2.717,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          }
+        },
+        "tokens_file": "assets/analise/padrao_0_cinza_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "58bd3a32e7fccca76d7c7a16b152b55ebc699b185a03098a992baf0e849344d2",
+          "source_tokens_sha256": "ca658c7c09eca1dac0ed839ad1392a73ded1493b0f2d4470868d8b01d0b74817",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/padrao_geometrico_branco.png": "7f890d7e66ad94bef7c062669afa9fdb2f36dedd5879f8489053c7e094aa6391",
+          "assets/analise/padrao_0_cinza_preparada.png": "03680cdfaf1a3b091b4643bd88a9e6f23938a135fb704db72a5c28f484dd676b"
+        }
+      }
+    },
+    "video_cases": {
+      "movimento_branco_gif_completo": {
+        "source": "assets/movimento_branco.gif",
+        "preparation": {
+          "type": "video",
+          "source": {
+            "kind": "gif",
+            "width": 128,
+            "height": 128,
+            "frames": 8,
+            "duration": 2.0,
+            "durations": [
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25
+            ],
+            "timing_fallback_frames": 0,
+            "audio_used": false
+          },
+          "requested_times": [
+            0.0,
+            0.5,
+            1.0,
+            1.5
+          ],
+          "timestamps": [
+            0.0,
+            0.5,
+            1.0,
+            1.5
+          ],
+          "frame_indices": [
+            0,
+            2,
+            4,
+            6
+          ],
+          "repeated_samples": 0,
+          "start": 0.0,
+          "end": 2.0,
+          "sampled_frames": 4,
+          "temporal_pairs": 2,
+          "prepared_wh": [
+            128,
+            128
+          ],
+          "pixel_values_shape": [
+            128,
+            1536
+          ],
+          "grid_thw": [
+            2,
+            8,
+            8
+          ],
+          "processor": "Qwen3VLVideoProcessor",
+          "background": "#ffffff",
+          "pixel_budget_per_frame": 65536,
+          "sampling": "uniforme no tempo; quadro ativo em cada instante",
+          "input_sha256": "7bee0ca0efb6f90bfcf7420376c69f316e7520439ffe45aa3b1d7e05301f4385",
+          "note": "Sequência amostrada; não contém áudio. Cada par reúne dois quadros selecionados.",
+          "expected_after_tokens": 32
+        },
+        "execution": {
+          "antes_shape": [
+            128,
+            1152
+          ],
+          "depois_shape": [
+            32,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 8.496734619140625,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 1.644,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          },
+          "temporal_pairs": 2
+        },
+        "tokens_file": "assets/analise/movimento_branco_gif_completo_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "1f10d33b3c79b1dbab422f74041c38b7bbbcd8afb8c3f75c439a88185eb279ce",
+          "source_tokens_sha256": "f45fbf3056808c4e218861673079452e7bd27983fe9e0160c815ee29a6568c7e",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/movimento_branco.gif": "7bee0ca0efb6f90bfcf7420376c69f316e7520439ffe45aa3b1d7e05301f4385",
+          "assets/analise/movimento_branco_gif_completo_quadro_00.png": "7d2bab8545f28b2427965b413e97b172d417584343403272febff1b9320e89aa",
+          "assets/analise/movimento_branco_gif_completo_quadro_01.png": "b8591050e5293e7a1778c5878b1e96db19410d2250afa2ba8ec9c0df9e2c2090",
+          "assets/analise/movimento_branco_gif_completo_quadro_02.png": "527be46dc463e2124e3035910e4f5c4ec5219b7fbe9b18057f1e5ecf8afce079",
+          "assets/analise/movimento_branco_gif_completo_quadro_03.png": "a0f20641d818d59e5048fb8700fc3b7900c05d1ac3e7a90610f8946b25854e61"
+        },
+        "format": "GIF",
+        "duration": 2.0,
+        "scenario": "completo"
+      },
+      "movimento_branco_gif_recorte": {
+        "source": "assets/movimento_branco.gif",
+        "preparation": {
+          "type": "video",
+          "source": {
+            "kind": "gif",
+            "width": 128,
+            "height": 128,
+            "frames": 8,
+            "duration": 2.0,
+            "durations": [
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25
+            ],
+            "timing_fallback_frames": 0,
+            "audio_used": false
+          },
+          "requested_times": [
+            0.5,
+            1.0
+          ],
+          "timestamps": [
+            0.5,
+            1.0
+          ],
+          "frame_indices": [
+            2,
+            4
+          ],
+          "repeated_samples": 0,
+          "start": 0.5,
+          "end": 1.5,
+          "sampled_frames": 2,
+          "temporal_pairs": 1,
+          "prepared_wh": [
+            128,
+            128
+          ],
+          "pixel_values_shape": [
+            64,
+            1536
+          ],
+          "grid_thw": [
+            1,
+            8,
+            8
+          ],
+          "processor": "Qwen3VLVideoProcessor",
+          "background": "#ffffff",
+          "pixel_budget_per_frame": 65536,
+          "sampling": "uniforme no tempo; quadro ativo em cada instante",
+          "input_sha256": "7bee0ca0efb6f90bfcf7420376c69f316e7520439ffe45aa3b1d7e05301f4385",
+          "note": "Sequência amostrada; não contém áudio. Cada par reúne dois quadros selecionados.",
+          "expected_after_tokens": 16
+        },
+        "execution": {
+          "antes_shape": [
+            64,
+            1152
+          ],
+          "depois_shape": [
+            16,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 8.700945854187012,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 0.773,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          },
+          "temporal_pairs": 1
+        },
+        "tokens_file": "assets/analise/movimento_branco_gif_recorte_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "ae1d28c36751c0925b9ab7052510503348d7024019515f5ebad1b3203a10d1e6",
+          "source_tokens_sha256": "d5cc2d199f0c0c233d65b7cd9c91216230b1464709eb341d6c1f3e71e7adb7cc",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/movimento_branco.gif": "7bee0ca0efb6f90bfcf7420376c69f316e7520439ffe45aa3b1d7e05301f4385",
+          "assets/analise/movimento_branco_gif_recorte_quadro_00.png": "b8591050e5293e7a1778c5878b1e96db19410d2250afa2ba8ec9c0df9e2c2090",
+          "assets/analise/movimento_branco_gif_recorte_quadro_01.png": "527be46dc463e2124e3035910e4f5c4ec5219b7fbe9b18057f1e5ecf8afce079"
+        },
+        "format": "GIF",
+        "duration": 2.0,
+        "scenario": "recorte"
+      },
+      "movimento_branco_gif_oito_quadros": {
+        "source": "assets/movimento_branco.gif",
+        "preparation": {
+          "type": "video",
+          "source": {
+            "kind": "gif",
+            "width": 128,
+            "height": 128,
+            "frames": 8,
+            "duration": 2.0,
+            "durations": [
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25,
+              0.25
+            ],
+            "timing_fallback_frames": 0,
+            "audio_used": false
+          },
+          "requested_times": [
+            0.0,
+            0.25,
+            0.5,
+            0.75,
+            1.0,
+            1.25,
+            1.5,
+            1.75
+          ],
+          "timestamps": [
+            0.0,
+            0.25,
+            0.5,
+            0.75,
+            1.0,
+            1.25,
+            1.5,
+            1.75
+          ],
+          "frame_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "repeated_samples": 0,
+          "start": 0.0,
+          "end": 2.0,
+          "sampled_frames": 8,
+          "temporal_pairs": 4,
+          "prepared_wh": [
+            128,
+            128
+          ],
+          "pixel_values_shape": [
+            256,
+            1536
+          ],
+          "grid_thw": [
+            4,
+            8,
+            8
+          ],
+          "processor": "Qwen3VLVideoProcessor",
+          "background": "#ffffff",
+          "pixel_budget_per_frame": 65536,
+          "sampling": "uniforme no tempo; quadro ativo em cada instante",
+          "input_sha256": "7bee0ca0efb6f90bfcf7420376c69f316e7520439ffe45aa3b1d7e05301f4385",
+          "note": "Sequência amostrada; não contém áudio. Cada par reúne dois quadros selecionados.",
+          "expected_after_tokens": 64
+        },
+        "execution": {
+          "antes_shape": [
+            256,
+            1152
+          ],
+          "depois_shape": [
+            64,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 8.935271263122559,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 2.391,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          },
+          "temporal_pairs": 4
+        },
+        "tokens_file": "assets/analise/movimento_branco_gif_oito_quadros_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "7c694fd4f0f7be351d2efc38dd28039b195fde0d118f59954e2f540786f7c35d",
+          "source_tokens_sha256": "6b1558e65b222df69f350042dd3cdb977904643186374237c0d7f90ca26da08b",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/movimento_branco.gif": "7bee0ca0efb6f90bfcf7420376c69f316e7520439ffe45aa3b1d7e05301f4385",
+          "assets/analise/movimento_branco_gif_oito_quadros_quadro_00.png": "7d2bab8545f28b2427965b413e97b172d417584343403272febff1b9320e89aa",
+          "assets/analise/movimento_branco_gif_oito_quadros_quadro_01.png": "b5ddd8465a15b979d6f9de3081bd1ebef7d45e5bb0c1a6f5414619e3f8344c21",
+          "assets/analise/movimento_branco_gif_oito_quadros_quadro_02.png": "b8591050e5293e7a1778c5878b1e96db19410d2250afa2ba8ec9c0df9e2c2090",
+          "assets/analise/movimento_branco_gif_oito_quadros_quadro_03.png": "a6c50e228f4ed44812af6e2d9e2f73c34fc3472ffd6057dae10b9f06cb5b8790",
+          "assets/analise/movimento_branco_gif_oito_quadros_quadro_04.png": "527be46dc463e2124e3035910e4f5c4ec5219b7fbe9b18057f1e5ecf8afce079",
+          "assets/analise/movimento_branco_gif_oito_quadros_quadro_05.png": "480fe6ff5a6930fa67d17cad9497a4287c496edddc3b366425d568eff9487999",
+          "assets/analise/movimento_branco_gif_oito_quadros_quadro_06.png": "a0f20641d818d59e5048fb8700fc3b7900c05d1ac3e7a90610f8946b25854e61",
+          "assets/analise/movimento_branco_gif_oito_quadros_quadro_07.png": "3440f85f6e5b03c99c66704b0fee83b0079737b398f24759eff9e59cf7a6c7ab"
+        },
+        "format": "GIF",
+        "duration": 2.0,
+        "scenario": "oito_quadros"
+      },
+      "movimento_branco_mp4_completo": {
+        "source": "assets/movimento_branco.mp4",
+        "preparation": {
+          "type": "video",
+          "source": {
+            "kind": "video",
+            "width": 128,
+            "height": 128,
+            "duration": 2.0,
+            "frames": 8,
+            "fps": 4.0,
+            "audio_used": false
+          },
+          "requested_times": [
+            0.0,
+            0.5,
+            1.0,
+            1.5
+          ],
+          "timestamps": [
+            0.0,
+            0.5,
+            1.0,
+            1.5
+          ],
+          "frame_indices": [
+            0,
+            2,
+            4,
+            6
+          ],
+          "repeated_samples": 0,
+          "start": 0.0,
+          "end": 2.0,
+          "sampled_frames": 4,
+          "temporal_pairs": 2,
+          "prepared_wh": [
+            128,
+            128
+          ],
+          "pixel_values_shape": [
+            128,
+            1536
+          ],
+          "grid_thw": [
+            2,
+            8,
+            8
+          ],
+          "processor": "Qwen3VLVideoProcessor",
+          "background": "#ffffff",
+          "pixel_budget_per_frame": 65536,
+          "sampling": "uniforme no tempo; quadro ativo em cada instante",
+          "input_sha256": "b36f59a473ee591199b58e5d97b9d5fe0b79037f0e4214120fddf5a38542259c",
+          "note": "Sequência amostrada; não contém áudio. Cada par reúne dois quadros selecionados.",
+          "expected_after_tokens": 32
+        },
+        "execution": {
+          "antes_shape": [
+            128,
+            1152
+          ],
+          "depois_shape": [
+            32,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 8.637529373168945,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 1.356,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          },
+          "temporal_pairs": 2
+        },
+        "tokens_file": "assets/analise/movimento_branco_mp4_completo_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "6a5517da2ea276e92c5f676bee7e6378afe23ad6937e6527f981a7d529c6c7c0",
+          "source_tokens_sha256": "331c4fabbd492710a294dcd2d0cbd785ca1a1254c3aace7719a7760ac3a2ba8b",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/movimento_branco.mp4": "b36f59a473ee591199b58e5d97b9d5fe0b79037f0e4214120fddf5a38542259c",
+          "assets/analise/movimento_branco_mp4_completo_quadro_00.png": "db50a164edb9716e0e01f2a616db152dcc72bb30e333cc8fce71fbbd54e1d705",
+          "assets/analise/movimento_branco_mp4_completo_quadro_01.png": "c0ef22f42b70097f55f54db028880265fe45c4e706f9cc68726c62bba81fb582",
+          "assets/analise/movimento_branco_mp4_completo_quadro_02.png": "7acd799eabe53d7f6f3b3975f8e77a44adceb5d46e0b370449e8781bbce4343f",
+          "assets/analise/movimento_branco_mp4_completo_quadro_03.png": "c2ac32e3a46efe0ace6187a087785d88b6e093b0597ae2459ab2376403c19291"
+        },
+        "format": "MP4",
+        "duration": 2.0,
+        "scenario": "completo"
+      },
+      "movimento_branco_mp4_recorte": {
+        "source": "assets/movimento_branco.mp4",
+        "preparation": {
+          "type": "video",
+          "source": {
+            "kind": "video",
+            "width": 128,
+            "height": 128,
+            "duration": 2.0,
+            "frames": 8,
+            "fps": 4.0,
+            "audio_used": false
+          },
+          "requested_times": [
+            0.5,
+            1.0
+          ],
+          "timestamps": [
+            0.5,
+            1.0
+          ],
+          "frame_indices": [
+            2,
+            4
+          ],
+          "repeated_samples": 0,
+          "start": 0.5,
+          "end": 1.5,
+          "sampled_frames": 2,
+          "temporal_pairs": 1,
+          "prepared_wh": [
+            128,
+            128
+          ],
+          "pixel_values_shape": [
+            64,
+            1536
+          ],
+          "grid_thw": [
+            1,
+            8,
+            8
+          ],
+          "processor": "Qwen3VLVideoProcessor",
+          "background": "#ffffff",
+          "pixel_budget_per_frame": 65536,
+          "sampling": "uniforme no tempo; quadro ativo em cada instante",
+          "input_sha256": "b36f59a473ee591199b58e5d97b9d5fe0b79037f0e4214120fddf5a38542259c",
+          "note": "Sequência amostrada; não contém áudio. Cada par reúne dois quadros selecionados.",
+          "expected_after_tokens": 16
+        },
+        "execution": {
+          "antes_shape": [
+            64,
+            1152
+          ],
+          "depois_shape": [
+            16,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 8.907596588134766,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 0.832,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          },
+          "temporal_pairs": 1
+        },
+        "tokens_file": "assets/analise/movimento_branco_mp4_recorte_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "caf854bad41da8ce6782adb5011989d7ef0bfd51a9531fc936bca3f60f3f3ba6",
+          "source_tokens_sha256": "73f2210a3dad3fc3ec19b86bb46aa7ded65e7eb6b86dffba502e293ca601944d",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/movimento_branco.mp4": "b36f59a473ee591199b58e5d97b9d5fe0b79037f0e4214120fddf5a38542259c",
+          "assets/analise/movimento_branco_mp4_recorte_quadro_00.png": "c0ef22f42b70097f55f54db028880265fe45c4e706f9cc68726c62bba81fb582",
+          "assets/analise/movimento_branco_mp4_recorte_quadro_01.png": "7acd799eabe53d7f6f3b3975f8e77a44adceb5d46e0b370449e8781bbce4343f"
+        },
+        "format": "MP4",
+        "duration": 2.0,
+        "scenario": "recorte"
+      },
+      "movimento_branco_mp4_oito_quadros": {
+        "source": "assets/movimento_branco.mp4",
+        "preparation": {
+          "type": "video",
+          "source": {
+            "kind": "video",
+            "width": 128,
+            "height": 128,
+            "duration": 2.0,
+            "frames": 8,
+            "fps": 4.0,
+            "audio_used": false
+          },
+          "requested_times": [
+            0.0,
+            0.25,
+            0.5,
+            0.75,
+            1.0,
+            1.25,
+            1.5,
+            1.75
+          ],
+          "timestamps": [
+            0.0,
+            0.25,
+            0.5,
+            0.75,
+            1.0,
+            1.25,
+            1.5,
+            1.75
+          ],
+          "frame_indices": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "repeated_samples": 0,
+          "start": 0.0,
+          "end": 2.0,
+          "sampled_frames": 8,
+          "temporal_pairs": 4,
+          "prepared_wh": [
+            128,
+            128
+          ],
+          "pixel_values_shape": [
+            256,
+            1536
+          ],
+          "grid_thw": [
+            4,
+            8,
+            8
+          ],
+          "processor": "Qwen3VLVideoProcessor",
+          "background": "#ffffff",
+          "pixel_budget_per_frame": 65536,
+          "sampling": "uniforme no tempo; quadro ativo em cada instante",
+          "input_sha256": "b36f59a473ee591199b58e5d97b9d5fe0b79037f0e4214120fddf5a38542259c",
+          "note": "Sequência amostrada; não contém áudio. Cada par reúne dois quadros selecionados.",
+          "expected_after_tokens": 64
+        },
+        "execution": {
+          "antes_shape": [
+            256,
+            1152
+          ],
+          "depois_shape": [
+            64,
+            4096
+          ],
+          "vetor_shape": [
+            4096
+          ],
+          "norma_media": 8.999287605285645,
+          "parametros": 456010480,
+          "dtype_execucao": "torch.float32",
+          "dispositivo": "cpu",
+          "gradientes": false,
+          "treinamento": false,
+          "pesos_ausentes": 0,
+          "pesos_inesperados": 0,
+          "encoder": {
+            "adapter": "qwen3.5-9b-v1",
+            "checkpoint": "Qwen/Qwen3.5-9B",
+            "files_sha256": {
+              "config.json": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+              "preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+              "video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+              "Qwen3.5-9B-Vision-BF16.safetensors": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+            }
+          },
+          "tempo_carregamento_s": 0.0,
+          "tempo_inferencia_s": 2.321,
+          "versoes": {
+            "torch": "2.14.0+cpu",
+            "transformers": "5.17.0",
+            "safetensors": "0.8.0"
+          },
+          "temporal_pairs": 4
+        },
+        "tokens_file": "assets/analise/movimento_branco_mp4_oito_quadros_tokens.npz",
+        "provenance": {
+          "tokens_sha256": "aae7cc2df798a4cb345654104e298c6eb1c3426166f98158378746db79f82492",
+          "source_tokens_sha256": "177d5df0205d415de1174ee064a261c40414a7f4d3901817872ed823635adc90",
+          "analysis_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+        },
+        "assets_sha256": {
+          "assets/movimento_branco.mp4": "b36f59a473ee591199b58e5d97b9d5fe0b79037f0e4214120fddf5a38542259c",
+          "assets/analise/movimento_branco_mp4_oito_quadros_quadro_00.png": "db50a164edb9716e0e01f2a616db152dcc72bb30e333cc8fce71fbbd54e1d705",
+          "assets/analise/movimento_branco_mp4_oito_quadros_quadro_01.png": "56c1286419ef2209c45e5742a4bae2ee417359a02600f21b437cfa82a13b569f",
+          "assets/analise/movimento_branco_mp4_oito_quadros_quadro_02.png": "c0ef22f42b70097f55f54db028880265fe45c4e706f9cc68726c62bba81fb582",
+          "assets/analise/movimento_branco_mp4_oito_quadros_quadro_03.png": "3a9cfff6b7955f58fe88f58aace09660180587c1e4f844512dfcf0c344992bb3",
+          "assets/analise/movimento_branco_mp4_oito_quadros_quadro_04.png": "7acd799eabe53d7f6f3b3975f8e77a44adceb5d46e0b370449e8781bbce4343f",
+          "assets/analise/movimento_branco_mp4_oito_quadros_quadro_05.png": "4e7f24b748f9ddb19fe0b72d669c5c647d5be4b7e8f4e523aa38b710f49041fd",
+          "assets/analise/movimento_branco_mp4_oito_quadros_quadro_06.png": "c2ac32e3a46efe0ace6187a087785d88b6e093b0597ae2459ab2376403c19291",
+          "assets/analise/movimento_branco_mp4_oito_quadros_quadro_07.png": "ee5f599e9d3aec7e52392c8e9dff15c1a56c049829941bc6f9fe954d7fb14426"
+        },
+        "format": "MP4",
+        "duration": 2.0,
+        "scenario": "oito_quadros"
+      }
+    },
+    "image_tokens": {
+      "circulo_azul": {
+        "file": "assets/analise/imagem_circulo_azul_tokens.npz",
+        "sha256": "b81bf21059941add34ad2cbd8432b5451d6a222370d3a0a49874027f9ed63dfc"
+      },
+      "quadrado_azul": {
+        "file": "assets/analise/imagem_quadrado_azul_tokens.npz",
+        "sha256": "3f89bce633480ac90b1ad5165aa0b0d681d892de1b89e9473eec5336af155e75"
+      },
+      "triangulo_azul": {
+        "file": "assets/analise/imagem_triangulo_azul_tokens.npz",
+        "sha256": "784e6c30b59ff44d2be932b69aadfb35d4b4af2e2eab449d5650ff3496241846"
+      },
+      "circulo_laranja": {
+        "file": "assets/analise/imagem_circulo_laranja_tokens.npz",
+        "sha256": "9d88f79e781af6f0bdd7117add74eb3c6c75772df40d9766dc3656790544d9ad"
+      },
+      "quadrado_laranja": {
+        "file": "assets/analise/imagem_quadrado_laranja_tokens.npz",
+        "sha256": "e4db0675e720eb46d10c3bbd2d5ab7516224c029fe9bb61d4052f2de9d41b50c"
+      },
+      "triangulo_laranja": {
+        "file": "assets/analise/imagem_triangulo_laranja_tokens.npz",
+        "sha256": "a2a654525b64ba83c41d60be98de8836f20f866c7d16306e983ead89aa106c14"
+      },
+      "circulo_deslocado": {
+        "file": "assets/analise/imagem_circulo_deslocado_tokens.npz",
+        "sha256": "3b6634802fcc5bdb6398bcaac0f6090f1de61c6936b0e668d9de51baf03fac0d"
+      },
+      "dois_circulos": {
+        "file": "assets/analise/imagem_dois_circulos_tokens.npz",
+        "sha256": "94fd6cc7666e97cfef2422bd968142a48e22040fc3e7dcd07be5c3031258da65"
+      },
+      "listras": {
+        "file": "assets/analise/imagem_listras_tokens.npz",
+        "sha256": "1176610f9e9bbfca00fd2bd5bc907731250fc3aa4ded13be5f3cc5f859e79795"
+      },
+      "anel": {
+        "file": "assets/analise/imagem_anel_tokens.npz",
+        "sha256": "71e248f0bcd42dba2b9a45be017c212e4abffe55601d7e74df6292bc6d787080"
+      },
+      "branco_transparente": {
+        "file": "assets/analise/imagem_branco_transparente_tokens.npz",
+        "sha256": "0650a22ad42d69530ec4a7a6ced4384936412975f26c126d49468352c7ccb5da"
+      },
+      "diagonal": {
+        "file": "assets/analise/imagem_diagonal_tokens.npz",
+        "sha256": "ac07ac58b976b0cb9ce68a9d2ccce32f1fbe6a8a34409abb1a0bbd258cfc8d23"
+      }
+    },
+    "background_tokens": {
+      "#c41838": {
+        "file": "assets/analise/fundo_c41838_tokens.npz",
+        "sha256": "d3b9fa507b4e7db97284f86fd897dbedf7c50c5c80719c83c5c44646314773e6"
+      },
+      "#e8d73a": {
+        "file": "assets/analise/fundo_e8d73a_tokens.npz",
+        "sha256": "ce1504aa2a130c783a873e99fc31ae3b3a8aa36370f3fbab2c541c25c021c4ae"
+      },
+      "#2eaee8": {
+        "file": "assets/analise/fundo_2eaee8_tokens.npz",
+        "sha256": "13ba0f70b8492ec2d116a250b9ef2f08ee43586af7a50b0621a9d9972840f4cc"
+      },
+      "#f2992e": {
+        "file": "assets/analise/fundo_f2992e_tokens.npz",
+        "sha256": "41bd6b6bedb7ceeea8002ffb2e1b275b3629a296db50a6b757934b49a639642c"
+      },
+      "#17482a": {
+        "file": "assets/analise/fundo_17482a_tokens.npz",
+        "sha256": "be4dd2f308e96efd721ba33709372fb570a7cb92b1d41a7dd049a57fc81cce3d"
+      },
+      "#6d2768": {
+        "file": "assets/analise/fundo_6d2768_tokens.npz",
+        "sha256": "2415d683c037aaff993767e4ca6ece20f3f669c931b5fd4b9a2f7150990e9fef"
+      },
+      "#000000": {
+        "file": "assets/analise/fundo_000000_tokens.npz",
+        "sha256": "8a6a90215b3c0798f4747ba3cf9c1b53c3b676fda5482c53f042e29c62d0006f"
+      },
+      "#ffffff": {
+        "file": "assets/analise/fundo_ffffff_tokens.npz",
+        "sha256": "d8a2dcc227d163d3724b0815f0c0f310375dbb02e943d8184370a0bf709b0af5"
+      }
+    },
+    "bias_evidence": {
+      "tensor": "model.visual.merger.linear_fc2.bias",
+      "coordinate_one_based": 3995,
+      "index_zero_based": 3994,
+      "value": 0.8984375,
+      "absolute_rank": 1,
+      "median_absolute_bias": 0.0054931640625,
+      "max_absolute_bias": 0.8984375,
+      "weights_sha256": "b28744e48d4a3412ffb68abb790f2c58ad354d3c29d8ed136539785402116919"
+    },
+    "alpha_mask": {
+      "file": "assets/analise/mascara_opacidade.png",
+      "sha256": "de83d9fbfa9a01875d494421a67fcd9732f269aabffbbfb61b698e6a9de2af89",
+      "meaning": "Canal alfa do PNG original: branco opaco; preto transparente; cinza opacidade parcial."
+    }
+  },
+  "current_analysis": {
+    "verified_on": "2026-09-28",
+    "status": "passed",
+    "version": "1.0.0",
+    "source": "analysis_core.py",
+    "source_sha256": "2fa9e7a32831dbf54d0fef94f6f3b059481139ab989e8cbdc9bd26503612e5ab",
+    "generated_sha256": "0e4b476eeea1a5076ad76aa5c252c3dbd9c46ec8cb1ad778cfc92ea00bc916c3",
+    "checks": {
+      "vectorCases": 672,
+      "rankingCases": 6912,
+      "temporalCases": 432,
+      "maxRelativeError": 0,
+      "tolerance": 0
+    },
+    "previous_analysis_comparison": {
+      "vector_hash_changes": 0,
+      "ranking_order_changes": 0,
+      "max_score_absolute_change": 2.682209014892578e-07
+    },
+    "scope": "Mesmos tokens e agregados da extração anterior; núcleo Python e artefato JavaScript gerado. Não houve nova inferência nem alteração dos pesos."
+  },
+  "analysis_sha256_scope": "Hash do módulo usado na extração original. A análise interativa atual é identificada em current_analysis."
 }

@@ -6,7 +6,7 @@
   <meta name="description" content="Demonstração pública do LabVisual com imagens, lote, vizinhos e sequências pré-calculadas da Bancada Visual do Qwen3.5-9B.">
   <title>Bancada Visual · Qwen3.5-9B — Rebojar</title>
   <link rel="icon" type="image/png" href="../assets/labvisual-icon.png">
-    <link rel="stylesheet" href="demo.css?v=20260924-54">
+    <link rel="stylesheet" href="demo.css?v=guias-unificadas-20261003">
 </head>
 <body>
   <header class="topbar">
@@ -27,8 +27,13 @@
   <main>
     <section class="hero">
       <div>
-        <p class="eyebrow">Demonstração pública · dados pré-calculados</p>
-        <h1>Bancada Visual <span>Qwen3.5-9B</span></h1>
+        <div class="hero-heading">
+          <h1>Bancada Visual</h1>
+          <div class="hero-model-block">
+            <p class="eyebrow">Demonstração pública · dados pré-calculados</p>
+            <p class="hero-model">Qwen3.5-9B</p>
+          </div>
+        </div>
         <p class="lead">Uma leitura interativa de representações produzidas pela torre visual do Qwen3.5-9B.</p>
         <div class="hero-actions">
           <button class="button primary" type="button" data-open-entry-picker>Explorar demonstração</button>
@@ -222,10 +227,10 @@
           <h3 id="workflow-analysis-title">Escolha como analisar os tokens salvos</h3>
           <div class="explorer-status-stack">
            <span class="step">Exploração interativa</span>
-            <span class="badge">Metodologia da bancada</span>        
+            <span class="badge">Metodologia da bancada</span>
           </div>
         </div>
-        <div class="analysis-stage-body">         
+        <div class="analysis-stage-body">
           <p class="method-note">Média, máximo e mediana foram calculados sobre os tokens reais e salvos antes da normalização.</p>
           <p class="method-note">Aqui sua escolha atua sobre as saídas do encoder, recalculando sua normalização.</p>
           <p class="method-note">Os pesos e o merger aprendido do Qwen permanecem os mesmos; o encoder não é executado novamente.</p>
@@ -261,7 +266,7 @@
             <span id="analysisMetricChoice" class="workflow-recipe-choice" hidden>Cosseno</span>
           </div>
           <div class="workflow-recipe-step">
-            <label><span><strong>Como comparar</strong> | Medida de comparação</span>
+            <label><span><strong id="comparison-stage-title">Como comparar</strong> | Medida de comparação</span>
             <!--🔹INICIO OPÇÕES DE SELEÇÃO🔹--><select id="metric"><option value="cosine">Cosseno</option><option value="euclidean">Distância euclidiana</option><option value="dot">Produto escalar</option></select><!--🔻FIM OPÇÕES DE SELEÇÃO🔻-->
            </label>
             <p id="analysisMetricExplanation" class="small"></p>
@@ -367,8 +372,9 @@
     </details>
 
     <section id="explorar" class="explorer panel" aria-label="Comparação e gráficos da representação registrada">
-      <span class="workflow-stage-label workflow-stage-execution explorer-execution-label">Execução registrada</span>
       <section class="chart-section" aria-labelledby="bars-title">
+        <div class="chart-toolbar chart-toolbar-execution"><span class="workflow-stage-label workflow-stage-execution explorer-execution-label">Execução registrada</span><button id="barAuto" class="chart-auto" type="button">Automático</button></div>
+        <div class="chart-surface">
         <div class="chart-heading">
           <div>
             <h3 id="bars-title"><span id="barWindowTitle">48</span> coordenadas por vez</h3>
@@ -382,7 +388,7 @@
               </select>
             </label>
             <label class="bar-window-control"><span>Quantidade de coordenadas por trecho visível</span><select id="barWindow"></select></label>
-            <button id="barAuto" class="chart-auto" type="button">Automático</button>
+
             <label class="zoom-readout zoom-editor" for="barZoomInput">
               <span class="zoom-editor-line"><span>Zoom:</span><input id="barZoomInput" type="text" inputmode="decimal" value="1,00" aria-label="Zoom do gráfico de barras"><span aria-hidden="true">×</span></span>
               <small id="barZoomDetail" class="zoom-detail" aria-live="polite">eixos vinculados</small>
@@ -403,14 +409,18 @@
         <details class="chart-explanation">
           <summary>Como interpretar positivo e negativo?</summary>
           <div>
-            <p>Cada barra é uma coordenada do vetor, como uma posição em um eixo: azul fica acima de zero, laranja abaixo. O sinal não indica acerto, erro, confiança ou presença de um objeto. As operações aprendidas da rede podem produzir valores dos dois sinais; dividir pela norma positiva preserva esses sinais.</p>
+            <p>Cada barra é uma coordenada do vetor, como uma posição em um eixo: azul fica acima de zero, azul celeste abaixo. O sinal não indica acerto, erro, confiança ou presença de um objeto. As operações aprendidas da rede podem produzir valores dos dois sinais; dividir pela norma positiva preserva esses sinais.</p>
             <p>A altura representa o valor absoluto nesta coordenada. Uma barra maior não prova que ela seja mais importante. A janela mostra a quantidade escolhida de coordenadas, na ordem dos índices, no estágio selecionado. A rolagem permite percorrer o vetor e a pinça amplia os dois eixos pelo mesmo fator.</p>
             <p id="barScaleNote" class="small"></p>
           </div>
         </details>
+
+        </div>
       </section>
 
       <section class="chart-section" aria-labelledby="line-title">
+        <div class="chart-toolbar"><button id="lineAuto" class="chart-auto" type="button">Automático</button></div>
+        <div class="chart-surface">
         <div class="chart-heading">
           <div>
             <h3 id="line-title">O vetor ao longo das coordenadas</h3>
@@ -418,7 +428,7 @@
           </div>
           <div class="line-controls">
             <label><span>Quantidade de coordenadas por trecho visível</span><select id="lineWindow"></select></label>
-            <button id="lineAuto" class="chart-auto" type="button">Automático</button>
+
             <label class="zoom-readout zoom-editor" for="lineZoomInput">
               <span class="zoom-editor-line"><span>Zoom:</span><input id="lineZoomInput" type="text" inputmode="decimal" value="1,00" aria-label="Zoom do gráfico"><span aria-hidden="true">×</span></span>
               <small id="lineZoomDetail" class="zoom-detail" aria-live="polite">eixos vinculados</small>
@@ -432,6 +442,8 @@
         <div class="chart-coordinate-readings">
           <p id="linePinnedReading" class="pinned-reading" aria-live="polite">Clique em uma coordenada para fixá-la no gráfico.</p>
           <p id="lineReading" class="reading" aria-live="polite">Mova o ponteiro sobre a linha para consultar uma coordenada.</p>
+        <div class="bar-legend" aria-label="Legenda da linha"><span><i class="bar-legend-swatch bar-legend-positive" aria-hidden="true"></i>Valor positivo</span><span><i class="bar-legend-swatch bar-legend-negative" aria-hidden="true"></i>Valor negativo</span></div></div>
+
         </div>
       </section>
 
@@ -446,6 +458,7 @@
         </article>
       </div>
 
+      <section class="single-export"><details class="notes-details"><summary>Minhas observações sobre esta imagem</summary><div class="notes-sheet"><textarea id="singleNotes" rows="4" aria-label="Notas sobre esta imagem" placeholder="Escreva suas observações aqui."></textarea><p class="notes-hint">As notas ficam nesta página até você baixar o arquivo. Não são enviadas nem salvas automaticamente.</p></div></details><div class="action-row"><button type="button" id="singleExport" class="button secondary compact">Baixar registro e notas (.json)</button><button type="button" id="singleCsv" class="button secondary compact">Baixar vetores (.csv)</button><a id="singleTokens" class="button secondary compact" download>Baixar tokens completos (.npz)</a></div></section>
       <details class="record-details">
         <summary>Ver parâmetros preservados da execução</summary>
         <pre id="record"></pre>
@@ -455,152 +468,81 @@
     </section>
 
     <section id="batchView" class="demo-view" role="tabpanel" aria-labelledby="batchTab" hidden>
-      <div class="mode-intro panel">
-        <div class="mode-intro-top">
-          <p class="step">Lote registrado</p>
-          <span class="badge">12 imagens · resultados reais</span>
-        </div>
-        <h2>Um conjunto de imagens já processadas</h2>
-        <p>Estas doze entradas foram preparadas e atravessaram o mesmo encoder. Escolha uma delas para abrir seu registro na área “Uma imagem”.</p>
-      </div>
-      <section class="panel mode-panel" aria-labelledby="batch-gallery-title">
-        <div class="section-heading">
-          <div>
-            <p class="step">Base da demonstração</p>
-            <h2 id="batch-gallery-title">Forma, cor, posição e transparência</h2>
-          </div>
-          <span id="batchSummary" class="status"><i aria-hidden="true"></i> Carregando a base</span>
-        </div>
-        <div id="batchGallery" class="batch-gallery" aria-label="Entradas do lote"></div>
-        <p class="mode-footnote">Clicar numa imagem não executa o modelo: apenas abre os números e arquivos preparados que já foram registrados para ela.</p>
+      <section class="panel mode-panel batch-entry-panel">
+      <div class="mode-intro mode-entry-intro"><h2 class="workflow-mode-title mode-guide-title">Simulação guiada</h2><div class="mode-intro-top"><h2>Da coleção ao conjunto de representações</h2><p class="step">Lote de imagens · execuções registradas</p></div><p>Confira as entradas, escolha uma receita e reúna os vetores. O navegador aplica essa leitura às saídas reais já calculadas pelo encoder.</p></div>
+        <h3>1. Confira as entradas</h3><p>Doze imagens públicas de formas, cores, posições e transparência. A galeria permanece completa, com rolagem contínua.</p>
+        <label>Fundo registrado para a entrada transparente<select id="batchBackground"></select></label>
+        <p class="small">As outras onze imagens são opacas. Esta escolha pertence ao lote; mudar o fundo em Uma imagem não altera um conjunto já reunido.</p>
+        <div class="batch-check-row"><p id="batchConditions"></p><button id="batchCheck" type="button" class="button secondary compact">Conferir a coleção</button></div><p id="batchCheckStatus" role="status"></p>
+        <details class="record-details"><summary>Ver o código e os parâmetros da conferência</summary><p class="small">Trecho explicativo do percurso local. Aqui os arquivos já estão registrados.</p><pre id="batchCheckCode"></pre><pre id="batchInputRecord"></pre></details>
       </section>
+      <section class="panel mode-panel"><h3>2. Defina a receita do lote</h3><div id="batchRecipeControls"></div>
+        <p class="small">No laboratório, a receita é definida antes do processamento. Nesta demonstração, média, máximo e mediana já foram calculados sobre os tokens reais; a preparação e os pesos não mudam.</p>
+        <div class="action-row"><button id="batchStart" type="button" class="button primary compact" disabled>Reunir representações</button><button id="batchStop" type="button" class="button secondary compact" hidden>Parar após a imagem atual</button></div>
+        <progress id="batchProgress" max="12" value="0" aria-label="Imagens reunidas"></progress><p id="batchState" role="status">Confira a coleção para começar.</p><p id="batchAppliedRecipe" class="small"></p>
+        <div id="batchDownloads" class="action-row" hidden><button id="batchNpz" type="button" class="button secondary compact">Baixar embeddings (.npz)</button><button id="batchJson" type="button" class="button secondary compact">Baixar registro (.json)</button><button id="batchNeighbors" type="button" class="button primary compact">Explorar vizinhos deste lote</button></div>
+        <details class="record-details"><summary>Entenda o processamento e veja o código</summary><p>Um vetor por estágio e por imagem. Mudar a agregação não recupera tokens de uma média: seleciona outro agregado, calculado previamente a partir de todos os tokens.</p><pre id="batchCode"></pre><pre id="batchRecord"></pre></details>
+        <details class="notes-details"><summary>Minhas observações sobre este lote</summary><div class="notes-sheet"><textarea id="batchNotes" rows="4" aria-label="Minhas observações sobre este lote" placeholder="Estas notas só entram no arquivo que você baixar."></textarea></div></details>
+      </section>
+      <section class="panel mode-panel" aria-labelledby="batch-gallery-title"><div class="section-heading"><h3 id="batch-gallery-title">3. Explore as imagens da coleção</h3><span id="batchSummary" class="badge"></span></div><div id="batchGallery" class="batch-gallery" aria-label="Entradas do lote"></div><p class="small">Abrir uma imagem permite investigar sua execução individual. A receita salva com o lote é preservada.</p></section>
     </section>
 
     <section id="neighborsView" class="demo-view" role="tabpanel" aria-labelledby="neighborsTab" hidden>
-      <div class="mode-intro panel">
-        <div class="mode-intro-top">
-          <p class="step">Comparação no lote</p>
-          <span id="neighborsRecipeBadge" class="badge">Média · L2 · cosseno</span>
-        </div>
-        <h2>Vizinhos da imagem escolhida</h2>
-        <p>Compare como as proximidades mudam antes e depois do merger. Os vizinhos são procurados somente entre as doze entradas desta demonstração.</p>
-        <div class="controls" aria-label="Receita da comparação no lote">
-          <label><span>Resumo dos tokens no lote</span><select id="neighborPooling"><option value="mean">Média</option><option value="max">Máximo</option><option value="median">Mediana</option></select></label>
-          <label><span>Normalização no lote</span><select id="neighborNormalization"><option value="l2">L2</option><option value="l1">L1</option><option value="linf">L∞</option><option value="none">Sem normalização</option></select></label>
-          <label><span>Comparação no lote</span><select id="neighborMetric"><option value="cosine">Cosseno</option><option value="euclidean">Distância euclidiana</option><option value="dot">Produto escalar</option></select></label>
-        </div>
-        <p class="small">Esta receita pertence à comparação do lote. L1, L2 e L∞ preservam a direção: o cosseno não muda matematicamente; arredondamentos podem afetar empates muito próximos.</p>
-        <p id="neighborsDatasetNote" class="small"></p>
+      <div class="mode-intro panel"><h2 class="workflow-mode-title mode-guide-title">Simulação guiada</h2><div class="mode-intro-top"><h2>Investigue as proximidades</h2><p class="step">Vizinhos · comparação no mesmo conjunto</p></div><label>Conjunto de representações<select id="neighborDataset"></select></label><p id="neighborsDatasetNote" class="small"></p><div id="neighborRecipeControls"></div><span id="neighborsRecipeBadge" class="badge"></span>
+        <details class="record-details"><summary>O que acontece quando mudo a receita aqui?</summary><p>Esta demo permite recalcular diretamente, usando agregados de média, máximo e mediana já registrados. O lote original é preservado. A versão local 0.5 da bancada também permite mudar a receita nesta guia. Lotes antigos podem oferecer somente parte dessas escolhas, conforme os dados que conservaram. A versão já publicada no GitHub ainda precisa receber essa atualização.</p><p>L1, L2 e L∞ preservam a direção de vetores não nulos. Trocar somente entre elas não muda matematicamente o cosseno; arredondamentos podem afetar empates muito próximos.</p></details>
       </div>
-      <section class="panel mode-panel" aria-labelledby="neighbor-title">
-        <div class="neighbor-picker">
-          <span class="neighbor-picker-label">Imagem de referência</span>
-          <button id="neighborSource" class="neighbor-picker-button" type="button"><strong id="neighborSourceLabel">Escolher imagem</strong><span aria-hidden="true">▾</span></button>
-        </div>
-        <div class="neighbor-anchor">
-          <img id="neighborAnchorImage" alt="">
-          <div>
-            <p class="step">Referência selecionada</p>
-            <h2 id="neighbor-title">—</h2>
-            <button id="openNeighborEntry" class="button secondary compact" type="button">Abrir em “Uma imagem”</button>
-          </div>
-        </div>
-        <div class="neighbor-columns-public">
-          <section>
-            <h3>Antes do merger</h3>
-            <p>1.152 coordenadas por vetor agregado.</p>
-            <div id="neighborsBefore" class="neighbor-list"></div>
-          </section>
-          <section>
-            <h3>Depois do merger</h3>
-            <p>4.096 coordenadas por vetor agregado.</p>
-            <div id="neighborsAfter" class="neighbor-list"></div>
-          </section>
-        </div>
-        <p id="neighborsMetricNote" class="mode-footnote">Cosseno próximo de 1 indica vetores mais alinhados dentro deste pequeno lote. Não é porcentagem de compreensão, confiança ou semelhança visual humana.</p>
+      <section class="panel mode-panel" aria-labelledby="neighbor-title"><div class="section-heading"><h3>2. Compare as proximidades</h3><button id="neighborBack" type="button" class="button secondary compact" disabled>← Imagem anterior</button></div>
+        <div class="neighbor-anchor"><img id="neighborAnchorImage" alt=""><div class="neighbor-anchor-copy"><p class="step">Referência selecionada</p><h2 id="neighbor-title"></h2><div class="action-row"><button id="neighborSource" type="button" class="button secondary compact">Escolher referência na galeria ↓</button><button id="openNeighborEntry" type="button" class="button secondary compact">Abrir em Uma imagem</button><p id="neighborOverlap" class="badge"></p></div></div></div>
+        <div class="neighbor-columns-public"><section><h3>Antes do merger</h3><p class="small">1.152 coordenadas por vetor.</p><div id="neighborsBefore" class="neighbor-list"></div><div id="beforeStats" class="stats-strip"></div></section><section><h3>Depois do merger</h3><p class="small">4.096 coordenadas por vetor.</p><div id="neighborsAfter" class="neighbor-list"></div><div id="afterStats" class="stats-strip"></div></section></div><p id="neighborsMetricNote" class="small"></p>
       </section>
+      <section class="panel mode-panel"><details class="record-details"><summary>Como os vizinhos e os números são calculados?</summary><p>A referência é excluída da busca. Os cinco primeiros são mostrados em cada estágio; mínimo, mediana e máximo consideram todas as outras imagens. Empates exatos seguem a ordem da coleção. O selo “Nos dois grupos” identifica a sobreposição.</p><pre id="neighborsCode"></pre><pre id="neighborsRecord"></pre></details>
+        <details class="record-details"><summary>Investigar o pico da coordenada 3995</summary><p id="neighborPeak"></p><p id="datasetPeak"></p><p id="biasReading"></p><p>Essa parcela mede concentração numérica, não importância, conteúdo ou significado visual. O viés é só uma parcela da saída; a contribuição variável da rede também participa do pico.</p><details class="record-details"><summary>Ver a evidência do viés e o código</summary><pre id="biasRecord"></pre><pre id="biasCode"></pre></details></details>
+        <details class="notes-details"><summary>Minhas observações sobre esta comparação</summary><div class="notes-sheet"><textarea id="neighborNotes" rows="4" aria-label="Minhas observações sobre esta comparação" placeholder="O que mudou antes e depois do merger?"></textarea></div><div class="notes-actions"><button id="neighborExport" type="button" class="button secondary compact">Baixar comparação e notas (.json)</button></div></details>
+      </section>
+      <section id="neighborGalleryPanel" class="panel mode-panel"><h3>1. Escolha sua imagem na galeria</h3><label>Filtrar por nome ou número<input id="neighborSearch" type="search" placeholder="Ex.: círculo ou 03"></label><p id="neighborGalleryCount" class="small" role="status"></p><div id="neighborGallery" class="batch-gallery" aria-label="Referências da comparação"></div></section>
     </section>
 
     <section id="videoView" class="demo-view" role="tabpanel" aria-labelledby="videoTab" hidden>
-      <div class="mode-intro panel">
-        <div class="mode-intro-top">
-          <p class="step">Sequência registrada</p>
-          <span class="badge">Somente visão · sem áudio</span>
-        </div>
-        <h2>O que entra quando a imagem se move</h2>
-        <p>Alterne entre o GIF e o vídeo usados no ensaio, veja os quatro quadros selecionados e percorra a representação salva da sequência.</p>
-      </div>
-      <section class="panel mode-panel" aria-labelledby="sequence-title">
-        <div class="sequence-toolbar">
-          <label for="sequenceFormat">Formato registrado</label>
-          <select id="sequenceFormat"></select>
-        </div>
-        <div class="sequence-overview">
-          <div>
-            <h2 id="sequence-title">Arquivo original</h2>
-            <div id="sequenceOriginal" class="sequence-original"></div>
-            <p id="sequenceMeta" class="small"></p>
-          </div>
-          <div>
-            <h3>Quadro preparado em foco</h3>
-            <img id="sequenceFocus" class="sequence-focus" alt="">
-            <label class="range-control sequence-range">
-              <span>Instante selecionado</span>
-              <input id="sequenceFrame" type="range" min="0" max="3" value="0">
-            </label>
-            <p id="sequenceFrameReading" class="reading" aria-live="polite"></p>
-          </div>
-        </div>
-        <div id="sequenceFrames" class="sequence-frames-public"></div>
-        <section class="chart-section sequence-chart-section" aria-labelledby="sequence-chart-title">
-          <div class="chart-heading">
-            <div>
-              <h3 id="sequence-chart-title">Representação registrada da sequência</h3>
-              <p>A linha percorre as 4.096 coordenadas da média global dos tokens depois do merger, normalizada em L2. Selecionar um quadro muda somente a prévia: o gráfico continua representando a sequência inteira amostrada, sem áudio.</p>
-            </div>
-            <div class="line-controls">
-              <label><span>Quantidade de coordenadas por trecho visível</span><select id="sequenceLineWindow"></select></label>
-              <button id="sequenceLineAuto" class="chart-auto" type="button">Automático</button>
-              <label class="zoom-readout zoom-editor" for="sequenceZoomInput">
-                <span class="zoom-editor-line"><span>Zoom:</span><input id="sequenceZoomInput" type="text" inputmode="decimal" value="1,00" aria-label="Zoom do gráfico da sequência"><span aria-hidden="true">×</span></span>
-                <small id="sequenceZoomDetail" class="zoom-detail" aria-live="polite">eixos vinculados</small>
-              </label>
-            </div>
-          </div>
-          <svg id="sequenceChart" viewBox="0 0 1000 448" role="img" aria-labelledby="sequence-chart-title sequenceChartRange" aria-describedby="sequenceGestureHint"></svg>
-          <label class="chart-pan"><span>Deslocar pelas coordenadas</span><input id="sequenceLineStart" type="range" min="0" max="0" value="0"></label>
-          <p id="sequenceGestureHint" class="gesture-hint">Faça o gesto de pinça sobre o gráfico para ampliar. Deslize horizontalmente sobre ele ou use a barra para percorrer o vetor.</p>
-          <p id="sequenceChartRange" class="small chart-range-note"></p>
-          <div class="chart-coordinate-readings">
-            <p id="sequencePinnedReading" class="pinned-reading" aria-live="polite">Clique em uma coordenada para fixá-la no gráfico.</p>
-            <p id="sequenceChartReading" class="reading" aria-live="polite">Mova o ponteiro sobre a linha para consultar uma coordenada.</p>
-          </div>
-        </section>
-        <p class="mode-footnote">A sequência é amostrada: ela não contém todos os quadros do arquivo. O áudio não participa da torre visual.</p>
-        <details class="record-details"><summary>Ver parâmetros preservados da sequência</summary><pre id="sequenceRecord"></pre></details>
+      <section class="panel mode-panel video-entry-panel">
+      <div class="mode-intro mode-entry-intro"><h2 class="workflow-mode-title mode-guide-title">Simulação guiada</h2><div class="mode-intro-top"><h2>O que entra quando a imagem se move</h2><p class="step">Vídeo / GIF · somente visão</p></div><p>Explore execuções reais da mesma animação. Formato, intervalo e quantidade de quadros definem a entrada; agregação e normalização definem como lemos seus tokens.</p></div>
+        <h3>1. Escolha a sequência e a amostragem registrada</h3><div class="controls controls-analysis"><label>Formato registrado<select id="sequenceFormat"><option value="GIF">GIF</option><option value="MP4">MP4</option></select></label><label>Intervalo e quadros<select id="sequenceScenario"><option value="completo">0–2 s · 4 quadros</option><option value="recorte">0,5–1,5 s · 2 quadros</option><option value="oito_quadros">0–2 s · 8 quadros</option></select></label></div>
+        <p id="sequenceMeta"></p><div id="sequenceOriginal" class="sequence-original"></div><p class="small">Aqui a troca abre outra execução registrada. No laboratório, mudar intervalo, amostragem, resolução ou fundo exige preparar de novo e executar o encoder. O áudio não participa.</p>
+        <details class="record-details"><summary>Ver a duração, a amostragem e o código</summary><pre id="sequencePrepareCode"></pre><pre id="sequencePreparationRecord"></pre></details>
       </section>
+      <section class="panel mode-panel"><h3>2. Confira os quadros preparados</h3><div class="sequence-overview"><div class="sequence-focus-wrap"><img id="sequenceFocus" class="sequence-focus" alt=""><span id="sequencePatchGrid" class="patch-grid-overlay" aria-hidden="true" hidden></span></div><div><p id="sequenceFrameReading" class="reading" aria-live="polite"></p><label class="chart-pan">Instante selecionado<input id="sequenceFrame" type="range" min="0" max="3" value="0"></label><label class="check-label"><input id="sequenceShowPatches" type="checkbox"> Mostrar patches de 16 × 16</label><label class="check-label"><input id="sequenceShowGroups" type="checkbox"> Destacar grupos de 2 × 2</label><p id="sequenceShapes" class="small"></p></div></div><div id="sequenceFrames" class="sequence-frames-public"></div>
+        <details class="record-details"><summary>Entenda os pares temporais e veja o código</summary><p>Dois quadros selecionados formam um par temporal. Isso não é a mesma operação que agrupar 2 × 2 posições espaciais no merger. O gráfico global reúne todos os tokens; um par reúne apenas o trecho temporal correspondente.</p><pre id="sequencePairsCode"></pre></details>
+      </section>
+      <section class="panel mode-panel"><h3>3. Escolha como analisar os tokens</h3><div id="videoRecipeControls"></div><p class="small">Reutiliza os tokens registrados. A média, o máximo e a mediana foram calculados antes da normalização, globalmente e por par temporal.</p><div class="controls controls-analysis"><label>Representação exibida<select id="videoStage"><option value="after">Depois do merger</option><option value="before">Antes do merger</option></select></label><label>O que visualizar<select id="videoScope"></select></label></div><p id="videoRecipeReading"></p><p id="videoTemporalComparison"></p>
+        <details class="record-details"><summary>Ver a análise, o código e os parâmetros</summary><pre id="videoAnalysisCode"></pre><pre id="sequenceRecord"></pre></details>
+      </section>
+      <section class="panel mode-panel video-chart-panel"><div id="videoChartsHeading" class="video-charts-heading"><h3>4. Percorra as representações</h3></div><p id="videoVectorCaption"></p><div id="videoCharts"></div><details class="notes-details"><summary>Minhas observações sobre a sequência</summary><div class="notes-sheet"><textarea id="videoNotes" rows="4" aria-label="Minhas observações sobre a sequência" placeholder="Escreva suas observações aqui."></textarea></div></details><div class="action-row"><button id="videoNpz" class="button secondary compact" type="button">Baixar vetores e pares (.npz)</button><button id="videoJson" class="button secondary compact" type="button">Baixar registro e notas (.json)</button><a id="videoTokens" class="button secondary compact" download>Baixar tokens completos (.npz)</a></div><p class="small">Mudar o quadro em foco altera a prévia. Para alterar o vetor temporal mostrado, escolha um par no campo “O que visualizar”.</p></section>
     </section>
-
     <details class="record-details panel">
       <summary>De onde vêm os números desta demonstração?</summary>
       <p>São saídas reais da torre visual Qwen3.5-9B executada localmente, com os pesos congelados. As formas geométricas são entradas controladas; os vetores não foram inventados.</p>
-      <p>A conferência de 23/09/2026 comparou as 12 imagens, os oito fundos da entrada transparente, o padrão geométrico e as duas sequências com os registros da bancada. Os agregados foram calculados sobre os tokens completos. O navegador aplica a normalização e calcula os vizinhos.</p>
+      <p>A conferência de origem comparou as 12 imagens, os oito fundos da entrada transparente, o padrão geométrico e as duas sequências com os registros da bancada. Os agregados foram calculados sobre os tokens completos. O navegador aplica a normalização e calcula os vizinhos. A expansão inclui outras preparações do padrão geométrico e recortes reais das sequências; seus registros acompanham os resultados.</p>
       <p><a href="proveniencia.json" download>Baixar origem dos dados e identificadores dos arquivos</a> · <a href="conferencia.json" download>Baixar resultados da conferência numérica</a></p>
     </details>
     <section class="next panel">
-      <div class="next-heading">
+      <div class="next-top">
+        <div class="next-heading"><h2>A bancada completa é local</h2></div>
         <p class="step">Para executar com seus próprios arquivos</p>
-        <h2>A bancada completa é local</h2>
       </div>
       <a class="button primary" href="https://github.com/rebojar/LabVisual" target="_blank" rel="noopener noreferrer">Abrir Bancada Visual Qwen3.5-9B no GitHub ↗</a>
       <p class="next-copy">O repositório contém o código, as instruções de instalação e as condições técnicas para executar o encoder na sua própria máquina.</p>
     </section>
+    <details class="record-details panel" id="notebook-guide">
+      <summary>Continue no caderno Jupyter</summary>
+      <p>O pacote inclui o caderno Experimento_visual.ipynb, com explicações e células de código Python para preparar uma imagem, executar a torre visual e examinar os tokens. Ele usa o mesmo motor da bancada instalada.</p>
+      <p>Você pode ler o caderno no GitHub. Para editar e executar suas células, siga a instalação local; esta demonstração não inicia um ambiente Python.</p>
+      <p><a href="https://github.com/rebojar/LabVisual/blob/main/Experimento_visual.ipynb" target="_blank" rel="noopener noreferrer">Ler o caderno no GitHub ↗</a> · <a href="https://github.com/rebojar/LabVisual/blob/main/INSTALL.md" target="_blank" rel="noopener noreferrer">Instalar a bancada e o JupyterLab ↗</a></p>
+    </details>
   </main>
 
   <footer id="pageFooter">
     <p><a href="https://rebojar.github.io/">Rebojar ↗</a> · <a href="https://github.com/rebojar/LabVisual" target="_blank" rel="noopener noreferrer">Código da bancada ↗</a> · <a href="https://github.com/rebojar/LabVisual/blob/main/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener noreferrer">Avisos de terceiros ↗</a> · <a href="https://github.com/sponsors/rebojar" target="_blank" rel="noopener noreferrer">Apoiar ♡</a></p>
     <p>Esta demonstração descreve uma execução registrada; não oferece um serviço remoto de inferência.</p>
-    <p class="copyright">© 2026 Rebojar</p>
+    <p class="copyright">© 2026 Rebojar · Código do LabVisual: <a href="https://github.com/rebojar/LabVisual/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">AGPL-3.0-only</a></p>
   </footer>
 
   <div id="pointerGuide" class="pointer-guide" role="status" aria-live="polite" hidden></div>
@@ -609,9 +551,12 @@
   <script src="dados-padrao-branco.js?v=auditoria-20260923"></script>
   <script src="dados-exemplos.js?v=auditoria-20260923"></script>
   <script src="dados-fundos.js?v=auditoria-20260923"></script>
-  <script src="dados-sequencias.js?v=auditoria-20260923"></script>
-  <script src="analise.js?v=auditoria-20260923"></script>
-  <script src="demo.js?v=auditoria-20260923-39"></script>
-  <script src="demo-modos.js?v=auditoria-20260923-29"></script>
+  <script src="analysis-core.js?v=canonico-0.5"></script>
+  <script src="analise.js?v=canonico-0.5"></script>
+  <script src="graficos.js?v=paleta-20261003"></script>
+  <script src="recursos.js?v=canonico-0.5"></script>
+  <script src="dados-extensoes.js?v=interativa-20260928"></script>
+  <script src="demo.js?v=interativa-20260928"></script>
+  <script src="demo-modos.js?v=video-compacto-20261003"></script>
 </body>
 </html>

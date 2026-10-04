@@ -2,6 +2,7 @@
   'use strict';
   const publicSet = window.LAB_DEMO && Array.isArray(window.LAB_DEMO.images) ? window.LAB_DEMO : null;
   const backgroundSet = window.LAB_BACKGROUND_VARIANTS || null;
+  const extensions = window.LAB_EXTENSIONS;
   const entries = {
     synthetic: { ...window.LAB_DEMO_DATA, kind: 'synthetic', entryId: 'synthetic' }
   };
@@ -115,6 +116,8 @@
     }
   };
   let current = [];
+  const charts = window.LabVisualCharts.create();
+  const applyAutomaticLineView = () => charts.automaticLine();
   const minimumBarWindow = 12;
   const minimumLineWindow = 64;
   let barZoom = 1;
@@ -125,6 +128,8 @@
   let workflowStage = 'empty';
   let analysisMetric = 'cosine';
   let replayTimer;
+  const imageNotes = new Map();
+  let imageNotesKey = null;
 
   function node(name, attributes = {}) {
     const element = document.createElementNS(svgNS, name);
@@ -183,22 +188,24 @@
 
     if (synthetic) {
       drawPattern();
+      const [, rows, columns] = data.record.preparation.grid_thw;
+      const count = rows * columns;
       originalImage.src = window.LAB_SYNTHETIC_WHITE.source;
       originalImage.alt = 'Padrão geométrico — arquivo original do ensaio';
-      preparedImage.src = window.LAB_SYNTHETIC_WHITE.prepared;
+      preparedImage.src = data.pattern?.prepared || window.LAB_SYNTHETIC_WHITE.prepared;
       preparedImage.alt = 'Padrão geométrico — pixels reconstruídos da entrada real do encoder';
       $('inputSelectorLabel').textContent = 'Entrada sintética';
       $('execucao-title').textContent = 'Um padrão geométrico controlado';
       $('inputDimensions').textContent = '320 × 240 px';
       $('inputDescription').textContent = 'O padrão foi criado dentro da própria bancada. Nenhuma fotografia ou arquivo pessoal participa desta demonstração.';
-      $('preparationSummary').textContent = '288 × 192 pixels preparados e organizados em 216 patches de entrada.';
-      $('beforeSummary').textContent = '216 tokens, cada um com 1.152 coordenadas.';
-      $('afterSummary').textContent = '54 tokens, cada um com 4.096 coordenadas.';
-      $('patch-title').textContent = 'Grade de entrada em 216 patches';
-      $('patchDescription').textContent = 'Os 288 × 192 pixels preparados formam uma grade de 18 × 12 células. Cada célula corresponde a um patch de 16 × 16 pixels antes da representação em tokens.';
+      $('preparationSummary').textContent = `${columns * 16} × ${rows * 16} pixels preparados e organizados em ${count} patches de entrada.`;
+      $('beforeSummary').textContent = `${count} tokens, cada um com 1.152 coordenadas.`;
+      $('afterSummary').textContent = `${count / 4} tokens, cada um com 4.096 coordenadas.`;
+      $('patch-title').textContent = `Grade de entrada em ${count} patches`;
+      $('patchDescription').textContent = `Os ${columns * 16} × ${rows * 16} pixels preparados formam uma grade de ${columns} × ${rows} células de 16 × 16 pixels.`;
       $('patchCaption').textContent = 'Imagem preparada real exportada pela bancada. A grade é uma sobreposição didática e não entra no encoder.';
-      grid.style.setProperty('--patch-columns', 18);
-      grid.style.setProperty('--patch-rows', 12);
+      grid.style.setProperty('--patch-columns', columns);
+      grid.style.setProperty('--patch-rows', rows);
       updateBackgroundPicker();
       if (workflowStage !== 'empty') renderWorkflowVisuals();
       return;
@@ -276,20 +283,21 @@
 
     if (!selected) return;
     if (synthetic) {
+      const [, rows, columns] = data.record.preparation.grid_thw;
       originalImage.src = window.LAB_SYNTHETIC_WHITE.source;
       originalImage.alt = 'Padrão geométrico — arquivo original';
       originalImage.style.backgroundColor = '#ffffff';
-      preparedImage.src = window.LAB_SYNTHETIC_WHITE.prepared;
+      preparedImage.src = data.pattern?.prepared || window.LAB_SYNTHETIC_WHITE.prepared;
       preparedImage.alt = 'Padrão geométrico — entrada preparada real';
-      grid.style.setProperty('--patch-columns', 18);
-      grid.style.setProperty('--patch-rows', 12);
-      mergeGrid.style.setProperty('--patch-columns', 18);
-      mergeGrid.style.setProperty('--patch-rows', 12);
+      grid.style.setProperty('--patch-columns', columns);
+      grid.style.setProperty('--patch-rows', rows);
+      mergeGrid.style.setProperty('--patch-columns', columns);
+      mergeGrid.style.setProperty('--patch-rows', rows);
     } else {
       const item = data.image;
       const [, rows, columns] = item.preparation.grid_thw;
-      originalImage.src = item.file;
-      originalImage.alt = `${item.label} — arquivo original da demonstração`;
+      originalImage.src = opacityToggle.checked ? 'assets/analise/mascara_opacidade.png' : item.file;
+      originalImage.alt = opacityToggle.checked ? 'Máscara de opacidade: branco opaco, preto transparente, cinza parcial' : `${item.label} — arquivo original da demonstração`;
       originalImage.style.backgroundColor = opacityToggle.checked ? 'transparent' : item._hasTransparentPixels ? item._selectedBackground : '#ffffff';
       preparedImage.src = item.prepared;
       preparedImage.alt = `${item.label} — entrada preparada para o encoder`;
@@ -345,14 +353,14 @@
   function preparationSelectionMatchesRecord() {
     const preparation = recordedPreparation();
     if (!preparation) return false;
-    return Number($('workflowPixelBudget').value) === Number(preparation.max_pixels)
+    return Number($('workflowPixelBudget').value) === Number(preparation.perfil_resolucao === 'checkpoint' ? 0 : preparation.max_pixels)
       && $('workflowImageVariant').value === (preparation.variante || 'original');
   }
 
   function syncPreparationControls() {
     const preparation = recordedPreparation();
     if (!preparation) return;
-    const budget = String(preparation.max_pixels ?? 65536);
+    const budget = String(preparation.perfil_resolucao === 'checkpoint' ? 0 : preparation.max_pixels ?? 65536);
     if ([...$('workflowPixelBudget').options].some(option => option.value === budget)) $('workflowPixelBudget').value = budget;
     $('workflowImageVariant').value = preparation.variante || 'original';
   }
@@ -363,13 +371,26 @@
     $('workflowPrepare').disabled = !selected || !matches;
     if (!selected) return;
     if (!matches) {
-      $('workflowPrepareStatus').textContent = 'Esta combinação ainda não possui uma execução pública pré-calculada. Volte a 65.536 pixels e cores originais para continuar nesta demonstração.';
+      $('workflowPrepareStatus').textContent = 'Esta combinação ainda não possui uma execução pública pré-calculada. Para esta imagem, use 65.536 pixels e cores originais. O padrão geométrico de teste oferece registros de todas as opções acima.';
     } else if (workflowStage === 'selected') {
       $('workflowPrepareStatus').textContent = 'Imagem escolhida. Agora você pode revelar a preparação registrada.';
     }
   }
 
   function handlePreparationSettingChange() {
+    if (data.kind === 'synthetic') {
+      const selected = extensions.pattern_cases[$('workflowPixelBudget').value + ':' + $('workflowImageVariant').value];
+      if (selected) {
+        data = {...entries.synthetic, pattern:selected, vectors:selected.vectors,
+          stages:{before:{tokens:selected.execution.antes_shape[0],dimensions:1152},after:{tokens:selected.execution.depois_shape[0],dimensions:4096}},
+          record:{...entries.synthetic.record,preparation:selected.preparation,provenance:selected.provenance,
+             execution:{...entries.synthetic.record.execution,inference_seconds:selected.execution.tempo_inferencia_s,details:selected.execution}}};
+        entries.synthetic=data;
+        drawEntryVisuals();renderRecord();update();
+        setWorkflowStage(workflowStage === 'empty' ? 'empty' : 'selected');
+        return;
+      }
+    }
     if (workflowStage === 'prepared' || workflowStage === 'executed') setWorkflowStage('selected');
     else refreshPreparationAvailability();
   }
@@ -425,34 +446,14 @@
   }
 
   function prepareWorkflowEntry() {
-    if (workflowStage === 'empty') return;
-    const button = $('workflowPrepare');
-    button.disabled = true;
-    button.textContent = 'Preparando…';
-    $('workflowPrepareStatus').textContent = 'Carregando a preparação pré-calculada desta entrada…';
-    setTimeout(() => {
-      setWorkflowStage('prepared');
-      update();
-    }, 420);
+    if (workflowStage === 'empty' || !preparationSelectionMatchesRecord()) return;
+    setWorkflowStage('prepared'); update();
   }
 
   function executeWorkflowEntry() {
-    if (workflowStage !== 'prepared' && workflowStage !== 'executed') return;
-    $('singleResults').hidden = true;
-    document.querySelector('.workflow').classList.remove('has-results');
-    const button = $('workflowExecute');
-    button.disabled = true;
-    button.textContent = 'Carregando execução…';
-    $('workflowExecuteStatus').textContent = 'Revelando os vetores e resultados pré-calculados do encoder…';
-    setTimeout(() => {
-      const selectedRecipe = workflowRecipe();
-      analysisMetric = selectedRecipe.metric;
-      lineZoom = 1;
-      update();
-      renderRecord();
-      setWorkflowStage('executed');
-      $('explorar').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 650);
+    if (!['prepared','executed'].includes(workflowStage) || !preparationSelectionMatchesRecord()) return;
+    update();renderRecord();setWorkflowStage('executed');
+    $('explorar').scrollIntoView({behavior:'smooth',block:'start'});
   }
 
   function setupBackgroundPicker() {
@@ -521,43 +522,9 @@
     return { stage: $('stage').value, pooling: $('pooling').value, normalization: $('normalization').value, metric: $('metric').value };
   }
 
-  function windowSizeForZoom(dimensions, zoom) {
-    if (!dimensions) return 0;
-    const smallest = Math.min(minimumLineWindow, dimensions);
-    return Math.max(smallest, Math.min(dimensions, Math.round(dimensions / Math.max(1, zoom))));
-  }
 
-  function barWindowSizeForZoom(dimensions, zoom) {
-    if (!dimensions) return 0;
-    const smallest = Math.min(minimumBarWindow, dimensions);
-    return Math.max(smallest, Math.min(dimensions, Math.round(dimensions / Math.max(1, zoom))));
-  }
 
-  function refreshBarWindowOptions(dimensions, selectedSize = barWindowSizeForZoom(dimensions, barZoom)) {
-    const select = $('barWindow');
-    const safeSize = Math.max(Math.min(minimumBarWindow, dimensions), Math.min(dimensions, selectedSize));
-    const sizes = [dimensions, 1024, 512, 256, 128, 64, 48, 32, 24, 16, 12, safeSize]
-      .filter((value, index, array) => value <= dimensions && array.indexOf(value) === index)
-      .sort((left, right) => right - left);
-    select.replaceChildren(...sizes.map(size => new Option(
-      size === dimensions ? `Todas · ${size.toLocaleString('pt-BR')}` : size.toLocaleString('pt-BR'),
-      String(size)
-    )));
-    select.value = String(safeSize);
-  }
 
-  function refreshWindowOptions(dimensions, selectedSize = windowSizeForZoom(dimensions, lineZoom)) {
-    const select = $('lineWindow');
-    const safeSize = Math.max(Math.min(minimumLineWindow, dimensions), Math.min(dimensions, selectedSize));
-    const sizes = [dimensions, 1024, 512, 256, 128, 64, safeSize]
-      .filter((value, index, array) => value <= dimensions && array.indexOf(value) === index)
-      .sort((left, right) => right - left);
-    select.replaceChildren(...sizes.map(size => new Option(
-      size === dimensions ? `Todas · ${size.toLocaleString('pt-BR')}` : size.toLocaleString('pt-BR'),
-      String(size)
-    )));
-    select.value = String(safeSize);
-  }
 
   function update() {
     const choice = recipe();
@@ -588,320 +555,45 @@
     $('divisor').textContent = choice.normalization === 'none' ? 'nenhum' : number(result.divisor, 4);
     $('peak').textContent = `#${peakIndex + 1} · ${number(current[peakIndex])}`;
 
-    const barWindowSize = barWindowInitialized
-      ? barWindowSizeForZoom(current.length, barZoom)
-      : Math.min(48, current.length);
-    refreshBarWindowOptions(current.length, barWindowSize);
-    barZoom = current.length / Math.max(1, Number($('barWindow').value));
-    barWindowInitialized = true;
-    configureBarPan();
-    refreshWindowOptions(current.length);
-    configureLinePan();
-    drawBars();
-    drawLine();
+    charts.setVector(current);
     renderRecord();
     window.dispatchEvent(new CustomEvent('labvisual:recipechange', { detail: choice }));
   }
 
-  function drawBars() {
-    const svg = $('barChart');
-    const start = Number($('barStart').value);
-    const requested = Number($('barWindow').value);
-    const values = current.slice(start, start + requested);
-    const width = 960, height = 280, left = 64, right = 15, top = 24, bottom = 40;
-    const plotWidth = width - left - right, plotHeight = height - top - bottom;
-    const scale = coupledScale(current, values, minimumBarWindow);
-    barZoom = scale.zoom;
-    const y = value => top + (scale.limit - value) / (2 * scale.limit) * plotHeight;
-    const zero = y(0);
-    const slot = plotWidth / values.length;
-    const barGap = Math.min(4, slot * 0.22);
-    const barWidth = Math.max(0.08, slot - barGap);
-    svg.replaceChildren();
-    appendVerticalRuler(svg, left, top, plotHeight, scale.limit);
-    svg.append(node('line', { x1: left, x2: width - right, y1: zero, y2: zero, class: 'axis' }));
-    const definitions = node('defs');
-    const clipPath = node('clipPath', { id: 'barPlotClip' });
-    clipPath.append(node('rect', { x: left, y: top, width: plotWidth, height: plotHeight }));
-    definitions.append(clipPath);
-    svg.append(definitions);
-    const plot = node('g', { 'clip-path': 'url(#barPlotClip)' });
-    values.forEach((value, index) => {
-      const valueY = Math.max(top, Math.min(top + plotHeight, y(value)));
-      const rect = node('rect', {
-        x: left + index * slot + barGap / 2,
-        y: Math.min(zero, valueY),
-        width: barWidth,
-        height: Math.max(1, Math.abs(valueY - zero)),
-        rx: Math.min(1, barWidth / 2),
-        class: `bar ${value >= 0 ? 'bar-positive' : 'bar-negative'}`,
-        tabindex: values.length <= 256 ? 0 : -1,
-        role: 'img',
-        'aria-label': `Coordenada ${start + index + 1}: ${number(value, 7)}`
-      });
-      const message = `Coordenada ${start + index + 1}: ${number(value, 7)}.`;
-      const read = () => $('barReading').textContent = message;
-      rect.addEventListener('mouseenter', read);
-      rect.addEventListener('focus', read);
-      rect.addEventListener('pointermove', event => { read(); showPointerGuide(event, message); });
-      rect.addEventListener('pointerleave', hidePointerGuide);
-      plot.append(rect);
-    });
-    svg.append(plot);
-    const atMaximum = Math.abs(scale.zoom - scale.maximumZoom) < 0.001;
-    syncZoomEditor($('barZoomInput'), $('barZoomDetail'), scale.zoom, atMaximum);
-    $('barWindowTitle').textContent = values.length.toLocaleString('pt-BR');
-    const clipping = scale.clipped ? ` ${scale.clipped.toLocaleString('pt-BR')} ${scale.clipped === 1 ? 'barra está' : 'barras estão'} fora do enquadramento vertical; os valores não foram alterados.` : '';
-    $('barRange').textContent = `Coordenadas ${(start + 1).toLocaleString('pt-BR')}–${(start + values.length).toLocaleString('pt-BR')} de ${current.length.toLocaleString('pt-BR')}. Limite vertical ±${number(scale.limit, 7)}.${clipping}`;
-    $('barScaleNote').textContent = `Os eixos horizontal e vertical usam o mesmo fator de zoom. Em 1×, a régua vai de −1 a 1; ao ampliar, o limite vertical diminui na mesma proporção que a janela horizontal.`;
-  }
 
-  function configureBarPan(focusIndex = null) {
-    const windowSize = Number($('barWindow').value);
-    const slider = $('barStart');
-    slider.max = Math.max(0, current.length - windowSize);
-    if (focusIndex !== null) slider.value = Math.max(0, Math.min(Number(slider.max), focusIndex - Math.floor(windowSize / 2)));
-    else slider.value = Math.min(Number(slider.value), Number(slider.max));
-    slider.disabled = Number(slider.max) === 0;
-  }
 
-  function barPointerFraction(event) {
-    const box = $('barChart').getBoundingClientRect();
-    if (!box.width) return 0.5;
-    const viewX = (event.clientX - box.left) / box.width * 960;
-    return Math.max(0, Math.min(1, (viewX - 64) / (960 - 64 - 15)));
-  }
 
-  function applyBarZoom(requestedZoom, anchorFraction = 0.5) {
-    if (!current.length) return;
-    const maximumZoom = current.length / Math.min(minimumBarWindow, current.length);
-    const zoom = Math.max(1, Math.min(maximumZoom, requestedZoom));
-    const oldWindow = Math.max(1, Math.round(current.length / barZoom));
-    const oldStart = Number($('barStart').value);
-    const anchor = oldStart + anchorFraction * oldWindow;
-    const nextWindow = barWindowSizeForZoom(current.length, zoom);
-    refreshBarWindowOptions(current.length, nextWindow);
-    barZoom = current.length / nextWindow;
-    const slider = $('barStart');
-    slider.max = Math.max(0, current.length - nextWindow);
-    slider.value = Math.max(0, Math.min(Number(slider.max), Math.round(anchor - anchorFraction * nextWindow)));
-    slider.disabled = Number(slider.max) === 0;
-    drawBars();
-  }
 
-  function commitBarZoom() {
-    const input = $('barZoomInput');
-    const parsed = Number(input.value.trim().replace(/×/g, '').replace(',', '.'));
-    if (!Number.isFinite(parsed) || parsed <= 0) {
-      input.value = barZoom.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      return;
-    }
-    applyBarZoom(parsed);
-    input.value = barZoom.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
 
-  function applyAutomaticBarView() {
-    const previousWindow = Number($('barWindow').value);
-    const focus = Number($('barStart').value) + Math.floor(previousWindow / 2);
-    const automaticWindow = Math.min(128, current.length);
-    refreshBarWindowOptions(current.length, automaticWindow);
-    barZoom = current.length / automaticWindow;
-    configureBarPan(focus);
-    drawBars();
-  }
 
-  function handleBarWheel(event) {
-    const svg = $('barChart');
-    const slider = $('barStart');
-    if (event.ctrlKey) {
-      event.preventDefault();
-      const maximumZoom = current.length / Math.min(minimumBarWindow, current.length);
-      const next = Math.max(1, Math.min(maximumZoom, barZoom * Math.exp(-event.deltaY * 0.015)));
-      applyBarZoom(next, barPointerFraction(event));
-      return;
-    }
-    if (Math.abs(event.deltaX) <= Math.abs(event.deltaY) * 0.65 || Number($('barStart').max) === 0) return;
-    event.preventDefault();
-    const windowSize = Number($('barWindow').value);
-    const width = Math.max(1, svg.getBoundingClientRect().width);
-    const step = Math.sign(event.deltaX) * Math.max(1, Math.round(Math.abs(event.deltaX) / width * windowSize));
-    slider.value = Math.max(0, Math.min(Number(slider.max), Number(slider.value) + step));
-    drawBars();
-  }
 
-  function coupledScale(allValues, visibleValues, minimumWindow = minimumLineWindow) {
-    const observedLimit = Math.max(...allValues.map(Math.abs), Number.EPSILON);
-    const baseLimit = observedLimit <= 1 ? 1 : observedLimit * 1.05;
-    const zoom = allValues.length / Math.max(1, visibleValues.length);
-    const maximumZoom = allValues.length / Math.min(minimumWindow, allValues.length);
-    const limit = baseLimit / zoom;
-    return {
-      limit,
-      zoom,
-      maximumZoom,
-      clipped: visibleValues.reduce((count, value) => count + (Math.abs(value) > limit ? 1 : 0), 0)
-    };
-  }
 
-  function appendVerticalRuler(svg, left, top, plotHeight, limit) {
-    const ruler = node('g', { class: 'scale-ruler', 'aria-hidden': 'true' });
-    ruler.append(node('line', { x1: left, x2: left, y1: top, y2: top + plotHeight, class: 'scale-ruler-axis' }));
-    for (let index = 0; index <= 4; index += 1) {
-      const ratio = index / 4;
-      const value = limit * (1 - ratio * 2);
-      const y = top + ratio * plotHeight;
-      ruler.append(node('line', { x1: left - 6, x2: left, y1: y, y2: y, class: 'scale-ruler-tick' }));
-      const label = node('text', { x: left - 9, y: y + 4, class: 'scale-ruler-label' });
-      const digits = limit < 0.02 ? 5 : limit < 0.2 ? 4 : 3;
-      label.textContent = Math.abs(value) < Number.EPSILON ? '0' : number(value, digits);
-      ruler.append(label);
-    }
-    svg.append(ruler);
-  }
 
-  function drawLine() {
-    const svg = $('lineChart');
-    const start = Number($('lineStart').value);
-    const requested = Number($('lineWindow').value);
-    const values = current.slice(start, start + requested);
-    const width = 1000, height = 448, left = 64, right = 15, top = 24, bottom = 40;
-    const plotWidth = width - left - right, plotHeight = height - top - bottom;
-    const scale = coupledScale(current, values);
-    lineZoom = scale.zoom;
-    const y = value => top + (scale.limit - value) / (2 * scale.limit) * plotHeight;
-    const x = index => left + (index + 0.5) / Math.max(1, values.length) * plotWidth;
-    const indexFromPointer = event => {
-      const box = svg.getBoundingClientRect();
-      const viewX = (event.clientX - box.left) / Math.max(1, box.width) * width;
-      const plotX = Math.max(left, Math.min(width - right, viewX));
-      return Math.max(0, Math.min(values.length - 1, Math.floor((plotX - left) / plotWidth * values.length)));
-    };
-    svg.replaceChildren();
-    appendVerticalRuler(svg, left, top, plotHeight, scale.limit);
-    svg.append(node('line', { x1: left, x2: width - right, y1: y(0), y2: y(0), class: 'axis' }));
-    const definitions = node('defs');
-    const clipPath = node('clipPath', { id: 'linePlotClip' });
-    clipPath.append(node('rect', { x: left, y: top, width: plotWidth, height: plotHeight }));
-    definitions.append(clipPath);
-    svg.append(definitions);
-    const plot = node('g', { 'clip-path': 'url(#linePlotClip)' });
-    const path = node('path', { class: 'vector-line', d: values.map((value, index) => `${index ? 'L' : 'M'}${x(index).toFixed(2)},${y(value).toFixed(2)}`).join(' ') });
-    plot.append(path);
-    const pinnedLocalIndex = linePinnedIndex === null ? -1 : linePinnedIndex - start;
-    if (pinnedLocalIndex >= 0 && pinnedLocalIndex < values.length) {
-      const pinnedX = x(pinnedLocalIndex);
-      const pinnedY = y(values[pinnedLocalIndex]);
-      plot.append(node('line', { x1: pinnedX, x2: pinnedX, y1: top, y2: height - bottom, class: 'pinned-axis' }));
-      plot.append(node('circle', { cx: pinnedX, cy: pinnedY, r: 6, class: 'pinned-node' }));
-    }
-    svg.append(plot);
-    const cursor = node('line', { y1: top, y2: height - bottom, class: 'cursor', visibility: 'hidden' });
-    svg.append(cursor);
-    const move = event => {
-      const index = indexFromPointer(event);
-      const cx = x(index);
-      cursor.setAttribute('x1', cx); cursor.setAttribute('x2', cx); cursor.setAttribute('visibility', 'visible');
-      const message = `Coordenada ${start + index + 1}: ${number(values[index], 7)}.`;
-      $('lineReading').textContent = message;
-      showPointerGuide(event, message);
-    };
-    svg.onpointermove = move;
-    svg.onpointerleave = () => { cursor.setAttribute('visibility', 'hidden'); hidePointerGuide(); };
-    svg.onclick = event => {
-      linePinnedIndex = start + indexFromPointer(event);
-      drawLine();
-    };
-    const atMaximum = Math.abs(scale.zoom - scale.maximumZoom) < 0.001;
-    syncZoomEditor($('lineZoomInput'), $('lineZoomDetail'), scale.zoom, atMaximum);
-    const clipping = scale.clipped ? ` ${scale.clipped.toLocaleString('pt-BR')} ${scale.clipped === 1 ? 'coordenada está' : 'coordenadas estão'} fora do enquadramento vertical; os valores não foram alterados.` : '';
-    $('lineRange').textContent = `Coordenadas ${(start + 1).toLocaleString('pt-BR')}–${(start + values.length).toLocaleString('pt-BR')} de ${current.length.toLocaleString('pt-BR')}. Limite vertical ±${number(scale.limit, 7)}.${clipping}`;
-    if (linePinnedIndex === null) $('linePinnedReading').textContent = 'Clique em uma coordenada para fixá-la no gráfico.';
-    else if (linePinnedIndex >= current.length) $('linePinnedReading').textContent = `Coordenada ${linePinnedIndex + 1} fixada · não existe nesta representação.`;
-    else $('linePinnedReading').textContent = `Coordenada ${linePinnedIndex + 1} fixada: ${number(current[linePinnedIndex], 7)}${pinnedLocalIndex < 0 || pinnedLocalIndex >= values.length ? ' · fora deste trecho' : ''}.`;
-    $('lineReading').textContent = 'Mova o ponteiro sobre a linha para consultar uma coordenada.';
-  }
 
-  function configureLinePan(focusIndex = null) {
-    const windowSize = Number($('lineWindow').value);
-    const slider = $('lineStart');
-    slider.max = Math.max(0, current.length - windowSize);
-    const focus = focusIndex ?? (linePinnedIndex !== null && linePinnedIndex < current.length ? linePinnedIndex : null);
-    if (focus !== null) slider.value = Math.max(0, Math.min(Number(slider.max), focus - Math.floor(windowSize / 2)));
-    else slider.value = Math.min(Number(slider.value), Number(slider.max));
-    slider.disabled = Number(slider.max) === 0;
-  }
 
-  function linePointerFraction(event) {
-    const box = $('lineChart').getBoundingClientRect();
-    if (!box.width) return 0.5;
-    const viewX = (event.clientX - box.left) / box.width * 1000;
-    return Math.max(0, Math.min(1, (viewX - 64) / (1000 - 64 - 15)));
-  }
 
-  function applyLineZoom(requestedZoom, anchorFraction = 0.5) {
-    if (!current.length) return;
-    const maximumZoom = current.length / Math.min(minimumLineWindow, current.length);
-    const zoom = Math.max(1, Math.min(maximumZoom, requestedZoom));
-    const oldWindow = Math.max(1, Math.round(current.length / lineZoom));
-    const oldStart = Number($('lineStart').value);
-    const anchor = oldStart + anchorFraction * oldWindow;
-    const nextWindow = windowSizeForZoom(current.length, zoom);
-    refreshWindowOptions(current.length, nextWindow);
-    lineZoom = current.length / nextWindow;
-    const slider = $('lineStart');
-    slider.max = Math.max(0, current.length - nextWindow);
-    slider.value = Math.max(0, Math.min(Number(slider.max), Math.round(anchor - anchorFraction * nextWindow)));
-    slider.disabled = Number(slider.max) === 0;
-    drawLine();
-  }
 
-  function commitLineZoom() {
-    const input = $('lineZoomInput');
-    const parsed = Number(input.value.trim().replace(/×/g, '').replace(',', '.'));
-    if (!Number.isFinite(parsed) || parsed <= 0) {
-      input.value = lineZoom.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      return;
-    }
-    const windowSize = Number($('lineWindow').value);
-    const start = Number($('lineStart').value);
-    const pinnedLocal = linePinnedIndex === null ? -1 : linePinnedIndex - start;
-    const anchorFraction = pinnedLocal >= 0 && pinnedLocal < windowSize ? (pinnedLocal + 0.5) / windowSize : 0.5;
-    applyLineZoom(parsed, anchorFraction);
-    input.value = lineZoom.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
 
-  function applyAutomaticLineView() {
-    const previousWindow = Number($('lineWindow').value);
-    const previousStart = Number($('lineStart').value);
-    const focus = linePinnedIndex !== null && linePinnedIndex < current.length
-      ? linePinnedIndex
-      : previousStart + Math.floor(previousWindow / 2);
-    const automaticWindow = Math.min(128, current.length);
-    refreshWindowOptions(current.length, automaticWindow);
-    lineZoom = current.length / automaticWindow;
-    configureLinePan(focus);
-    drawLine();
-  }
 
-  function handleLineWheel(event) {
-    const svg = $('lineChart');
-    if (event.ctrlKey) {
-      event.preventDefault();
-      const maximumZoom = current.length / Math.min(minimumLineWindow, current.length);
-      const next = Math.max(1, Math.min(maximumZoom, lineZoom * Math.exp(-event.deltaY * 0.015)));
-      applyLineZoom(next, linePointerFraction(event));
-      return;
-    }
-    if (Math.abs(event.deltaX) <= Math.abs(event.deltaY) * 0.65 || Number($('lineStart').max) === 0) return;
-    event.preventDefault();
-    const windowSize = Number($('lineWindow').value);
-    const width = Math.max(1, svg.getBoundingClientRect().width);
-    const delta = Math.sign(event.deltaX) * Math.max(1, Math.round(Math.abs(event.deltaX) / width * windowSize));
-    $('lineStart').value = Math.max(0, Math.min(Number($('lineStart').max), Number($('lineStart').value) + delta));
-    drawLine();
-  }
 
+  function tokenFile() {
+    if(data.kind==='synthetic') return (data.pattern || extensions.pattern_cases['65536:original']).tokens_file;
+    if(data.image._hasTransparentPixels) return extensions.background_tokens[data.image._selectedBackground].file;
+    return extensions.image_tokens[data.image.id].file;
+  }
+  function exportedRecord() {
+    return {schema:1,math_core:window.LabVisualMath.version,source:'demonstração pública; leitura de execução registrada',execution:data.record,
+      reading:recipe(),notes:$('singleNotes').value,
+      vectors:Object.fromEntries(['before','after'].map(stage=>[stage,normalize(data.vectors[stage][recipe().pooling],recipe().normalization).vector]))};
+  }
   function renderRecord() {
+    const noteKey = selectedEntryId + ':' + JSON.stringify(data.record.preparation);
+    if (imageNotesKey !== noteKey) {
+      if (imageNotesKey !== null) imageNotes.set(imageNotesKey, $('singleNotes').value);
+      $('singleNotes').value = imageNotes.get(noteKey) || '';
+      imageNotesKey = noteKey;
+    }
+    $('singleTokens').href=tokenFile();
     const elapsed = data.record.execution.inference_seconds;
     $('recordedTime').textContent = typeof elapsed === 'number' ? `${elapsed.toLocaleString('pt-BR')} s` : 'preservada no registro';
     renderJsonCode('record', {
@@ -958,6 +650,8 @@
   }
 
   function events() {
+    $('singleExport').addEventListener('click',()=>window.LabDemoResources.json('imagem_registro.json',exportedRecord()));
+    $('singleCsv').addEventListener('click',()=>window.LabDemoResources.csv('imagem_vetores.csv',exportedRecord().vectors));
     const entryDialog = $('entryDialog');
     const syntheticOption = entryDialog.querySelector('[data-entry-id="synthetic"]');
     const openEntryPicker = (purpose = 'single', showLocalInstall = false) => {
@@ -991,28 +685,6 @@
     for (const id of ['stage', 'pooling', 'normalization', 'metric']) $(id).addEventListener('change', () => {
       $('barStart').value = 0; $('lineStart').value = 0; barZoom = 1; barWindowInitialized = false; lineZoom = 1; update();
     });
-    $('barWindow').addEventListener('change', event => applyBarZoom(current.length / Number(event.target.value)));
-    $('barAuto').addEventListener('click', applyAutomaticBarView);
-    $('barStart').addEventListener('input', drawBars);
-    $('barChart').addEventListener('wheel', handleBarWheel, { passive: false });
-    $('barZoomInput').addEventListener('change', commitBarZoom);
-    $('barZoomInput').addEventListener('keydown', event => {
-      if (event.key !== 'Enter') return;
-      event.preventDefault();
-      commitBarZoom();
-      event.currentTarget.blur();
-    });
-    $('lineWindow').addEventListener('change', event => applyLineZoom(current.length / Number(event.target.value)));
-    $('lineAuto').addEventListener('click', applyAutomaticLineView);
-    $('lineStart').addEventListener('input', drawLine);
-    $('lineChart').addEventListener('wheel', handleLineWheel, { passive: false });
-    $('lineZoomInput').addEventListener('change', commitLineZoom);
-    $('lineZoomInput').addEventListener('keydown', event => {
-      if (event.key !== 'Enter') return;
-      event.preventDefault();
-      commitLineZoom();
-      event.currentTarget.blur();
-    });
     $('workflowChoose').addEventListener('click', () => openEntryPicker('single'));
     $('workflowUseSynthetic').addEventListener('click', () => {
       $('singleResults').hidden = true;
@@ -1038,6 +710,7 @@
   setWorkflowStage('empty');
   window.LabVisualPublicDemo = {
     entries,
+    openImage: item => { const id='example:'+item.id;entries[id]=entryFromItem({...item});loadRegisteredEntry(id,{scroll:true,workflow:true,executed:true,automatic:true}); },
     openEntry: loadRegisteredEntry,
     openPicker: purpose => window.LabVisualOpenEntryPicker(purpose),
     currentEntry: () => selectedEntryId,

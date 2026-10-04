@@ -1,23 +1,253 @@
 {
-  "date": "2026-09-23",
-  "status": "passed",
-  "scope": "Conferência de saídas locais e dos cálculos usados pela demonstração.",
-  "origin": {
-    "checks": 104,
-    "passed": 104,
-    "failed": 0
+  "initial_audit": {
+    "date": "2026-09-23",
+    "status": "passed",
+    "scope": "Conferência de saídas locais e dos cálculos usados pela demonstração.",
+    "origin": {
+      "checks": 104,
+      "passed": 104,
+      "failed": 0
+    },
+    "browser_math": {
+      "normalizations": 504,
+      "coordinates": 1322496,
+      "ranking_lists": 6912,
+      "max_vector_absolute_error": 0,
+      "max_divisor_relative_error": 2.384596118845396e-15,
+      "max_score_relative_error": 1.0940482903899486e-14,
+      "score_tolerance": 1e-11,
+      "reference": "analysis.py da bancada local validada",
+      "reference_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e",
+      "cases": "21 entradas/variantes × 2 estágios × 3 agregações × 4 normalizações; rankings dos 8 fundos × 12 âncoras × 2 estágios × 3 agregações × 4 normalizações × 3 medidas."
+    },
+    "failures": []
   },
-  "browser_math": {
-    "normalizations": 504,
-    "coordinates": 1322496,
-    "ranking_lists": 6912,
-    "max_vector_absolute_error": 0,
-    "max_divisor_relative_error": 2.384596118845396e-15,
-    "max_score_relative_error": 1.0940482903899486e-14,
-    "score_tolerance": 1e-11,
-    "reference": "analysis.py da bancada local validada",
-    "reference_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e",
-    "cases": "21 entradas/variantes × 2 estágios × 3 agregações × 4 normalizações; rankings dos 8 fundos × 12 âncoras × 2 estágios × 3 agregações × 4 normalizações × 3 medidas."
+  "date": "2026-10-03",
+  "status": "numerical_checks_passed",
+  "scope": "Conferência de origem e matemática da demonstração; não é certificado de publicação ou de todos os gestos e dispositivos.",
+  "extension_origin": {
+    "verified_on": "2026-09-24",
+    "raw_aggregate_checks": 168,
+    "alpha_mask": "exact",
+    "reference_vectors": 672,
+    "reference_rankings": 6912,
+    "reference_temporal_comparisons": 432
   },
-  "failures": []
+  "extension_browser_math": {
+    "verified_on": "2026-09-28",
+    "vectorCases": 672,
+    "rankingCases": 6912,
+    "temporalCases": 432,
+    "maxRelativeError": 1.0940482903899486e-14,
+    "tolerance": 1e-11,
+    "reference": "analysis.py da bancada validada",
+    "reference_sha256": "7f800336b40bb936de2ac0e4e1c9159b64860233b33c46d77427b6d44d333b2e"
+  },
+  "zoom": {
+    "verified_on": "2026-09-28",
+    "cases": 1260,
+    "result": "passed",
+    "scope": "Janela, âncora, limites e preservação dos vetores. O gesto físico não é simulado; o usuário confirmou anteriormente que a pinça amplia somente o gráfico."
+  },
+  "coverage": {
+    "images": 12,
+    "transparent_background_variants": 8,
+    "pattern_preparations": 8,
+    "video_scenarios": 6,
+    "aggregations": [
+      "mean",
+      "max",
+      "median"
+    ],
+    "normalizations": [
+      "none",
+      "l1",
+      "l2",
+      "linf"
+    ],
+    "comparisons": [
+      "cosine",
+      "euclidean",
+      "dot"
+    ],
+    "shared_charts": [
+      "single_image",
+      "video"
+    ],
+    "neighbor_recipe_editing": "Preservada; automação adicional da demo, ainda não alinhada à interface instalável."
+  },
+  "checked_data_sha256": {
+    "dados-exemplos.js": "a1cae71f7f63c5baef7efff92bf4999453b7589904cf716e03d47edab6617f7a",
+    "dados-extensoes.js": "8e8fa4d2f14d7a3c8112c5a9dc0b94a3f82de123f86d2f3659ab5aebbc39509d",
+    "dados-fundos.js": "d2b0bd4e0dd17b971aa6cea4cf637d4db37c7abdf5ddbe64786a1401c7037364",
+    "dados-padrao-branco.js": "a5eb962509488dca90492ecd0e28f7d665e39dc63e19ea4866e7193ad4ccc92a",
+    "dados.js": "f148df334bfa7452608f187d87b8fdd55e2d104bc5c0f0a90f24e5a9827446cb",
+    "analise.js": "434883b3b86523e6eeb0e3366a96adc03cd1883ec42cf50737c60378320f6d9a",
+    "analysis-core.js": "0e4b476eeea1a5076ad76aa5c252c3dbd9c46ec8cb1ad778cfc92ea00bc916c3",
+    "analysis_core.py": "2fa9e7a32831dbf54d0fef94f6f3b059481139ab989e8cbdc9bd26503612e5ab"
+  },
+  "limits": [
+    "Não garante execução de arquivos arbitrários, de outro checkpoint ou em todos os navegadores.",
+    "Valores já conferidos podem exigir nova validação se dados, matemática ou preparação forem alterados.",
+    "A interface é uma leitura estática interativa; os tempos de inferência são os registrados, não o tempo deste navegador."
+  ],
+  "failures": [],
+  "local_integration": {
+    "verified_on": "2026-09-28",
+    "result": "passed_for_checked_paths",
+    "checks": [
+      "Paleta e edições recentes de apresentação incorporadas à candidata.",
+      "Máscara de opacidade corresponde ao alfa; não modifica a imagem preparada.",
+      "Lote de 12 entradas com máximo e L1; progresso da reunião de vetores.",
+      "Edição em Vizinhos preserva a receita original do conjunto.",
+      "Alterar o fundo da imagem individual não altera o lote já reunido.",
+      "MP4 com oito quadros, mediana, sem normalização, antes do merger e quarto par temporal.",
+      "Quadros, pares, gráficos e três comparações temporais consecutivas apresentados.",
+      "Largura de 390 px sem transbordamento horizontal da página ou IDs duplicados.",
+      "Sem erros de JavaScript capturados nos percursos consultados."
+    ],
+    "limits": "Percursos selecionados no navegador interno; não equivale a testar todas as combinações em todos os navegadores."
+  },
+  "exports": {
+    "verified_on": "2026-09-28",
+    "serializers": {
+      "json_roundtrip": "passed",
+      "csv_rows": 4096,
+      "npz_arrays": 6,
+      "numpy_roundtrip": "passed_exact_fp32",
+      "scope": "Vetores reais de lote e vídeo; conteúdo conferido independentemente do salvamento pelo navegador."
+    },
+    "complete_tokens_download": {
+      "result": "passed",
+      "file": "movimento_branco_mp4_oito_quadros_tokens.npz",
+      "sha256": "aae7cc2df798a4cb345654104e298c6eb1c3426166f98158378746db79f82492"
+    },
+    "generated_download_in_regular_browser": {
+      "status": "awaiting_user_check",
+      "scope": "Botão Baixar registro e notas (.json). A automação do navegador interno não confirmou o salvamento do Blob."
+    }
+  },
+  "checked_ui_sha256": {
+    "index.html": "af1620abe5b938ab9a59774e9ab419cd6feb9ff4d55ba91b2f177069f0700749",
+    "demo.css": "4ccdf8dc4a09c7d9a3a6c568a876b5ea0a4e3807c03291b499d43e54a7db49d2",
+    "demo.js": "b2dda6bc9fb1c05689b92733ba1ca5b3d14ed97124057d67ef5706296b4fce01",
+    "demo-modos.js": "0622ea36080e85602d362814cf7fb2c6bdcf9b4dc6a03889ba92680ab98f8951",
+    "graficos.js": "21044600b5050498f8b270f7d4587938c44c6436333bf7d710466957ac9f0906",
+    "recursos.js": "045488550a4182ee156341b5f28bc3ffe286f3b3c2e223d0d1f05e772d01636d"
+  },
+  "canonical_math": {
+    "verified_on": "2026-09-28",
+    "status": "passed",
+    "version": "1.0.0",
+    "source": "analysis_core.py",
+    "source_sha256": "2fa9e7a32831dbf54d0fef94f6f3b059481139ab989e8cbdc9bd26503612e5ab",
+    "generated_sha256": "0e4b476eeea1a5076ad76aa5c252c3dbd9c46ec8cb1ad778cfc92ea00bc916c3",
+    "checks": {
+      "vectorCases": 672,
+      "rankingCases": 6912,
+      "temporalCases": 432,
+      "maxRelativeError": 0,
+      "tolerance": 0
+    },
+    "previous_analysis_comparison": {
+      "vector_hash_changes": 0,
+      "ranking_order_changes": 0,
+      "max_score_absolute_change": 2.682209014892578e-07
+    },
+    "scope": "Mesmos tokens e agregados da extração anterior; núcleo Python e artefato JavaScript gerado. Não houve nova inferência nem alteração dos pesos."
+  },
+  "historical_hashes_20260928": {
+    "data": {
+      "analise.js": "33b5710f623069dcd472009dd82e7b738b3df62d47131faf0a739ae5824dfa2a",
+      "dados.js": "f148df334bfa7452608f187d87b8fdd55e2d104bc5c0f0a90f24e5a9827446cb",
+      "dados-exemplos.js": "a1cae71f7f63c5baef7efff92bf4999453b7589904cf716e03d47edab6617f7a",
+      "dados-fundos.js": "d2b0bd4e0dd17b971aa6cea4cf637d4db37c7abdf5ddbe64786a1401c7037364",
+      "dados-padrao-branco.js": "a5eb962509488dca90492ecd0e28f7d665e39dc63e19ea4866e7193ad4ccc92a",
+      "dados-sequencias.js": "10459d69a10d92227fb3a928e2128e64da6b72c06eb2c9899bad263b9119f947",
+      "dados-extensoes.js": "8e8fa4d2f14d7a3c8112c5a9dc0b94a3f82de123f86d2f3659ab5aebbc39509d"
+    },
+    "ui": {
+      "index.html": "e2a82bbbabfc1ae2629582197c5505140575b5b38f9ffd2141ad09dd06db28b5",
+      "demo.css": "3a2c24732040123180c5c1adffd81ff6e7bfe96ec3d4023ff07782004e255a55",
+      "demo.js": "e2bcdf976e18c16d4a5edbd908fb6c5d7df118f19c9bfca32fe862ea1efe0bf6",
+      "demo-modos.js": "6825e9991b2fbbf7a4a258cc63981eab9431b8260f6dabc0c0944fcefc1919d4",
+      "graficos.js": "6f5c0dcdcfb4bc79cf1be9c2a69671864769820f05dce2c5521d4521b461dce6",
+      "recursos.js": "197a6c2d52de7124300a2e8a9af4778fe7e8c879a0aea94d891a3617868cd343"
+    }
+  },
+  "publication_review": {
+    "verified_on": "2026-10-03",
+    "status": "passed_for_checked_scope",
+    "tokens_and_assets": {
+      "passed": true,
+      "records": 34,
+      "unique_token_files": 34,
+      "aggregates_including_temporal_pairs": 288,
+      "coordinates": 755712,
+      "max_absolute_error": 0.0,
+      "pair_stages": 28,
+      "referenced_assets": 114,
+      "core_hashes_match": true,
+      "unique_html_ids": 200,
+      "no_upload_input": true,
+      "private_path_or_secret_patterns": 0,
+      "public_files": 144
+    },
+    "ranking_and_exports": {
+      "passed": true,
+      "rankings_checked": 6912,
+      "normalization_sets": 192,
+      "top5_order_matches_numpy": true,
+      "max_scaled_score_error": 3.192019621902078e-15,
+      "all_statistics_match_numpy": true,
+      "npz_export_roundtrip": true,
+      "export_shapes": {
+        "antes_merger": [
+          12,
+          1152
+        ],
+        "depois_merger": [
+          12,
+          4096
+        ]
+      }
+    },
+    "canonical_core_unit_tests": {
+      "passed": 9,
+      "javascript_python_parity_test_executed": true,
+      "demo_matches_local_canonical_sources": true
+    },
+    "browser": {
+      "tested_viewports_css_pixels": [
+        992,
+        390
+      ],
+      "checks": [
+        "Inicialmente as três escolhas de análise estão desabilitadas.",
+        "Padrão geométrico: preparação e revelação das representações.",
+        "Lote: conferência de 12 imagens e reunião com máximo/L1.",
+        "Vizinhos: cinco resultados por estágio com mediana/distância euclidiana; receita original preservada.",
+        "MP4: oito quadros, mediana, sem normalização, antes do merger e quarto par temporal.",
+        "Sem erros de JavaScript capturados nesses percursos.",
+        "Rótulo do hero deslocado 6,4 px para cima; altura de 276 px preservada em desktop.",
+        "Sem transbordamento horizontal da página nas larguras verificadas.",
+        "Introdução de Vídeo/GIF reunida no cartão de escolha da sequência, com título, rótulo e explicação preservados.",
+        "Introdução de Lote de imagens reunida no cartão de conferência das entradas, com título, rótulo e explicação preservados.",
+        "Simulação guiada identifica o início das quatro guias com o mesmo estilo tipográfico."
+      ],
+      "generated_json_download": "Evento de salvamento não confirmado pela automação do navegador interno; conteúdo/serializadores têm conferência separada."
+    },
+    "cleanup": {
+      "removed_files": [
+        "dados-sequencias.js"
+      ],
+      "reason": "LAB_SEQUENCE_VARIANTS não possui consumidores nos controladores atuais; os seis cenários ativos usam LAB_EXTENSIONS.video_cases.",
+      "excluded_local_backups": [
+        "index.html.backup",
+        "demo.css.backup"
+      ],
+      "retained": "Tokens completos NPZ, imagens, quadros, vídeos, fonte canônica, licença e registros de procedência."
+    },
+    "scope": "Atualização somente da demo pública. Pesos, entradas, tokens e agregados preservados. Não publica as alterações locais pendentes da bancada instalável. Os registros anteriores permanecem como histórico."
+  }
 }
