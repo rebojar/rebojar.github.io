@@ -36,4 +36,4 @@ Imagens, desenhos, textos e demais criações artísticas presentes na página n
 
 ## Caderno de Bordo
 
-A pasta `caderno-de-bordo/` é uma cópia de publicação gerada a partir da mesma interface do aplicativo em desenvolvimento. Visitantes podem editar textos, fotografias e páginas durante a visita; nenhuma dessas mudanças é salva, e recarregar restaura o estado editorial publicado. A fonte da interface permanece no projeto privado; esta pasta é um espelho de publicação, evitando duas implementações independentes.
+A pasta `caderno-de-bordo/` é uma cópia de publicação gerada a partir da mesma interface do aplicativo em desenvolvimento. O quinto arco abre o caderno diretamente; o nome no menu abre primeiro sua apresentação no portal. Visitantes podem editar textos, fotografias e páginas durante a visita; nenhuma dessas mudanças é salva, e recarregar restaura o estado editorial publicado. A fonte da interface permanece no projeto privado; esta pasta é um espelho de publicação, evitando duas implementações independentes.
