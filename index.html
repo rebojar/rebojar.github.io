@@ -215,6 +215,9 @@
     .apresentacao-projeto:target {
       display: block;
     }
+    main:has(.apresentacao-projeto:target) .introducao-portal {
+      display: none;
+    }
     footer {
       text-align: center;
       padding: 2rem;
@@ -415,8 +418,10 @@
   </nav>
   </div>
   <main>
-    <h2>Bem-vinde ao Rebojar 🌿</h2>
-    <p>Um espaço onde os ciclos naturais se encontram com a exploração curiosa e artística num mesmo fluxo.</p>
+    <section class="introducao-portal" aria-labelledby="boas-vindas-title">
+      <h2 id="boas-vindas-title">Bem-vinde ao Rebojar 🌿</h2>
+      <p>Um espaço onde os ciclos naturais se encontram com a exploração curiosa e artística num mesmo fluxo.</p>
+    </section>
     <section class="apresentacao-projeto" id="labvisual" aria-labelledby="labvisual-title">
       <h2 id="labvisual-title">LabVisual</h2>
       <p>Uma bancada para investigar como modelos multimodais organizam imagens, sem transformar a observação em uma caixa-preta.</p>
@@ -445,6 +450,8 @@
     <div class="footer-actions">
       <p><a href="https://github.com/rebojar/rebojar.github.io">Código desta página no GitHub ↗</a></p>
       <a class="sponsor-button" href="https://github.com/sponsors/rebojar" aria-label="Apoiar Rebojar pelo GitHub Sponsors">Apoiar ♡</a>
+      <a class="sponsor-button" href="https://ko-fi.com/rebojar" aria-label="Apoiar Rebojar pelo Ko-fi">Ko-fi</a>
+      <a class="sponsor-button" href="https://apoia.se/rebojar" aria-label="Apoiar Rebojar pelo Apoia.se">Apoia.se</a>
     </div>
     <details class="sponsor-card">
       <summary>Conhecer formas de apoiar o Rebojar</summary>
