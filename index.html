@@ -202,11 +202,17 @@
       color: #b7d9ff;
       text-underline-offset: 0.25em;
     }
-    .garatujas {
+    .apresentacao-projeto {
       display: none;
-      margin-top: 3rem;
+      max-width: 52rem;
+      margin: 3rem auto 0;
+      padding: 1.5rem;
+      border: 1px solid rgba(183, 217, 255, 0.24);
+      border-radius: 12px;
+      background: rgba(0, 4, 40, 0.66);
+      scroll-margin-top: 2rem;
     }
-    .garatujas:target {
+    .apresentacao-projeto:target {
       display: block;
     }
     footer {
@@ -361,15 +367,15 @@
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
       </a>
-      <a class="onda-alvo onda-link" data-anel="3" style="--raio-hit: 4.4rem; --largura-hit: 2.7rem" href="https://garatujas.tumblr.com/" aria-label="Abrir Garatujas no Tumblr">
+      <a class="onda-alvo onda-link" data-anel="3" style="--raio-hit: 4.4rem; --largura-hit: 2.7rem" href="#garatujas" aria-label="Conhecer o projeto Garatujas">
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
       </a>
-      <a class="onda-alvo onda-link" data-anel="4" style="--raio-hit: 11.375rem; --largura-hit: 11.25rem" href="demonstracao-labvisual/" aria-label="Abrir a demonstração pública da Bancada Visual do Qwen3.5-9B">
+      <a class="onda-alvo onda-link" data-anel="4" style="--raio-hit: 11.375rem; --largura-hit: 11.25rem" href="#labvisual" aria-label="Conhecer o projeto LabVisual">
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
       </a>
-      <a class="onda-alvo onda-link" data-anel="5" style="--raio-hit: 18.5rem; --largura-hit: 3rem" href="caderno-de-bordo/" aria-label="Abrir a página pública Caderno de Bordo">
+      <a class="onda-alvo onda-link" data-anel="5" style="--raio-hit: 18.5rem; --largura-hit: 3rem" href="https://rebojar.github.io/caderno-de-bordo/" aria-label="Abrir o Caderno de Bordo">
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
       </a>
@@ -403,15 +409,21 @@
     <p class="explanation">Espaço autoral para projetos independentes em pesquisa, arte e ferramentas abertas.</p>
   </header>
   <nav aria-label="Navegação principal">
-    <a href="demonstracao-labvisual/">LabVisual</a>
+    <a href="#labvisual">LabVisual</a>
     <a href="#garatujas">Garatujas</a>
-    <a href="caderno-de-bordo/">Caderno de Bordo</a>
+    <a href="#caderno-de-bordo">Caderno de Bordo</a>
   </nav>
   </div>
   <main>
     <h2>Bem-vinde ao Rebojar 🌿</h2>
     <p>Um espaço onde os ciclos naturais se encontram com a exploração curiosa e artística num mesmo fluxo.</p>
-    <section class="garatujas" id="garatujas" aria-labelledby="garatujas-title">
+    <section class="apresentacao-projeto" id="labvisual" aria-labelledby="labvisual-title">
+      <h2 id="labvisual-title">LabVisual</h2>
+      <p>Uma bancada para investigar como modelos multimodais organizam imagens, sem transformar a observação em uma caixa-preta.</p>
+      <p>A demonstração pública apresenta uma execução sintética já calculada e deixa explorar imagens, lotes, vizinhanças e sequências sem enviar arquivos nem executar o modelo no navegador.</p>
+      <p><a href="demonstracao-labvisual/">Entrar na demonstração do LabVisual →</a></p>
+    </section>
+    <section class="apresentacao-projeto garatujas" id="garatujas" aria-labelledby="garatujas-title">
       <h2 id="garatujas-title">Garatujas</h2>
       <p>Desenhos reunidos em um blog no Tumblr.</p>
       <p>Pensamentos inacabados em grafite, nanquim e qualquer outra coisa que deixe uma marca.</p>
@@ -421,6 +433,12 @@
       <p>Coisas que crescem, assombram e doem; pensamentos capturados antes de aprenderem a falar, coisas que se recusaram a virar palavras — então eu desenho.
 .</p>
       <p><a href="https://garatujas.tumblr.com/">Ver os desenhos ↗</a></p>
+    </section>
+    <section class="apresentacao-projeto" id="caderno-de-bordo" aria-labelledby="caderno-title">
+      <h2 id="caderno-title">Caderno de Bordo</h2>
+      <p>Um diário visual que trata fotografias e palavras como objetos sobre o papel: elas podem ser escritas, movidas, giradas e levadas de uma página para outra.</p>
+      <p>Na página pública você pode folhear e experimentar livremente. As mudanças duram somente durante a visita; ao recarregar, o caderno volta ao estado publicado.</p>
+      <p><a href="caderno-de-bordo/">Abrir o Caderno de Bordo →</a></p>
     </section>
   </main>
   <footer>
