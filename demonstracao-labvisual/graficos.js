@@ -121,6 +121,7 @@
     definitions.append(clipPath);
     svg.append(definitions);
     const plot = node('g', { 'clip-path': `url(#${prefix}barPlotClip)` });
+    const clippedEnds = { positive: null, negative: null };
     values.forEach((value, index) => {
       const valueY = Math.max(top, Math.min(top + plotHeight, y(value)));
       const rect = node('rect', {
@@ -145,16 +146,23 @@
       plot.append(rect);
       if (Math.abs(value) > scale.limit) {
         const boundary = value > 0 ? top : top + plotHeight;
+        clippedEnds[value > 0 ? 'positive' : 'negative'] = left + (index + 1) * slot;
         plot.append(node('line', {x1:left+index*slot,x2:left+(index+1)*slot,y1:boundary,y2:boundary,class:'clip-marker'}));
       }
     });
+    // Uma guia por limite evita sobrepor pontilhados quando várias barras o atingem.
+    for (const [side, end] of Object.entries(clippedEnds)) {
+      if (end === null) continue;
+      const boundary = side === 'positive' ? top : top + plotHeight;
+      svg.append(node('line', { x1: left, x2: end, y1: boundary, y2: boundary, class: 'clip-guide' }));
+    }
     svg.append(plot);
     const atMaximum = Math.abs(scale.zoom - scale.maximumZoom) < 0.001;
     syncZoomEditor($('barZoomInput'), $('barZoomDetail'), scale.zoom, atMaximum);
     $('barWindowTitle').textContent = values.length.toLocaleString('pt-BR');
     const clipping = scale.clipped ? ` ${scale.clipped.toLocaleString('pt-BR')} ${scale.clipped === 1 ? 'barra está' : 'barras estão'} fora do enquadramento vertical; os valores não foram alterados.` : '';
     $('barRange').textContent = `Coordenadas ${(start + 1).toLocaleString('pt-BR')}–${(start + values.length).toLocaleString('pt-BR')} de ${current.length.toLocaleString('pt-BR')}. Limite vertical ±${number(scale.limit, 7)}.${clipping}`;
-    $('barScaleNote').textContent = `Os eixos horizontal e vertical usam o mesmo fator de zoom. Em 1×, o limite vertical é ±${number(scale.limit * scale.zoom, 7)}. Ao ampliar, esse limite diminui; os valores originais são preservados. Marcas amarelas na borda indicam barras que continuam além do enquadramento.`;
+    $('barScaleNote').textContent = `Os eixos horizontal e vertical usam o mesmo fator de zoom. Em 1×, o limite vertical é ±${number(scale.limit * scale.zoom, 7)}. Ao ampliar, esse limite diminui; os valores originais são preservados. Marcas amarelas na borda indicam barras que continuam além do enquadramento; as guias pontilhadas ligam esses limites ao eixo vertical.`;
   }
 
   function configureBarPan(focusIndex = null) {

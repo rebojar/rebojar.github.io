@@ -61,15 +61,36 @@
   gallery($('batchGallery'),images.map((item,index)=>({item,index})),index=>openImage(images[index]));
   json('batchInputRecord',{images:images.map(i=>({id:i.id,file:i.file,preparation:i.preparation,provenance:i.provenance})),count:images.length});return images;
  }
- function batchRecord(){if(!lastBatch)return null;return{schema:1,math_core:window.LabVisualMath.version,mode:'lote de demonstração',status:lastBatch.status,recipe:lastBatch.recipe,count:lastBatch.images.length,requested:12,notes:$('batchNotes').value,images:lastBatch.images.map((i,index)=>({index,id:i.id,file:i.file,preparation:i.preparation,provenance:i.provenance})),matrices:{before:[lastBatch.images.length,1152],after:[lastBatch.images.length,4096]},source:'Agregados registrados, normalizados no navegador. O encoder não foi executado nesta página.'};}
+ function batchRecord(){if(!lastBatch)return null;return{schema:1,math_core:window.LabVisualMath.version,mode:'lote de demonstração',status:lastBatch.status,recipe:lastBatch.recipe,count:lastBatch.images.length,requested:12,processed:lastBatch.rows.length,results:lastBatch.rows,notes:$('batchNotes').value,images:lastBatch.images.map((i,index)=>({index,id:i.id,file:i.file,preparation:i.preparation,provenance:i.provenance})),matrices:{before:[lastBatch.images.length,1152],after:[lastBatch.images.length,4096]},source:'Agregados registrados, normalizados no navegador. O encoder não foi executado nesta página.'};}
+ function appendBatchRow(item,error){
+  const row=node('tr',undefined,error?'batch-row-error':undefined);
+  for(const text of [item.file.split('/').pop(),error?'Erro: '+error:'Concluída',error?'—':format(item.tokens_before),error?'—':format(item.tokens_after)])row.append(node('td',text));
+  $('batchRows').append(row);
+ }
  async function buildBatch(){
   if(!batchChecked||building)return;building=true;stop=false;batchRecipe.disable(true);$('batchBackground').disabled=true;$('batchCheck').disabled=true;$('batchStart').disabled=true;$('batchStop').hidden=false;$('batchStop').disabled=false;$('batchDownloads').hidden=true;
-  const images=collection($('batchBackground').value),recipe=batchRecipe.value(),done=[],before=[],after=[];$('batchProgress').value=0;$('batchAppliedRecipe').textContent=R.describe(recipe);
+  const images=collection($('batchBackground').value),recipe=batchRecipe.value(),done=[],before=[],after=[],rows=[];let errors=0;
+  lastBatch=null;$('batchProgress').value=0;$('batchProgress').max=images.length;$('batchRows').replaceChildren();$('batchRecord').replaceChildren();
+  $('batchAppliedRecipe').hidden=false;$('batchAppliedRecipe').textContent='Receita deste lote: '+R.describe(recipe);
+  $('batchCounts').textContent=`0 de ${images.length} concluídas · 0 válidas · 0 com erro`;
+  $('batchState').textContent='Reunindo as representações registradas';$('batchResults').scrollIntoView({behavior:'smooth',block:'start'});
   try{
-   for(const item of images){const vectors=R.vectors([item],recipe);before.push(vectors.before[0]);after.push(vectors.after[0]);done.push(item);$('batchProgress').value=done.length;$('batchState').textContent=`${done.length}/${images.length} representações reunidas no navegador · ${item.label}.`;await new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));if(stop)break;}
-   lastBatch={id:'lote-'+Date.now(),label:`Lote ${sets.length} · ${done.length} imagens · ${R.describe(recipe)}`,images:done,recipe,vectors:{before,after},status:done.length===images.length?'concluído':'interrompido'};
-   sets.push(lastBatch);if(sets.length>9){const removable=sets.findIndex((set,i)=>i>0&&set!==activeSet&&set!==lastBatch);if(removable>0)sets.splice(removable,1);}setOptions();
-   $('batchState').textContent=`${lastBatch.status==='concluído'?'Concluído':'Interrompido'}: ${done.length} de ${images.length} imagens. Nenhuma inferência nova; somente leitura dos agregados registrados.`;json('batchRecord',batchRecord());$('batchDownloads').hidden=false;
+   for(const [index,item]of images.entries()){
+    $('batchCurrent').textContent=`${item.file.split('/').pop()} · leitura do registro ${index+1}/${images.length}`;
+    // Breve pausa da apresentação guiada, para permitir acompanhar e interromper a leitura.
+    await new Promise(resolve=>setTimeout(resolve,180));
+    let error=null;
+    try{const vectors=R.vectors([item],recipe);before.push(vectors.before[0]);after.push(vectors.after[0]);done.push(item);}catch(e){error=e.message||String(e);errors++;}
+    rows.push({index,id:item.id,file:item.file,status:error?'erro':'concluída',...(error?{error}:{tokens_before:item.tokens_before,tokens_after:item.tokens_after})});appendBatchRow(item,error);
+    $('batchProgress').value=rows.length;$('batchCounts').textContent=`${rows.length} de ${images.length} concluídas · ${done.length} válidas · ${errors} com erro`;
+    if(stop)break;
+   }
+   const status=rows.length<images.length?'interrompido':errors?'concluído com erros':'concluído';
+   lastBatch={id:'lote-'+Date.now(),label:`Lote ${sets.length} · ${done.length} imagens · ${R.describe(recipe)}`,images:done,recipe,vectors:{before,after},rows,status};
+   if(done.length){sets.push(lastBatch);if(sets.length>9){const removable=sets.findIndex((set,i)=>i>0&&set!==activeSet&&set!==lastBatch);if(removable>0)sets.splice(removable,1);}setOptions();}
+   $('batchState').textContent=`${status[0].toUpperCase()+status.slice(1)}: ${rows.length} de ${images.length} imagens conferidas.`;
+   $('batchCurrent').textContent='Leitura dos registros encerrada. O encoder não foi executado.';
+   json('batchRecord',batchRecord());$('batchDownloads').hidden=false;$('batchNpz').disabled=!done.length;$('batchNeighbors').disabled=!done.length;
   }catch(error){$('batchState').textContent='Não foi possível reunir o lote: '+error.message;}
   finally{building=false;batchRecipe.disable(false);$('batchBackground').disabled=false;$('batchCheck').disabled=false;$('batchStart').disabled=false;$('batchStop').hidden=true;}
  }
@@ -98,7 +119,7 @@
   bindNotes('neighborNotes',activeSet.id+':'+anchor+':'+JSON.stringify(recipe));
   const before=R.ranking(activeSet.images,anchor,'before',recipe),after=R.ranking(activeSet.images,anchor,'after',recipe),common=new Set(before.neighbors.filter(r=>after.neighbors.some(a=>a.index===r.index)).map(r=>r.index));neighborResult={before,after,common:[...common]};
   $('neighborsRecipeBadge').textContent=R.describe(recipe);$('neighborsDatasetNote').textContent=`${activeSet.images.length} imagens neste conjunto. Receita de origem: ${R.describe(activeSet.recipe)}. A leitura interativa abaixo não altera esse registro.`;
-  $('neighbor-title').textContent=item.label;$('neighborAnchorImage').src=item.prepared;$('neighborAnchorImage').alt=item.label+' — entrada preparada';$('neighborOverlap').textContent=`${common.size} imagens em comum entre os dois grupos`;$('neighborBack').disabled=!history.length;
+  $('neighbor-title').textContent=item.label;$('neighborFileName').textContent=`Imagem ${anchor+1} · ${item.file.split('/').pop()}`;$('neighborAnchorImage').src=item.prepared;$('neighborAnchorImage').alt=item.label+' — entrada preparada';$('neighborOverlap').textContent=`${common.size} em comum entre os dois grupos`;$('neighborBack').disabled=!history.length;
   cards($('neighborsBefore'),before.neighbors,common,recipe.metric);cards($('neighborsAfter'),after.neighbors,common,recipe.metric);stats('beforeStats',before.statistics);stats('afterStats',after.statistics);
   $('neighborsMetricNote').textContent=recipe.metric==='euclidean'?'Menor distância indica maior proximidade nesta receita.':'Valores maiores ficam primeiro nesta receita. Os números não são porcentagens de semelhança, confiança ou compreensão.';
   const vectors=R.vectors(activeSet.images,recipe).after,v=vectors[anchor],coordinate=3994,peak=v.reduce((best,value,index)=>Math.abs(value)>Math.abs(v[best])?index:best,0),shares=R.statistics(vectors.map(row=>R.squaredShare(row,coordinate)));
@@ -131,17 +152,57 @@
   $('videoTemporalComparison').textContent=videoReading.comparisons.length?`${R.labels.metric[recipe.metric]} entre pares consecutivos: `+videoReading.comparisons.map((v,i)=>`par ${i+1} → ${i+2}: ${format(v)}`).join(' · '):'Este recorte tem um único par temporal; não há outro par para comparar.';
   $('videoTokens').href=sequence.tokens_file;json('sequenceRecord',videoRecord());
  }
- function renderSequence(){
-  sequence=ext.video_cases.find(s=>s.format===$('sequenceFormat').value&&s.scenario===$('sequenceScenario').value);if(!sequence)return;
+ function sequenceCases(){return ext.video_cases.filter(s=>s.format===$('sequenceFormat').value);}
+ function sequenceParameters(){return{start:$('sequenceStart').valueAsNumber,end:$('sequenceEnd').valueAsNumber,sampled_frames:Number($('sequenceSampleCount').value),pixel_budget_per_frame:Number($('sequencePixelBudget').value),background:$('sequenceBackground').value.toLowerCase()};}
+ function matchingSequence(){
+  const values=sequenceParameters();
+  return sequenceCases().find(s=>Object.entries(values).every(([key,value])=>s.preparation[key]===value));
+ }
+ function sequenceTimeError(){
+  const {start,end}=sequenceParameters(),duration=sequenceCases()[0].duration;
+  if(!Number.isFinite(start)||!Number.isFinite(end))return 'Preencha o início e o fim em segundos.';
+  if(start<0)return 'O início deve ser zero ou maior.';
+  if(end<=start)return 'O fim deve ser maior que o início.';
+  if(end>duration)return `O arquivo dura ${format(duration)} s. O fim informado ultrapassa essa duração.`;
+  return '';
+ }
+ function invalidateSequence(){
+  sequence=null;videoReading=null;
+  for(const id of ['sequenceApplied','sequencePreparedPanel','sequenceAnalysisPanel','sequenceChartPanel'])$(id).hidden=true;
+  $('sequenceOriginal').replaceChildren();$('sequencePreparationRecord').textContent='Prepare a sequência para abrir os parâmetros registrados.';
+  const duration=sequenceCases()[0].duration;
+  $('sequenceStart').max=duration;$('sequenceEnd').max=duration;$('sequenceEndHelp').textContent=`O arquivo termina em ${format(duration)} s. Fim máximo para este trecho: ${format(duration)} s.`;
+  const error=sequenceTimeError();$('sequencePrepare').disabled=!!error;
+  $('sequencePrepareStatus').textContent=error||'Parâmetros definidos. Prepare a sequência para conferir se há uma execução registrada correspondente.';
+  $('sequenceScenario').value=matchingSequence()?.scenario||'';
+ }
+ function useSequencePreset(){
+  const selected=sequenceCases().find(s=>s.scenario===$('sequenceScenario').value);if(!selected)return;
+  const p=selected.preparation;
+  for(const [id,value]of Object.entries({sequenceStart:p.start,sequenceEnd:p.end,sequenceSampleCount:p.sampled_frames,sequencePixelBudget:p.pixel_budget_per_frame,sequenceBackground:p.background}))$(id).value=value;
+  invalidateSequence();
+ }
+ function prepareSequence(){
+  const error=sequenceTimeError();if(error){$('sequencePrepareStatus').textContent=error;return;}
+  const registered=matchingSequence();
+  if(!registered){invalidateSequence();$('sequencePrepareStatus').textContent='Esta combinação ainda não tem execução registrada na demo. Escolha uma das amostragens disponíveis abaixo ou use a bancada local para executar esses parâmetros.';return;}
+  renderSequence(registered);
+  for(const id of ['sequenceApplied','sequencePreparedPanel','sequenceAnalysisPanel','sequenceChartPanel'])$(id).hidden=false;
+  $('sequencePrepareStatus').textContent='Sequência preparada: exibindo os quadros e resultados da execução registrada, sem nova inferência.';
+ }
+ function renderSequence(next){
+  sequence=next;if(!sequence)return;
   bindNotes('videoNotes',sequence.id);
   const p=sequence.preparation,media=node(sequence.format==='GIF'?'img':'video');media.src=sequence.file;if(sequence.format==='GIF')media.alt='Animação geométrica original';else{media.controls=true;media.preload='metadata';media.setAttribute('aria-label','Vídeo geométrico original');}
-  $('sequenceOriginal').replaceChildren(media);$('sequenceMeta').textContent=`Duração total: ${format(sequence.duration)} s · recorte ${format(p.start)}–${format(p.end)} s · ${p.sampled_frames} quadros · ${p.temporal_pairs} pares · fundo branco.`;
+  $('sequenceOriginal').replaceChildren(media);$('sequenceMeta').textContent=`Duração total: ${format(sequence.duration)} s · recorte ${format(p.start)}–${format(p.end)} s · ${p.sampled_frames} quadros · ${p.temporal_pairs} ${p.temporal_pairs===1?'par':'pares'} · fundo branco.`;
   $('sequenceShapes').textContent=`${p.prepared_wh.join(' × ')} pixels por quadro · grade ${p.grid_thw.join(' × ')} · ${sequence.execution.antes_shape.join(' × ')} antes / ${sequence.execution.depois_shape.join(' × ')} depois. ${p.repeated_samples} seleções repetidas.`;
   $('sequenceFrame').max=sequence.prepared_frames.length-1;$('sequenceFrames').replaceChildren(...sequence.prepared_frames.map((src,i)=>{const b=button('',()=>frame(i),'sequence-frame-button'),im=node('img');im.src=src;im.alt='';b.append(im,node('span',format(p.timestamps[i])+' s'));return b;}));
   $('videoScope').replaceChildren(new Option('Sequência inteira amostrada','-1'),...sequence.pairs.after.map((_,i)=>new Option(`Par ${i+1} · ${format(p.timestamps[i*2])} e ${format(p.timestamps[i*2+1])} s`,String(i))));frame(0);updateGrid();json('sequencePreparationRecord',p);renderVideoAnalysis();
  }
  function updateGrid(){if(!sequence)return;const grid=$('sequencePatchGrid'),groups=$('sequenceShowGroups').checked;grid.hidden=!$('sequenceShowPatches').checked&&!groups;grid.style.setProperty('--patch-columns',sequence.preparation.grid_thw[2]/(groups?2:1));grid.style.setProperty('--patch-rows',sequence.preparation.grid_thw[1]/(groups?2:1));grid.classList.toggle('group-grid',groups);}
- for(const id of ['sequenceFormat','sequenceScenario'])$(id).addEventListener('change',renderSequence);
+ for(const id of ['sequenceFormat','sequenceStart','sequenceEnd','sequenceSampleCount','sequencePixelBudget','sequenceBackground'])$(id).addEventListener('input',invalidateSequence);
+ $('sequenceUseEnd').addEventListener('click',()=>{$('sequenceEnd').value=sequenceCases()[0].duration;invalidateSequence();});
+ $('sequenceScenario').addEventListener('change',useSequencePreset);$('sequencePrepare').addEventListener('click',prepareSequence);
  for(const id of ['videoStage','videoScope'])$(id).addEventListener('change',renderVideoAnalysis);
  for(const id of ['sequenceShowPatches','sequenceShowGroups'])$(id).addEventListener('change',updateGrid);
  $('sequenceFrame').addEventListener('input',()=>frame($('sequenceFrame').value));$('videoJson').addEventListener('click',()=>R.json('sequencia_registro.json',videoRecord()));
@@ -149,6 +210,6 @@
  $('sequencePrepareCode').textContent='# Trecho explicativo: amostragem antes da inferência\nimport numpy as np\n# O último instante selecionado é anterior ao fim do recorte.\ntempos = np.linspace(inicio, fim, numero_de_quadros, endpoint=False)\n# A bancada escolhe o quadro ativo em cada instante e prepara os pixels.\n# Aqui os parâmetros e pixels são lidos da execução registrada.';
  $('sequencePairsCode').textContent='# Usando a grade produzida pelo processador (T, H, W)\npares_antes = tokens_antes.reshape(T, H * W, 1152)\npares_depois = tokens_depois.reshape(T, H * W // 4, 4096)\n# T é a quantidade de pares temporais. O merger reúne 2 × 2 posições.';
  $('videoAnalysisCode').textContent='# Trecho equivalente da leitura de tokens salvos\nfrom analysis import represent\nbruto, vetor, divisor = represent(tokens_do_escopo, receita)\n# Repetir por par temporal para investigar mudanças na sequência.\n# Usar a mesma receita e o mesmo estágio ao comparar pares.';
- setupPicker();batchInputs();setOptions();renderNeighbors();renderSequence();
+ setupPicker();batchInputs();setOptions();renderNeighbors();invalidateSequence();
  window.addEventListener('labvisual:entrychange',event=>document.querySelectorAll('[data-entry-id]').forEach(b=>b.setAttribute('aria-current',String(b.dataset.entryId===event.detail.entryId))));
 })();

@@ -128,11 +128,11 @@
     }
   },
   "checked_ui_sha256": {
-    "index.html": "af1620abe5b938ab9a59774e9ab419cd6feb9ff4d55ba91b2f177069f0700749",
-    "demo.css": "4ccdf8dc4a09c7d9a3a6c568a876b5ea0a4e3807c03291b499d43e54a7db49d2",
-    "demo.js": "b2dda6bc9fb1c05689b92733ba1ca5b3d14ed97124057d67ef5706296b4fce01",
-    "demo-modos.js": "0622ea36080e85602d362814cf7fb2c6bdcf9b4dc6a03889ba92680ab98f8951",
-    "graficos.js": "21044600b5050498f8b270f7d4587938c44c6436333bf7d710466957ac9f0906",
+    "index.html": "7a4eb815693e21f2300f74c625f543f10cfb6bd5efb738b458817c4c25c4ab4c",
+    "demo.css": "efe3ae8a3f2b72069b34e46633ab78b0855110948553d938cf67d3967f966dc9",
+    "demo.js": "78fbb3d44268567786aa861b48d2db48420e419e6fc791811948a6dc38268daf",
+    "demo-modos.js": "73088a7d5a88ab519033d87bd84eb806a12e66b2164010146a0c46c9970e247b",
+    "graficos.js": "c9eb0166cafac0258b4ab8ac6dff2eb7bc4171690d52380bca915a1bdadc6b6b",
     "recursos.js": "045488550a4182ee156341b5f28bc3ffe286f3b3c2e223d0d1f05e772d01636d"
   },
   "canonical_math": {
@@ -249,5 +249,53 @@
       "retained": "Tokens completos NPZ, imagens, quadros, vídeos, fonte canônica, licença e registros de procedência."
     },
     "scope": "Atualização somente da demo pública. Pesos, entradas, tokens e agregados preservados. Não publica as alterações locais pendentes da bancada instalável. Os registros anteriores permanecem como histórico."
+  },
+  "presentation_review": {
+    "date": "2026-10-04",
+    "scope": "Composição dos cartões e marcas visuais dos gráficos. Dados, agregados e núcleo matemático preservados byte a byte.",
+    "changes": [
+      "Origem dos números e caderno Jupyter em dois tópicos recolhíveis no mesmo cartão.",
+      "Bancada local é o último cartão comum às quatro guias.",
+      "Rótulos roxos no alto à direita, ao lado de Simulação guiada.",
+      "Limites das barras recortadas têm guias amarelas pontilhadas até o eixo vertical.",
+      "Coordenada fixada na linha e seu ponto usam o vermelho oficial #c41838.",
+      "Downloads da imagem dentro de Minhas observações, visíveis somente ao expandir.",
+      "Uma única linha divisória acima das observações da imagem.",
+      "Minha hipótese opcional recolhível depois da mensagem de preparação; caixa e legenda dentro do mesmo tópico; hipótese preservada no registro JSON.",
+      "Reunir representações alinhado à direita; barra de progresso vazia clara, preenchimento azul celeste.",
+      "Controles de opacidade, patches e grupos acima do tópico Entenda a preparação; cards 1 e 2 com alturas independentes.",
+      "Vídeo/GIF usa campos numéricos, seletores de quadros e pixels, seletor nativo de cor e Preparar sequência, adaptados da interface local. Campos independentes; resultados somente quando todos os parâmetros correspondem a uma execução registrada.",
+      "Passo 3 Acompanhe o lote antes dos downloads: progresso, contagens, receita, parada após imagem e tabela de sucessos/erros; coleção no passo 4 com seis colunas em desktop.",
+      "Referência dos vizinhos exibe número da imagem e nome do arquivo original com extensão; contagem em comum separada dos botões e explicação dos selos verdes.",
+      "Contagem em comum usa o mesmo selo azul claro da receita Média → L2 → Cosseno; selos dos itens em comum permanecem verdes.",
+      "Imagem da referência selecionada ampliada de 7 para 9 rem em telas maiores; largura de 7 rem preservada em telas até 560 px."
+    ],
+    "validation": {
+      "javascript_syntax": "passed",
+      "unique_html_ids": 222,
+      "local_links": "passed",
+      "data_and_math_unchanged": true,
+      "browser": [
+        "Imagem e vídeo: marcas de limite positivas/negativas e guias até o eixo Y.",
+        "Guias ausentes quando todas as barras cabem no enquadramento.",
+        "Coordenada fixada da linha renderizada em rgb(196,24,56).",
+        "Rótulos no canto superior; ordem dos tópicos e último cartão comum.",
+        "Larguras de 992 e 390 px; sem transbordamento horizontal da página.",
+        "Três downloads invisíveis ao recolher e visíveis ao expandir as observações; abertura e fechamento conferidos.",
+        "Sem borda no contêiner externo e com uma borda superior no tópico de observações.",
+        "Hipótese preservada ao escolher o padrão, preparar, revelar e mudar a versão da imagem.",
+        "Hipótese fechada por padrão depois de workflowPrepareStatus; caixa e legenda ocultas juntas, texto preservado ao fechar/reabrir.",
+        "Lote conferido e reunido: barra clara em zero e azul ao concluir 12/12; botão alinhado à direita.",
+        "Campos de vídeo conferidos no navegador em tela de 390 px, sem transbordamento horizontal; tela normal restaurada; nenhum erro JavaScript observado.",
+        "Em 1440 px, altura do card 2 permaneceu 708,06 px ao abrir Minha hipótese; card 1 permaneceu 603,48 px ao abrir os detalhes do card 2. Grade alternada com o tópico de explicação fechado.",
+        "Seis execuções preparadas pelo novo botão, com quadros, pares e arquivo de tokens correspondentes. Cor editada, resolução sem registro e tempo além da duração ocultaram os resultados anteriores; parâmetros originais recuperados pelos presets.",
+        "Lote interrompido com 5/12 e depois concluído com 12/12; tabela com 12 linhas válidas e seis colunas na galeria. Campos de vídeo em 390 px sem transbordamento; viewport restaurado; nenhum erro JavaScript observado.",
+        "Vizinhos: circulo_azul.png identificado como imagem 1; troca para circulo_deslocado.png como imagem 7 e retorno conferidos. Contagem igual aos selos nos dois grupos, inclusive após troca de métrica. Nome sem corte em 390 px, viewport restaurado e nenhum erro JavaScript observado.",
+        "Selo de contagem e selo de receita conferidos com mesmos valores de cor, fundo, borda, tamanho/peso de fonte e arredondamento no navegador.",
+        "Referência com largura de 144 px em viewport de 1440 px e 112 px em viewport de 390 px; nome, contagem e ações acomodados no cartão, sem transbordamento horizontal; viewport restaurado."
+      ],
+      "hypothesis_export": "passed: texto com acentos/quebra de linha e valor vazio; notas e vetores preservados na função de exportação. Não confirma o salvamento pelo navegador.",
+      "batch_progress": "passed: função real conferida em conclusão 12/12, parada após imagem, duas falhas parciais e todas as entradas com erro; vetores somente das válidas e controles liberados ao terminar."
+    }
   }
 }

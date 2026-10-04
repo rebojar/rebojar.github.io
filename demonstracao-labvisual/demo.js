@@ -583,7 +583,7 @@
   }
   function exportedRecord() {
     return {schema:1,math_core:window.LabVisualMath.version,source:'demonstração pública; leitura de execução registrada',execution:data.record,
-      reading:recipe(),notes:$('singleNotes').value,
+      reading:recipe(),hypothesis:$('workflowHypothesis').value,notes:$('singleNotes').value,
       vectors:Object.fromEntries(['before','after'].map(stage=>[stage,normalize(data.vectors[stage][recipe().pooling],recipe().normalization).vector]))};
   }
   function renderRecord() {

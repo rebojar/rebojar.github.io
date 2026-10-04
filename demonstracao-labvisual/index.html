@@ -6,7 +6,7 @@
   <meta name="description" content="Demonstração pública do LabVisual com imagens, lote, vizinhos e sequências pré-calculadas da Bancada Visual do Qwen3.5-9B.">
   <title>Bancada Visual · Qwen3.5-9B — Rebojar</title>
   <link rel="icon" type="image/png" href="../assets/labvisual-icon.png">
-    <link rel="stylesheet" href="demo.css?v=guias-unificadas-20261003">
+    <link rel="stylesheet" href="demo.css?v=referencia-maior-20261004">
 </head>
 <body>
   <header class="topbar">
@@ -133,6 +133,11 @@
           </div>
           <button id="workflowPrepare" class="button secondary workflow-action" type="button" disabled>Preparar imagem</button>
           <p id="workflowPrepareStatus" class="small" aria-live="polite">Escolha uma imagem para habilitar a preparação.</p>
+          <details class="notes-details workflow-hypothesis">
+            <summary id="workflowHypothesisLabel">Minha hipótese (opcional)</summary>
+            <div class="notes-sheet"><textarea id="workflowHypothesis" rows="4" aria-labelledby="workflowHypothesisLabel" aria-describedby="workflowHypothesisHint" placeholder="O que você espera observar ao mudar a imagem?"></textarea></div>
+            <p id="workflowHypothesisHint" class="small">Essa nota é só sua. Não é enviada ao encoder como texto. Ela só é salva quando você baixa o registro.</p>
+          </details>
         </article>
 
         <article class="workflow-card workflow-preview-card">
@@ -166,10 +171,7 @@
             <div id="backgroundChoices" class="background-choices" role="radiogroup" aria-label="Fundo registrado para pixels transparentes"></div>
             <p id="backgroundStatus" class="small" aria-live="polite"></p>
           </fieldset>
-          <section id="preparationInsight" class="preparation-insight" aria-label="Leitura da preparação da imagem">
-            <details class="preparation-detail preparation-overview">
-              <summary>Entenda a preparação da imagem</summary>
-              <div class="preparation-overview-body">
+          <div class="preparation-display-controls" role="group" aria-label="Opções de visualização da imagem">
                 <label class="preparation-toggle preparation-opacity-toggle">
                   <input id="workflowOpacityMask" type="checkbox">
                   <span>Ver máscara de opacidade no original</span>
@@ -185,6 +187,11 @@
                     <span>Destacar grupos de 2 × 2</span>
                   </label>
                 </div>
+          </div>
+          <section id="preparationInsight" class="preparation-insight" aria-label="Leitura da preparação da imagem">
+            <details class="preparation-detail preparation-overview">
+              <summary>Entenda a preparação da imagem</summary>
+              <div class="preparation-overview-body">
                 <dl class="preparation-metrics">
                   <div>
                     <dt>Patches de entrada</dt>
@@ -458,7 +465,7 @@
         </article>
       </div>
 
-      <section class="single-export"><details class="notes-details"><summary>Minhas observações sobre esta imagem</summary><div class="notes-sheet"><textarea id="singleNotes" rows="4" aria-label="Notas sobre esta imagem" placeholder="Escreva suas observações aqui."></textarea><p class="notes-hint">As notas ficam nesta página até você baixar o arquivo. Não são enviadas nem salvas automaticamente.</p></div></details><div class="action-row"><button type="button" id="singleExport" class="button secondary compact">Baixar registro e notas (.json)</button><button type="button" id="singleCsv" class="button secondary compact">Baixar vetores (.csv)</button><a id="singleTokens" class="button secondary compact" download>Baixar tokens completos (.npz)</a></div></section>
+      <section class="single-export"><details class="notes-details"><summary>Minhas observações sobre esta imagem</summary><div class="notes-sheet"><textarea id="singleNotes" rows="4" aria-label="Notas sobre esta imagem" placeholder="Escreva suas observações aqui."></textarea><p class="notes-hint">As notas ficam nesta página até você baixar o arquivo. Não são enviadas nem salvas automaticamente.</p></div><div class="action-row notes-actions"><button type="button" id="singleExport" class="button secondary compact">Baixar registro e notas (.json)</button><button type="button" id="singleCsv" class="button secondary compact">Baixar vetores (.csv)</button><a id="singleTokens" class="button secondary compact" download>Baixar tokens completos (.npz)</a></div></details></section>
       <details class="record-details">
         <summary>Ver parâmetros preservados da execução</summary>
         <pre id="record"></pre>
@@ -469,7 +476,7 @@
 
     <section id="batchView" class="demo-view" role="tabpanel" aria-labelledby="batchTab" hidden>
       <section class="panel mode-panel batch-entry-panel">
-      <div class="mode-intro mode-entry-intro"><h2 class="workflow-mode-title mode-guide-title">Simulação guiada</h2><div class="mode-intro-top"><h2>Da coleção ao conjunto de representações</h2><p class="step">Lote de imagens · execuções registradas</p></div><p>Confira as entradas, escolha uma receita e reúna os vetores. O navegador aplica essa leitura às saídas reais já calculadas pelo encoder.</p></div>
+      <div class="mode-intro mode-entry-intro"><div class="mode-guide-row"><h2 class="workflow-mode-title mode-guide-title">Simulação guiada</h2><p class="step">Lote de imagens · execuções registradas</p></div><div class="mode-intro-top"><h2>Da coleção ao conjunto de representações</h2></div><p>Confira as entradas, escolha uma receita e reúna os vetores. O navegador aplica essa leitura às saídas reais já calculadas pelo encoder.</p></div>
         <h3>1. Confira as entradas</h3><p>Doze imagens públicas de formas, cores, posições e transparência. A galeria permanece completa, com rolagem contínua.</p>
         <label>Fundo registrado para a entrada transparente<select id="batchBackground"></select></label>
         <p class="small">As outras onze imagens são opacas. Esta escolha pertence ao lote; mudar o fundo em Uma imagem não altera um conjunto já reunido.</p>
@@ -478,21 +485,32 @@
       </section>
       <section class="panel mode-panel"><h3>2. Defina a receita do lote</h3><div id="batchRecipeControls"></div>
         <p class="small">No laboratório, a receita é definida antes do processamento. Nesta demonstração, média, máximo e mediana já foram calculados sobre os tokens reais; a preparação e os pesos não mudam.</p>
-        <div class="action-row"><button id="batchStart" type="button" class="button primary compact" disabled>Reunir representações</button><button id="batchStop" type="button" class="button secondary compact" hidden>Parar após a imagem atual</button></div>
-        <progress id="batchProgress" max="12" value="0" aria-label="Imagens reunidas"></progress><p id="batchState" role="status">Confira a coleção para começar.</p><p id="batchAppliedRecipe" class="small"></p>
-        <div id="batchDownloads" class="action-row" hidden><button id="batchNpz" type="button" class="button secondary compact">Baixar embeddings (.npz)</button><button id="batchJson" type="button" class="button secondary compact">Baixar registro (.json)</button><button id="batchNeighbors" type="button" class="button primary compact">Explorar vizinhos deste lote</button></div>
-        <details class="record-details"><summary>Entenda o processamento e veja o código</summary><p>Um vetor por estágio e por imagem. Mudar a agregação não recupera tokens de uma média: seleciona outro agregado, calculado previamente a partir de todos os tokens.</p><pre id="batchCode"></pre><pre id="batchRecord"></pre></details>
+        <div class="action-row batch-run-actions"><button id="batchStart" type="button" class="button primary compact" disabled>Reunir representações</button></div>
+        <details class="record-details"><summary>Entenda o processamento e veja o código</summary><p>Um vetor por estágio e por imagem. Mudar a agregação não recupera tokens de uma média: seleciona outro agregado, calculado previamente a partir de todos os tokens.</p><pre id="batchCode"></pre></details>
+      </section>
+      <section id="batchResults" class="panel mode-panel" aria-labelledby="batch-results-title">
+        <h3 id="batch-results-title">3. Acompanhe o lote</h3>
+        <p id="batchState" role="status">Confira a coleção para começar.</p>
+        <progress id="batchProgress" max="12" value="0" aria-label="Imagens concluídas"></progress>
+        <p id="batchCounts">0 de 12 concluídas · 0 válidas · 0 com erro</p>
+        <p id="batchCurrent" class="small">O andamento aparece ao reunir as representações.</p>
+        <p id="batchAppliedRecipe" class="batch-recipe-readout" hidden></p>
+        <div class="action-row"><button id="batchStop" type="button" class="button secondary compact" hidden>Parar após a imagem atual</button></div>
+        <p class="small">Um vetor por estágio e por imagem válida, com a receita fixada no início do lote. O andamento acompanha a leitura dos registros no navegador; o encoder não é executado. A ordem das imagens válidas acompanha as linhas das matrizes exportadas.</p>
+        <details class="record-details" open><summary>Ver imagens concluídas e eventuais erros</summary><div class="batch-results-table"><table><thead><tr><th scope="col">Arquivo</th><th scope="col">Resultado</th><th scope="col">Patches de entrada</th><th scope="col">Tokens após merger</th></tr></thead><tbody id="batchRows"><tr><td colspan="4">Nenhuma imagem concluída ainda.</td></tr></tbody></table></div></details>
+        <div id="batchDownloads" class="action-row notes-actions" hidden><button id="batchNpz" type="button" class="button secondary compact">Baixar embeddings (.npz)</button><button id="batchJson" type="button" class="button secondary compact">Baixar registro (.json)</button><button id="batchNeighbors" type="button" class="button primary compact">Explorar vizinhos deste lote</button></div>
+        <details class="record-details"><summary>Ver o registro deste lote</summary><pre id="batchRecord"></pre></details>
         <details class="notes-details"><summary>Minhas observações sobre este lote</summary><div class="notes-sheet"><textarea id="batchNotes" rows="4" aria-label="Minhas observações sobre este lote" placeholder="Estas notas só entram no arquivo que você baixar."></textarea></div></details>
       </section>
-      <section class="panel mode-panel" aria-labelledby="batch-gallery-title"><div class="section-heading"><h3 id="batch-gallery-title">3. Explore as imagens da coleção</h3><span id="batchSummary" class="badge"></span></div><div id="batchGallery" class="batch-gallery" aria-label="Entradas do lote"></div><p class="small">Abrir uma imagem permite investigar sua execução individual. A receita salva com o lote é preservada.</p></section>
+      <section class="panel mode-panel" aria-labelledby="batch-gallery-title"><div class="section-heading"><h3 id="batch-gallery-title">4. Explore as imagens da coleção</h3><span id="batchSummary" class="badge"></span></div><div id="batchGallery" class="batch-gallery" aria-label="Entradas do lote"></div><p class="small">Abrir uma imagem permite investigar sua execução individual. A receita salva com o lote é preservada.</p></section>
     </section>
 
     <section id="neighborsView" class="demo-view" role="tabpanel" aria-labelledby="neighborsTab" hidden>
-      <div class="mode-intro panel"><h2 class="workflow-mode-title mode-guide-title">Simulação guiada</h2><div class="mode-intro-top"><h2>Investigue as proximidades</h2><p class="step">Vizinhos · comparação no mesmo conjunto</p></div><label>Conjunto de representações<select id="neighborDataset"></select></label><p id="neighborsDatasetNote" class="small"></p><div id="neighborRecipeControls"></div><span id="neighborsRecipeBadge" class="badge"></span>
+      <div class="mode-intro panel"><div class="mode-guide-row"><h2 class="workflow-mode-title mode-guide-title">Simulação guiada</h2><p class="step">Vizinhos · comparação no mesmo conjunto</p></div><div class="mode-intro-top"><h2>Investigue as proximidades</h2></div><label>Conjunto de representações<select id="neighborDataset"></select></label><p id="neighborsDatasetNote" class="small"></p><div id="neighborRecipeControls"></div><span id="neighborsRecipeBadge" class="badge"></span>
         <details class="record-details"><summary>O que acontece quando mudo a receita aqui?</summary><p>Esta demo permite recalcular diretamente, usando agregados de média, máximo e mediana já registrados. O lote original é preservado. A versão local 0.5 da bancada também permite mudar a receita nesta guia. Lotes antigos podem oferecer somente parte dessas escolhas, conforme os dados que conservaram. A versão já publicada no GitHub ainda precisa receber essa atualização.</p><p>L1, L2 e L∞ preservam a direção de vetores não nulos. Trocar somente entre elas não muda matematicamente o cosseno; arredondamentos podem afetar empates muito próximos.</p></details>
       </div>
       <section class="panel mode-panel" aria-labelledby="neighbor-title"><div class="section-heading"><h3>2. Compare as proximidades</h3><button id="neighborBack" type="button" class="button secondary compact" disabled>← Imagem anterior</button></div>
-        <div class="neighbor-anchor"><img id="neighborAnchorImage" alt=""><div class="neighbor-anchor-copy"><p class="step">Referência selecionada</p><h2 id="neighbor-title"></h2><div class="action-row"><button id="neighborSource" type="button" class="button secondary compact">Escolher referência na galeria ↓</button><button id="openNeighborEntry" type="button" class="button secondary compact">Abrir em Uma imagem</button><p id="neighborOverlap" class="badge"></p></div></div></div>
+        <div class="neighbor-anchor"><img id="neighborAnchorImage" alt=""><div class="neighbor-anchor-copy"><p class="step">Referência selecionada</p><h2 id="neighbor-title"></h2><p id="neighborFileName" class="neighbor-file-name"></p><div class="neighbor-overlap-reading"><p id="neighborOverlap" class="badge" aria-live="polite"></p><p class="small">As imagens com selo verde aparecem nos dois grupos. Clique em qualquer vizinha para investigá-la também.</p></div><div class="action-row"><button id="neighborSource" type="button" class="button secondary compact">Escolher referência na galeria ↓</button><button id="openNeighborEntry" type="button" class="button secondary compact">Abrir em Uma imagem</button></div></div></div>
         <div class="neighbor-columns-public"><section><h3>Antes do merger</h3><p class="small">1.152 coordenadas por vetor.</p><div id="neighborsBefore" class="neighbor-list"></div><div id="beforeStats" class="stats-strip"></div></section><section><h3>Depois do merger</h3><p class="small">4.096 coordenadas por vetor.</p><div id="neighborsAfter" class="neighbor-list"></div><div id="afterStats" class="stats-strip"></div></section></div><p id="neighborsMetricNote" class="small"></p>
       </section>
       <section class="panel mode-panel"><details class="record-details"><summary>Como os vizinhos e os números são calculados?</summary><p>A referência é excluída da busca. Os cinco primeiros são mostrados em cada estágio; mínimo, mediana e máximo consideram todas as outras imagens. Empates exatos seguem a ordem da coleção. O selo “Nos dois grupos” identifica a sobreposição.</p><pre id="neighborsCode"></pre><pre id="neighborsRecord"></pre></details>
@@ -504,25 +522,47 @@
 
     <section id="videoView" class="demo-view" role="tabpanel" aria-labelledby="videoTab" hidden>
       <section class="panel mode-panel video-entry-panel">
-      <div class="mode-intro mode-entry-intro"><h2 class="workflow-mode-title mode-guide-title">Simulação guiada</h2><div class="mode-intro-top"><h2>O que entra quando a imagem se move</h2><p class="step">Vídeo / GIF · somente visão</p></div><p>Explore execuções reais da mesma animação. Formato, intervalo e quantidade de quadros definem a entrada; agregação e normalização definem como lemos seus tokens.</p></div>
-        <h3>1. Escolha a sequência e a amostragem registrada</h3><div class="controls controls-analysis"><label>Formato registrado<select id="sequenceFormat"><option value="GIF">GIF</option><option value="MP4">MP4</option></select></label><label>Intervalo e quadros<select id="sequenceScenario"><option value="completo">0–2 s · 4 quadros</option><option value="recorte">0,5–1,5 s · 2 quadros</option><option value="oito_quadros">0–2 s · 8 quadros</option></select></label></div>
-        <p id="sequenceMeta"></p><div id="sequenceOriginal" class="sequence-original"></div><p class="small">Aqui a troca abre outra execução registrada. No laboratório, mudar intervalo, amostragem, resolução ou fundo exige preparar de novo e executar o encoder. O áudio não participa.</p>
+      <div class="mode-intro mode-entry-intro"><div class="mode-guide-row"><h2 class="workflow-mode-title mode-guide-title">Simulação guiada</h2><p class="step">Vídeo / GIF · somente visão</p></div><div class="mode-intro-top"><h2>O que entra quando a imagem se move</h2></div><p>Explore execuções reais da mesma animação. Formato, intervalo e quantidade de quadros definem a entrada; agregação e normalização definem como lemos seus tokens.</p></div>
+        <h3>1. Escolha a sequência e a amostragem registrada</h3>
+        <div class="controls sequence-format-controls"><label>Formato registrado<select id="sequenceFormat"><option value="GIF">GIF</option><option value="MP4">MP4</option></select></label></div>
+        <div class="controls sequence-preparation-controls">
+          <div><label for="sequenceStart">Início (segundos)</label><input id="sequenceStart" type="number" min="0" max="2" step="any" value="0"></div>
+          <div><label for="sequenceEnd">Fim (segundos, não incluído)</label><input id="sequenceEnd" type="number" min="0" max="2" step="any" value="2" aria-describedby="sequenceEndHelp sequencePrepareStatus"></div>
+          <div><label for="sequenceSampleCount">Quadros selecionados</label><select id="sequenceSampleCount"><option value="2">2 quadros · 1 par</option><option value="4">4 quadros · 2 pares</option><option value="8" selected>8 quadros · 4 pares</option><option value="16">16 quadros · 8 pares</option></select></div>
+          <div><label for="sequencePixelBudget">Orçamento de pixels por quadro</label><select id="sequencePixelBudget"><option value="16384">16.384 pixels</option><option value="36864">36.864 pixels</option><option value="65536" selected>65.536 pixels</option></select></div>
+          <div><label for="sequenceBackground">Fundo para transparência</label><input id="sequenceBackground" type="color" value="#ffffff"></div>
+        </div>
+        <p id="sequenceEndHelp" class="small">O arquivo termina em 2 s. Fim máximo para este trecho: 2 s.</p>
+        <button id="sequenceUseEnd" class="button secondary compact" type="button">Usar fim do arquivo</button>
+        <p class="small sequence-proportion-note">A proporção é preservada aproximadamente; largura e altura se ajustam a múltiplos de 32.</p>
+        <button id="sequencePrepare" class="button primary sequence-prepare-button" type="button">Preparar sequência</button>
+        <p id="sequencePrepareStatus" class="small" role="status">Confira os campos e prepare a sequência para abrir sua execução registrada.</p>
+        <details class="record-details"><summary>Amostragens disponíveis nesta demo</summary><p class="small">Os campos são os mesmos da bancada local. A demo dispõe de três amostragens por formato, todas com orçamento de 65.536 pixels e fundo branco. Outras combinações precisam ser executadas na bancada local.</p><label for="sequenceScenario">Usar parâmetros de uma execução registrada</label><select id="sequenceScenario"><option value="">Escolha uma amostragem registrada</option><option value="completo">0–2 s · 4 quadros</option><option value="recorte">0,5–1,5 s · 2 quadros</option><option value="oito_quadros" selected>0–2 s · 8 quadros</option></select></details>
+        <div id="sequenceApplied" hidden><p id="sequenceMeta"></p><div id="sequenceOriginal" class="sequence-original"></div></div>
         <details class="record-details"><summary>Ver a duração, a amostragem e o código</summary><pre id="sequencePrepareCode"></pre><pre id="sequencePreparationRecord"></pre></details>
       </section>
-      <section class="panel mode-panel"><h3>2. Confira os quadros preparados</h3><div class="sequence-overview"><div class="sequence-focus-wrap"><img id="sequenceFocus" class="sequence-focus" alt=""><span id="sequencePatchGrid" class="patch-grid-overlay" aria-hidden="true" hidden></span></div><div><p id="sequenceFrameReading" class="reading" aria-live="polite"></p><label class="chart-pan">Instante selecionado<input id="sequenceFrame" type="range" min="0" max="3" value="0"></label><label class="check-label"><input id="sequenceShowPatches" type="checkbox"> Mostrar patches de 16 × 16</label><label class="check-label"><input id="sequenceShowGroups" type="checkbox"> Destacar grupos de 2 × 2</label><p id="sequenceShapes" class="small"></p></div></div><div id="sequenceFrames" class="sequence-frames-public"></div>
+      <section id="sequencePreparedPanel" class="panel mode-panel" hidden><h3>2. Confira os quadros preparados</h3><div class="sequence-overview"><div class="sequence-focus-wrap"><img id="sequenceFocus" class="sequence-focus" alt=""><span id="sequencePatchGrid" class="patch-grid-overlay" aria-hidden="true" hidden></span></div><div><p id="sequenceFrameReading" class="reading" aria-live="polite"></p><label class="chart-pan">Instante selecionado<input id="sequenceFrame" type="range" min="0" max="3" value="0"></label><label class="check-label"><input id="sequenceShowPatches" type="checkbox"> Mostrar patches de 16 × 16</label><label class="check-label"><input id="sequenceShowGroups" type="checkbox"> Destacar grupos de 2 × 2</label><p id="sequenceShapes" class="small"></p></div></div><div id="sequenceFrames" class="sequence-frames-public"></div>
         <details class="record-details"><summary>Entenda os pares temporais e veja o código</summary><p>Dois quadros selecionados formam um par temporal. Isso não é a mesma operação que agrupar 2 × 2 posições espaciais no merger. O gráfico global reúne todos os tokens; um par reúne apenas o trecho temporal correspondente.</p><pre id="sequencePairsCode"></pre></details>
       </section>
-      <section class="panel mode-panel"><h3>3. Escolha como analisar os tokens</h3><div id="videoRecipeControls"></div><p class="small">Reutiliza os tokens registrados. A média, o máximo e a mediana foram calculados antes da normalização, globalmente e por par temporal.</p><div class="controls controls-analysis"><label>Representação exibida<select id="videoStage"><option value="after">Depois do merger</option><option value="before">Antes do merger</option></select></label><label>O que visualizar<select id="videoScope"></select></label></div><p id="videoRecipeReading"></p><p id="videoTemporalComparison"></p>
+      <section id="sequenceAnalysisPanel" class="panel mode-panel" hidden><h3>3. Escolha como analisar os tokens</h3><div id="videoRecipeControls"></div><p class="small">Reutiliza os tokens registrados. A média, o máximo e a mediana foram calculados antes da normalização, globalmente e por par temporal.</p><div class="controls controls-analysis"><label>Representação exibida<select id="videoStage"><option value="after">Depois do merger</option><option value="before">Antes do merger</option></select></label><label>O que visualizar<select id="videoScope"></select></label></div><p id="videoRecipeReading"></p><p id="videoTemporalComparison"></p>
         <details class="record-details"><summary>Ver a análise, o código e os parâmetros</summary><pre id="videoAnalysisCode"></pre><pre id="sequenceRecord"></pre></details>
       </section>
-      <section class="panel mode-panel video-chart-panel"><div id="videoChartsHeading" class="video-charts-heading"><h3>4. Percorra as representações</h3></div><p id="videoVectorCaption"></p><div id="videoCharts"></div><details class="notes-details"><summary>Minhas observações sobre a sequência</summary><div class="notes-sheet"><textarea id="videoNotes" rows="4" aria-label="Minhas observações sobre a sequência" placeholder="Escreva suas observações aqui."></textarea></div></details><div class="action-row"><button id="videoNpz" class="button secondary compact" type="button">Baixar vetores e pares (.npz)</button><button id="videoJson" class="button secondary compact" type="button">Baixar registro e notas (.json)</button><a id="videoTokens" class="button secondary compact" download>Baixar tokens completos (.npz)</a></div><p class="small">Mudar o quadro em foco altera a prévia. Para alterar o vetor temporal mostrado, escolha um par no campo “O que visualizar”.</p></section>
+      <section id="sequenceChartPanel" class="panel mode-panel video-chart-panel" hidden><div id="videoChartsHeading" class="video-charts-heading"><h3>4. Percorra as representações</h3></div><p id="videoVectorCaption"></p><div id="videoCharts"></div><details class="notes-details"><summary>Minhas observações sobre a sequência</summary><div class="notes-sheet"><textarea id="videoNotes" rows="4" aria-label="Minhas observações sobre a sequência" placeholder="Escreva suas observações aqui."></textarea></div></details><div class="action-row"><button id="videoNpz" class="button secondary compact" type="button">Baixar vetores e pares (.npz)</button><button id="videoJson" class="button secondary compact" type="button">Baixar registro e notas (.json)</button><a id="videoTokens" class="button secondary compact" download>Baixar tokens completos (.npz)</a></div><p class="small">Mudar o quadro em foco altera a prévia. Para alterar o vetor temporal mostrado, escolha um par no campo “O que visualizar”.</p></section>
     </section>
-    <details class="record-details panel">
+    <section class="panel reference-resources" aria-label="Origem dos dados e caderno interativo">
+    <details class="record-details">
       <summary>De onde vêm os números desta demonstração?</summary>
       <p>São saídas reais da torre visual Qwen3.5-9B executada localmente, com os pesos congelados. As formas geométricas são entradas controladas; os vetores não foram inventados.</p>
       <p>A conferência de origem comparou as 12 imagens, os oito fundos da entrada transparente, o padrão geométrico e as duas sequências com os registros da bancada. Os agregados foram calculados sobre os tokens completos. O navegador aplica a normalização e calcula os vizinhos. A expansão inclui outras preparações do padrão geométrico e recortes reais das sequências; seus registros acompanham os resultados.</p>
       <p><a href="proveniencia.json" download>Baixar origem dos dados e identificadores dos arquivos</a> · <a href="conferencia.json" download>Baixar resultados da conferência numérica</a></p>
     </details>
+    <details class="record-details" id="notebook-guide">
+      <summary>Continue no caderno Jupyter</summary>
+      <p>O pacote inclui o caderno Experimento_visual.ipynb, com explicações e células de código Python para preparar uma imagem, executar a torre visual e examinar os tokens. Ele usa o mesmo motor da bancada instalada.</p>
+      <p>Você pode ler o caderno no GitHub. Para editar e executar suas células, siga a instalação local; esta demonstração não inicia um ambiente Python.</p>
+      <p><a href="https://github.com/rebojar/LabVisual/blob/main/Experimento_visual.ipynb" target="_blank" rel="noopener noreferrer">Ler o caderno no GitHub ↗</a> · <a href="https://github.com/rebojar/LabVisual/blob/main/INSTALL.md" target="_blank" rel="noopener noreferrer">Instalar a bancada e o JupyterLab ↗</a></p>
+    </details>
+    </section>
     <section class="next panel">
       <div class="next-top">
         <div class="next-heading"><h2>A bancada completa é local</h2></div>
@@ -531,12 +571,6 @@
       <a class="button primary" href="https://github.com/rebojar/LabVisual" target="_blank" rel="noopener noreferrer">Abrir Bancada Visual Qwen3.5-9B no GitHub ↗</a>
       <p class="next-copy">O repositório contém o código, as instruções de instalação e as condições técnicas para executar o encoder na sua própria máquina.</p>
     </section>
-    <details class="record-details panel" id="notebook-guide">
-      <summary>Continue no caderno Jupyter</summary>
-      <p>O pacote inclui o caderno Experimento_visual.ipynb, com explicações e células de código Python para preparar uma imagem, executar a torre visual e examinar os tokens. Ele usa o mesmo motor da bancada instalada.</p>
-      <p>Você pode ler o caderno no GitHub. Para editar e executar suas células, siga a instalação local; esta demonstração não inicia um ambiente Python.</p>
-      <p><a href="https://github.com/rebojar/LabVisual/blob/main/Experimento_visual.ipynb" target="_blank" rel="noopener noreferrer">Ler o caderno no GitHub ↗</a> · <a href="https://github.com/rebojar/LabVisual/blob/main/INSTALL.md" target="_blank" rel="noopener noreferrer">Instalar a bancada e o JupyterLab ↗</a></p>
-    </details>
   </main>
 
   <footer id="pageFooter">
@@ -553,10 +587,10 @@
   <script src="dados-fundos.js?v=auditoria-20260923"></script>
   <script src="analysis-core.js?v=canonico-0.5"></script>
   <script src="analise.js?v=canonico-0.5"></script>
-  <script src="graficos.js?v=paleta-20261003"></script>
+  <script src="graficos.js?v=guias-limites-20261003"></script>
   <script src="recursos.js?v=canonico-0.5"></script>
   <script src="dados-extensoes.js?v=interativa-20260928"></script>
-  <script src="demo.js?v=interativa-20260928"></script>
-  <script src="demo-modos.js?v=video-compacto-20261003"></script>
+  <script src="demo.js?v=hipotese-20261003"></script>
+  <script src="demo-modos.js?v=vizinhos-20261004"></script>
 </body>
 </html>
