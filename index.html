@@ -282,8 +282,10 @@
       bottom: 0;
       left: 0;
       display: flex;
-      width: min(18rem, 82vw);
+      width: max-content;
+      max-width: calc(100vw - 2rem);
       flex-direction: column;
+      align-items: stretch;
       gap: 0.35rem;
       padding: 5rem 1rem 1.5rem;
       background: transparent;
@@ -300,6 +302,7 @@
     }
     .menu-lateral a {
       display: block;
+      width: 100%;
       color: #f2f2f2;
       text-decoration: none;
       font-weight: 600;
@@ -324,7 +327,7 @@
     .menu-fundo.aberto {
       opacity: 1;
       visibility: visible;
-      pointer-events: auto;
+      pointer-events: none;
     }
     .menu-lateral a:focus-visible,
     .menu-toggle:focus-visible,
@@ -339,6 +342,9 @@
     main {
       padding: 3rem;
       text-align: center;
+    }
+    body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)) main {
+      min-height: 100svh;
     }
     main a {
       color: #b7d9ff;
@@ -683,7 +689,12 @@
         definirMenu(botao.getAttribute('aria-expanded') !== 'true');
       });
 
-      fundo.addEventListener('click', () => definirMenu(false));
+      document.addEventListener('click', event => {
+        const aberto = botao.getAttribute('aria-expanded') === 'true';
+        if (aberto && !menu.contains(event.target) && !botao.contains(event.target)) {
+          definirMenu(false);
+        }
+      });
 
       menu.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => definirMenu(false));
