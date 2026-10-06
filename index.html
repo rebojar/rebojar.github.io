@@ -168,26 +168,111 @@
       font-size: 0.94rem;
       line-height: 1.5;
     }
-    nav {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 0.5rem 1rem;
-      background-color: #1c1d1f;
-      padding: 1rem;
+    .menu-toggle {
+      position: absolute;
+      z-index: 50;
+      top: 1.25rem;
+      left: 1.25rem;
+      display: inline-grid;
+      width: 2.6rem;
+      height: 2.6rem;
+      place-items: center;
+      padding: 0;
+      border: 1px solid rgba(242, 242, 242, 0.18);
+      border-radius: 999px;
+      background: rgba(0, 4, 40, 0.18);
+      color: #f2f2f2;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background 180ms ease, border-color 180ms ease;
     }
-    nav a {
+    .menu-toggle:hover,
+    .menu-toggle[aria-expanded="true"] {
+      border-color: rgba(242, 242, 242, 0.38);
+      background: rgba(0, 4, 40, 0.48);
+    }
+    .menu-icone {
+      position: relative;
+      display: block;
+      width: 1rem;
+      height: 0.75rem;
+    }
+    .menu-icone span {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      border-radius: 999px;
+      background: currentColor;
+      transition: transform 220ms ease, top 220ms ease;
+    }
+    .menu-icone span:first-child {
+      top: 0.18rem;
+    }
+    .menu-icone span:last-child {
+      top: 0.56rem;
+    }
+    .menu-toggle[aria-expanded="true"] .menu-icone span:first-child {
+      top: 0.37rem;
+      transform: rotate(45deg);
+    }
+    .menu-toggle[aria-expanded="true"] .menu-icone span:last-child {
+      top: 0.37rem;
+      transform: rotate(-45deg);
+    }
+    .menu-lateral {
+      position: fixed;
+      z-index: 40;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      width: min(18rem, 82vw);
+      flex-direction: column;
+      gap: 0.35rem;
+      padding: 5rem 1rem 1.5rem;
+      background: #11273C;
+      box-shadow: 1rem 0 3rem rgba(0, 0, 0, 0.28);
+      transform: translateX(-102%);
+      visibility: hidden;
+      pointer-events: none;
+      transition: transform 280ms cubic-bezier(.22,.61,.36,1), visibility 280ms;
+    }
+    .menu-lateral.aberto {
+      transform: translateX(0);
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .menu-lateral a {
+      display: block;
       color: #f2f2f2;
       text-decoration: none;
-      font-weight: bold;
-      padding: 0.5rem 1rem;
+      font-weight: 600;
+      padding: 0.8rem 1rem;
       border-radius: 8px;
-      transition: background 0.3s;
+      text-align: left;
+      transition: background 180ms ease;
     }
-    nav a:hover {
-      background-color: #3f51b5;
+    .menu-lateral a:hover {
+      background: rgba(63, 81, 181, 0.48);
     }
-    nav a:focus-visible,
+    .menu-fundo {
+      position: fixed;
+      z-index: 30;
+      inset: 0;
+      background: rgba(0, 4, 40, 0.34);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 280ms ease, visibility 280ms;
+    }
+    .menu-fundo.aberto {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .menu-lateral a:focus-visible,
+    .menu-toggle:focus-visible,
     header a:focus-visible,
     footer summary:focus-visible,
     footer a:focus-visible,
@@ -311,69 +396,61 @@
         animation: none;
       }
     }
-    /* Ajuste mínimo: altura da primeira tela e índigo do menu.
-       Centro das ondas fixado na coordenada original em relação ao topo:
-       27rem - 4rem no desktop; 24rem - 4rem no mobile. */
+    /* A primeira tela continua ocupando o viewport, agora sem uma barra inferior. */
     .primeira-tela {
       display: grid;
-      grid-template-rows: minmax(min-content, 1fr) auto;
+      grid-template-rows: minmax(min-content, 1fr);
       min-height: 100vh;
       min-height: 100svh;
+      isolation: isolate;
     }
     .primeira-tela > header {
       --centro-ondas-y: calc(100% - 23rem);
     }
-    .primeira-tela > nav { background-color: #11273C; }
     @media (max-width: 38rem) {
-      .primeira-tela > header { --centro-ondas-y: calc(100% - 20rem); }
+      .primeira-tela > header {
+        --centro-ondas-y: calc(100% - 20rem);
+      }
+      .menu-toggle {
+        top: 0.9rem;
+        left: 0.9rem;
+      }
     }
 
-    /* Água: revelar o desenho sobre o menu sem ampliar ou mover seus círculos. */
-    .primeira-tela { isolation: isolate; }
-    .primeira-tela > header { overflow: visible; z-index: 2; }
-    .primeira-tela > nav { position: relative; z-index: 1; }
-    /* Revela também os pontilhados, mantendo o SVG e seus centros imóveis. */
+    /* As ondas permanecem contidas no header; o menu agora flutua por cima dele. */
     .ondas-interativas {
-      overflow: visible;
+      overflow: hidden;
       clip-path: inset(0);
-      transition: clip-path 460ms cubic-bezier(.22,.61,.36,1);
     }
-    .onda-hit { clip-path: url(#limite-interacao-ondas); }
+    .onda-hit {
+      clip-path: url(#limite-interacao-ondas);
+    }
     .agua-superficie {
       position: absolute;
-      inset: 0 0 auto;
-      height: calc(100% + var(--altura-menu, 0px));
+      inset: 0;
+      height: 100%;
       overflow: hidden;
       background: inherit;
       pointer-events: none;
-      clip-path: inset(0 0 var(--altura-menu, 0px) 0);
-      transition: clip-path 460ms cubic-bezier(.22,.61,.36,1);
-    }
-    @media (hover: hover) and (pointer: fine) {
-      header:has(.onda-alvo:hover) .agua-superficie {
-        clip-path: inset(0);
-      }
-      header:has(.onda-alvo:hover) .ondas-interativas {
-        clip-path: inset(0 0 calc(0px - var(--altura-menu, 0px)) 0);
-      }
-    }
-    /* Foco nos links do menu sempre revela a navegação novamente. */
-    .primeira-tela:has(> nav:focus-within) .agua-superficie {
-      clip-path: inset(0 0 var(--altura-menu, 0px) 0);
-      transition: none;
-    }
-    .primeira-tela:has(> nav:focus-within) .ondas-interativas {
-      clip-path: inset(0);
-      transition: none;
     }
     @media (prefers-reduced-motion: reduce) {
-      .agua-superficie, .ondas-interativas { transition: none; }
+      .menu-lateral,
+      .menu-fundo,
+      .menu-icone span {
+        transition: none;
+      }
     }
   </style>
 </head>
 <body>
   <div class="primeira-tela">
   <header>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal" aria-label="Abrir menu">
+      <span class="menu-icone" aria-hidden="true">
+        <span></span>
+        <span></span>
+      </span>
+    </button>
     <div class="agua-superficie" aria-hidden="true">
       <span class="onda-distante"></span>
     </div>
@@ -432,13 +509,14 @@
     <p>Vibração orgânica. Arte, natureza e tato digital.</p>
     <p class="explanation">Espaço autoral para projetos independentes em pesquisa, arte e ferramentas abertas.</p>
   </header>
-  <nav aria-label="Navegação principal">
+  <nav class="menu-lateral" id="menu-principal" aria-label="Navegação principal">
     <a href="#labvisual">LabVisual</a>
     <a href="#garatujas">Garatujas</a>
     <a href="#caderno-de-bordo">Caderno de Bordo</a>
     <a href="#audicanvas">AudiCanvas</a>
     <a href="#galeria">Galeria</a>
   </nav>
+  <div class="menu-fundo" aria-hidden="true"></div>
   </div>
   <main>
     <section class="introducao-portal" aria-labelledby="boas-vindas-title">
@@ -504,16 +582,34 @@
   </footer>
 
   <script>
-    // Só mede a faixa. Não altera eventos, raios nem áreas de captura das ondas.
     (() => {
-      const tela = document.querySelector('.primeira-tela');
-      const menu = tela.querySelector(':scope > nav');
-      const medirMenu = () => {
-        tela.style.setProperty('--altura-menu', `${menu.getBoundingClientRect().height}px`);
+      const botao = document.querySelector('.menu-toggle');
+      const menu = document.getElementById('menu-principal');
+      const fundo = document.querySelector('.menu-fundo');
+
+      const definirMenu = aberto => {
+        menu.classList.toggle('aberto', aberto);
+        fundo.classList.toggle('aberto', aberto);
+        botao.setAttribute('aria-expanded', String(aberto));
+        botao.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');
       };
-      medirMenu();
-      if ('ResizeObserver' in window) new ResizeObserver(medirMenu).observe(menu);
-      else window.addEventListener('resize', medirMenu, { passive: true });
+
+      botao.addEventListener('click', () => {
+        definirMenu(botao.getAttribute('aria-expanded') !== 'true');
+      });
+
+      fundo.addEventListener('click', () => definirMenu(false));
+
+      menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => definirMenu(false));
+      });
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && botao.getAttribute('aria-expanded') === 'true') {
+          definirMenu(false);
+          botao.focus();
+        }
+      });
     })();
   </script>
 </body>
