@@ -20,6 +20,27 @@
       background-attachment: fixed;
       color: #f2f2f2;
     }
+    html {
+      scrollbar-color: rgba(183, 217, 255, 0.38) transparent;
+      scrollbar-width: thin;
+    }
+    html::-webkit-scrollbar {
+      width: 10px;
+    }
+    html::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    html::-webkit-scrollbar-thumb {
+      border: 3px solid transparent;
+      border-radius: 999px;
+      background: rgba(183, 217, 255, 0.38);
+      background-clip: padding-box;
+    }
+    html::-webkit-scrollbar-thumb:hover {
+      background: rgba(183, 217, 255, 0.62);
+      background-clip: padding-box;
+    }
+
     header {
       position: relative;
       overflow: hidden;
@@ -635,6 +656,12 @@
 
   <script>
     (() => {
+      // A home sempre inicia pelo header, mesmo após recarregar uma seção com hash.
+      if (window.location.hash) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+        window.scrollTo(0, 0);
+      }
+
       const botao = document.querySelector('.menu-toggle');
       const menu = document.getElementById('menu-principal');
       const fundo = document.querySelector('.menu-fundo');
