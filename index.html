@@ -171,7 +171,8 @@
     nav {
       display: flex;
       justify-content: center;
-      gap: 2rem;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
       background-color: #1c1d1f;
       padding: 1rem;
     }
@@ -402,14 +403,14 @@
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
       </a>
-      <g class="onda-alvo" data-anel="6" style="--raio-hit: 22rem; --largura-hit: 4rem" aria-hidden="true">
+      <a class="onda-alvo onda-link" data-anel="6" style="--raio-hit: 22rem; --largura-hit: 4rem" href="https://rebojar.github.io/audicanvas/" aria-label="Abrir a demonstração do AudiCanvas">
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
-      </g>
-      <g class="onda-alvo" data-anel="7" style="--raio-hit: 27.5rem; --largura-hit: 7rem" aria-hidden="true">
+      </a>
+      <a class="onda-alvo onda-link" data-anel="7" style="--raio-hit: 27.5rem; --largura-hit: 7rem" href="https://rebojar.github.io/galeria/" aria-label="Abrir a Galeria de imagens autorais do Rebojar">
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
-      </g>
+      </a>
       <g class="onda-alvo" data-anel="8" style="--raio-hit: 38rem; --largura-hit: 14rem" aria-hidden="true">
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
@@ -435,6 +436,8 @@
     <a href="#labvisual">LabVisual</a>
     <a href="#garatujas">Garatujas</a>
     <a href="#caderno-de-bordo">Caderno de Bordo</a>
+    <a href="#audicanvas">AudiCanvas</a>
+    <a href="#galeria">Galeria</a>
   </nav>
   </div>
   <main>
@@ -452,11 +455,8 @@
       <h2 id="garatujas-title">Garatujas</h2>
       <p>Desenhos reunidos em um blog no Tumblr.</p>
       <p>Pensamentos inacabados em grafite, nanquim e qualquer outra coisa que deixe uma marca.</p>
-      <p></p>
-      <p>Li Imp me dizer, em algumas das várias vezes em que mergulhei em *A Menina Submersa*, que assombrações são, em especial, contágios de pensamentos perniciosos. Mas, sendo um ser assombrado pela vida, assim como tantos outros, eu tento capturar meus fantasmas pela arte, apesar do risco.</p>
-      <p></p>
-      <p>Coisas que crescem, assombram e doem; pensamentos capturados antes de aprenderem a falar, coisas que se recusaram a virar palavras — então eu desenho.
-.</p>
+      <p>Li Imp me dizer, em algumas das várias vezes em que mergulhei em <em>A Menina Submersa</em>, que assombrações são, em especial, contágios de pensamentos perniciosos. Mas, sendo um ser assombrado pela vida, assim como tantos outros, eu tento capturar meus fantasmas pela arte, apesar do risco.</p>
+      <p>Coisas que crescem, assombram e doem; pensamentos capturados antes de aprenderem a falar, coisas que se recusaram a virar palavras — então eu desenho.</p>
       <p><a href="https://garatujas.tumblr.com/">Ver os desenhos ↗</a></p>
     </section>
     <section class="apresentacao-projeto" id="caderno-de-bordo" aria-labelledby="caderno-title">
@@ -471,6 +471,18 @@
         <p>Na versão pessoal do aplicativo, o conteúdo fica no armazenamento local do navegador, no seu dispositivo, para que o caderno possa ser retomado. Ele só vira um arquivo quando você escolhe guardar uma cópia ou exportar uma leitura; limpar os dados do site no navegador também pode apagar esse conteúdo local.</p>
         <p>Esta página é hospedada pelo GitHub Pages. O navegador e o GitHub podem tratar dados técnicos da conexão e da visita, como endereço IP, dispositivo, horário, páginas vistas e links acessados, conforme a <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">declaração de privacidade do GitHub ↗</a>.</p>
       </section>
+    </section>
+    <section class="apresentacao-projeto" id="audicanvas" aria-labelledby="audicanvas-title">
+      <h2 id="audicanvas-title">AudiCanvas</h2>
+      <p>Uma demonstração pública de outro aplicativo experimental do Rebojar.</p>
+      <p>A página permite experimentar a versão demonstrativa do AudiCanvas diretamente no navegador.</p>
+      <p><a href="audicanvas/">Abrir a demonstração do AudiCanvas →</a></p>
+    </section>
+    <section class="apresentacao-projeto" id="galeria" aria-labelledby="galeria-title">
+      <h2 id="galeria-title">Galeria</h2>
+      <p>Um índice visual das fotografias de autoria do Rebojar que aparecem ao longo deste site.</p>
+      <p>A galeria reúne essas imagens em um só lugar para que fotografias publicadas em diferentes páginas e projetos possam ser encontradas novamente sem precisar percorrer o site inteiro.</p>
+      <p><a href="galeria/">Abrir a Galeria →</a></p>
     </section>
   </main>
   <footer>
