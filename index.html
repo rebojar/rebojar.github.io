@@ -8,35 +8,53 @@
   <link rel="icon" type="image/png" href="assets/favicon-rebojar-circular.png">
   <link rel="alternate" type="application/rss+xml" title="Rebojar — RSS" href="https://rebojar.github.io/feed.xml">
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    html {
       background-color: #0d2e1a;
       background-image: url("assets/fundo-rebojar-colorido.png");
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
       background-attachment: fixed;
-      color: #f2f2f2;
-    }
-    html {
       scrollbar-color: rgba(183, 217, 255, 0.38) transparent;
       scrollbar-width: thin;
     }
-    html::-webkit-scrollbar {
-      width: 10px;
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: transparent;
+      color: #f2f2f2;
     }
-    html::-webkit-scrollbar-track {
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      width: 10px;
       background: transparent;
     }
-    html::-webkit-scrollbar-thumb {
+    html::-webkit-scrollbar-track,
+    html::-webkit-scrollbar-track-piece,
+    body::-webkit-scrollbar-track,
+    body::-webkit-scrollbar-track-piece {
+      background: transparent;
+    }
+    html::-webkit-scrollbar-button,
+    body::-webkit-scrollbar-button {
+      width: 0;
+      height: 0;
+      background: transparent;
+    }
+    html::-webkit-scrollbar-corner,
+    body::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+    html::-webkit-scrollbar-thumb,
+    body::-webkit-scrollbar-thumb {
       border: 3px solid transparent;
       border-radius: 999px;
       background: rgba(183, 217, 255, 0.38);
       background-clip: padding-box;
     }
-    html::-webkit-scrollbar-thumb:hover {
+    html::-webkit-scrollbar-thumb:hover,
+    body::-webkit-scrollbar-thumb:hover {
       background: rgba(183, 217, 255, 0.62);
       background-clip: padding-box;
     }
@@ -343,9 +361,9 @@
       max-width: 52rem;
       margin: 3rem auto 0;
       padding: 1.5rem;
-      border: 1px solid rgba(183, 217, 255, 0.24);
+      border: 1px solid rgba(159, 189, 85, 0.28);
       border-radius: 12px;
-      background: rgba(0, 4, 40, 0.66);
+      background: rgba(13, 46, 26, 0.72);
       scroll-margin-top: 2rem;
     }
     .apresentacao-projeto:target {
@@ -373,6 +391,10 @@
     body:has(.apresentacao-projeto:target) .home-icon,
     body:has(#privacidade-caderno-de-bordo:target) .home-icon {
       display: inline-flex;
+    }
+    body:has(.apresentacao-projeto:target) .menu-lateral,
+    body:has(#privacidade-caderno-de-bordo:target) .menu-lateral {
+      padding-top: 7.5rem;
     }
 
     .privacidade-caderno {
