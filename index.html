@@ -169,7 +169,7 @@
       line-height: 1.5;
     }
     .menu-toggle {
-      position: absolute;
+      position: fixed;
       z-index: 50;
       top: 1.25rem;
       left: 1.25rem;
@@ -219,6 +219,34 @@
     .menu-toggle[aria-expanded="true"] .menu-icone span:last-child {
       top: 0.37rem;
       transform: rotate(-45deg);
+    }
+    .home-icon {
+      position: fixed;
+      z-index: 50;
+      top: 4.35rem;
+      left: 1.25rem;
+      display: none;
+      width: 2.6rem;
+      height: 2.6rem;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 1px solid rgba(242, 242, 242, 0.18);
+      border-radius: 999px;
+      background: rgba(0, 4, 40, 0.18);
+      overflow: hidden;
+      backdrop-filter: blur(4px);
+      transition: background 180ms ease, border-color 180ms ease;
+    }
+    .home-icon:hover {
+      border-color: rgba(242, 242, 242, 0.38);
+      background: rgba(0, 4, 40, 0.48);
+    }
+    .home-icon img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
     .menu-lateral {
       position: fixed;
@@ -273,6 +301,7 @@
     }
     .menu-lateral a:focus-visible,
     .menu-toggle:focus-visible,
+    .home-icon:focus-visible,
     header a:focus-visible,
     footer summary:focus-visible,
     footer a:focus-visible,
@@ -310,6 +339,21 @@
     main:has(#privacidade-caderno-de-bordo:target) .introducao-portal {
       display: none;
     }
+
+    body:has(.apresentacao-projeto:target) .primeira-tela,
+    body:has(#privacidade-caderno-de-bordo:target) .primeira-tela {
+      min-height: 0;
+      height: 0;
+    }
+    body:has(.apresentacao-projeto:target) .primeira-tela > header,
+    body:has(#privacidade-caderno-de-bordo:target) .primeira-tela > header {
+      display: none;
+    }
+    body:has(.apresentacao-projeto:target) .home-icon,
+    body:has(#privacidade-caderno-de-bordo:target) .home-icon {
+      display: inline-flex;
+    }
+
     .privacidade-caderno {
       margin-top: 1.75rem;
       padding-top: 1.25rem;
@@ -415,6 +459,10 @@
         top: 0.9rem;
         left: 0.9rem;
       }
+      .home-icon {
+        top: 4rem;
+        left: 0.9rem;
+      }
     }
 
     /* As ondas permanecem contidas no header; o menu agora flutua por cima dele. */
@@ -443,14 +491,26 @@
   </style>
 </head>
 <body>
+  <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal" aria-label="Abrir menu">
+    <span class="menu-icone" aria-hidden="true">
+      <span></span>
+      <span></span>
+    </span>
+  </button>
+  <a class="home-icon" href="#inicio" aria-label="Voltar ao início" title="Voltar ao início">
+    <img src="assets/favicon-rebojar-circular.png" alt="">
+  </a>
+  <nav class="menu-lateral" id="menu-principal" aria-label="Navegação principal">
+    <a href="#labvisual">LabVisual</a>
+    <a href="#garatujas">Garatujas</a>
+    <a href="#caderno-de-bordo">Caderno de Bordo</a>
+    <a href="#audicanvas">AudiCanvas</a>
+    <a href="#galeria">Galeria</a>
+  </nav>
+  <div class="menu-fundo" aria-hidden="true"></div>
+
   <div class="primeira-tela">
-  <header>
-    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal" aria-label="Abrir menu">
-      <span class="menu-icone" aria-hidden="true">
-        <span></span>
-        <span></span>
-      </span>
-    </button>
+  <header id="inicio">
     <div class="agua-superficie" aria-hidden="true">
       <span class="onda-distante"></span>
     </div>
@@ -509,14 +569,6 @@
     <p>Vibração orgânica. Arte, natureza e tato digital.</p>
     <p class="explanation">Espaço autoral para projetos independentes em pesquisa, arte e ferramentas abertas.</p>
   </header>
-  <nav class="menu-lateral" id="menu-principal" aria-label="Navegação principal">
-    <a href="#labvisual">LabVisual</a>
-    <a href="#garatujas">Garatujas</a>
-    <a href="#caderno-de-bordo">Caderno de Bordo</a>
-    <a href="#audicanvas">AudiCanvas</a>
-    <a href="#galeria">Galeria</a>
-  </nav>
-  <div class="menu-fundo" aria-hidden="true"></div>
   </div>
   <main>
     <section class="introducao-portal" aria-labelledby="boas-vindas-title">
