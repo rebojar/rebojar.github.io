@@ -15,8 +15,7 @@
       background-repeat: no-repeat;
       background-size: cover;
       background-attachment: fixed;
-      scrollbar-color: rgba(183, 217, 255, 0.38) transparent;
-      scrollbar-width: thin;
+      scrollbar-width: none;
     }
     body {
       margin: 0;
@@ -27,36 +26,25 @@
     }
     html::-webkit-scrollbar,
     body::-webkit-scrollbar {
-      width: 10px;
-      background: transparent;
-    }
-    html::-webkit-scrollbar-track,
-    html::-webkit-scrollbar-track-piece,
-    body::-webkit-scrollbar-track,
-    body::-webkit-scrollbar-track-piece {
-      background: transparent;
-    }
-    html::-webkit-scrollbar-button,
-    body::-webkit-scrollbar-button {
       width: 0;
       height: 0;
-      background: transparent;
     }
-    html::-webkit-scrollbar-corner,
-    body::-webkit-scrollbar-corner {
-      background: transparent;
-    }
-    html::-webkit-scrollbar-thumb,
-    body::-webkit-scrollbar-thumb {
-      border: 3px solid transparent;
+    .scroll-indicador {
+      position: fixed;
+      z-index: 100;
+      top: 0;
+      right: 3px;
+      width: 6px;
+      min-height: 28px;
       border-radius: 999px;
-      background: rgba(183, 217, 255, 0.38);
-      background-clip: padding-box;
+      background: rgba(183, 217, 255, 0.46);
+      opacity: 0.82;
+      pointer-events: none;
+      transform: translateY(0);
+      transition: opacity 140ms ease;
     }
-    html::-webkit-scrollbar-thumb:hover,
-    body::-webkit-scrollbar-thumb:hover {
-      background: rgba(183, 217, 255, 0.62);
-      background-clip: padding-box;
+    .scroll-indicador[hidden] {
+      display: none;
     }
 
     header {
@@ -529,6 +517,7 @@
   </style>
 </head>
 <body>
+  <div class="scroll-indicador" aria-hidden="true"></div>
   <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu-principal" aria-label="Abrir menu">
     <span class="menu-icone" aria-hidden="true">
       <span></span>
@@ -706,6 +695,32 @@
           botao.focus();
         }
       });
+
+      const indicador = document.querySelector('.scroll-indicador');
+      const atualizarIndicador = () => {
+        const raiz = document.documentElement;
+        const total = raiz.scrollHeight;
+        const visivel = raiz.clientHeight;
+        const rolavel = total - visivel;
+
+        if (rolavel <= 0) {
+          indicador.hidden = true;
+          return;
+        }
+
+        indicador.hidden = false;
+        const altura = Math.max(28, visivel * visivel / total);
+        const percurso = visivel - altura;
+        const progresso = Math.min(1, Math.max(0, window.scrollY / rolavel));
+
+        indicador.style.height = `${altura}px`;
+        indicador.style.transform = `translateY(${percurso * progresso}px)`;
+      };
+
+      atualizarIndicador();
+      window.addEventListener('scroll', atualizarIndicador, { passive: true });
+      window.addEventListener('resize', atualizarIndicador, { passive: true });
+      new ResizeObserver(atualizarIndicador).observe(document.body);
     })();
   </script>
 </body>
