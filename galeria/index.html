@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Galeria de imagens autorais publicadas no Rebojar.">
+  <title>Galeria — Rebojar</title>
+  <link rel="icon" type="image/png" href="../assets/favicon-rebojar-circular.png">
+  <style>
+    :root {
+      color-scheme: dark;
+      --fundo: #0d2e1a;
+      --texto: #f2f2f2;
+      --link: #b7d9ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--fundo);
+      color: var(--texto);
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      padding: clamp(0.75rem, 2vw, 1.5rem);
+    }
+
+    .voltar {
+      position: fixed;
+      z-index: 10;
+      top: 0.8rem;
+      left: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.6rem;
+      height: 2.6rem;
+      border-radius: 50%;
+      background: rgba(13, 46, 26, 0.78);
+      color: var(--texto);
+      text-decoration: none;
+      backdrop-filter: blur(8px);
+    }
+
+    .voltar:focus-visible {
+      outline: 2px solid #e8d73a;
+      outline-offset: 3px;
+    }
+
+    #galeria {
+      columns: 1;
+      column-gap: clamp(0.6rem, 1.4vw, 1rem);
+    }
+
+    .imagem {
+      display: block;
+      width: 100%;
+      margin: 0 0 clamp(0.6rem, 1.4vw, 1rem);
+      break-inside: avoid;
+    }
+
+    .imagem img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    #estado {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      margin: 0;
+      padding: 2rem;
+      text-align: center;
+      color: rgba(242, 242, 242, 0.72);
+    }
+
+    #estado[hidden] {
+      display: none;
+    }
+
+    @media (min-width: 42rem) {
+      #galeria {
+        columns: 2;
+      }
+    }
+
+    @media (min-width: 70rem) {
+      #galeria {
+        columns: 3;
+      }
+    }
+
+    @media (min-width: 100rem) {
+      #galeria {
+        columns: 4;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="voltar" href="../#galeria" aria-label="Voltar ao Rebojar" title="Voltar ao Rebojar">←</a>
+  <main id="galeria" aria-label="Galeria de imagens autorais"></main>
+  <p id="estado">Carregando imagens…</p>
+
+  <script>
+    (() => {
+      const galeria = document.getElementById("galeria");
+      const estado = document.getElementById("estado");
+      const extensaoImagem = /\.(avif|gif|jpe?g|png|webp)$/i;
+      const api = "https://api.github.com/repos/rebojar/rebojar.github.io/contents/galeria/imagens?ref=main";
+
+      const mostrarEstado = mensagem => {
+        estado.textContent = mensagem;
+        estado.hidden = false;
+      };
+
+      fetch(api, {
+        headers: {
+          Accept: "application/vnd.github+json"
+        }
+      })
+        .then(resposta => {
+          if (!resposta.ok) throw new Error(`GitHub respondeu ${resposta.status}`);
+          return resposta.json();
+        })
+        .then(arquivos => {
+          const imagens = arquivos
+            .filter(arquivo => arquivo.type === "file" && extensaoImagem.test(arquivo.name))
+            .sort((a, b) => a.name.localeCompare(b.name, "pt-BR", { numeric: true }));
+
+          if (!imagens.length) {
+            mostrarEstado("Nenhuma imagem publicada ainda.");
+            return;
+          }
+
+          estado.hidden = true;
+
+          for (const arquivo of imagens) {
+            const link = document.createElement("a");
+            const img = document.createElement("img");
+
+            link.className = "imagem";
+            link.href = arquivo.download_url;
+            link.target = "_blank";
+            link.rel = "noopener";
+            link.setAttribute("aria-label", `Abrir ${arquivo.name}`);
+
+            img.src = arquivo.download_url;
+            img.alt = "";
+            img.loading = "lazy";
+            img.decoding = "async";
+
+            link.append(img);
+            galeria.append(link);
+          }
+        })
+        .catch(erro => {
+          console.error(erro);
+          mostrarEstado("Não foi possível carregar a galeria agora.");
+        });
+    })();
+  </script>
+</body>
+</html>
