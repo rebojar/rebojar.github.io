@@ -1,9 +1,5 @@
 [build]
-  base = "servidor-pagamentos"
-  publish = "public"
-
-[functions]
-  directory = "netlify/functions"
+  publish = "."
 
 [build.environment]
   NODE_VERSION = "24"
