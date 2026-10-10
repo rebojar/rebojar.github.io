@@ -343,7 +343,7 @@
       padding: 3rem;
       text-align: center;
     }
-    body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)) main {
+    body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) main {
       min-height: 100svh;
     }
     main a {
@@ -363,27 +363,32 @@
     .apresentacao-projeto:target {
       display: block;
     }
-    #caderno-de-bordo:has(#privacidade-caderno-de-bordo:target) {
+    #caderno-de-bordo:has(#privacidade-caderno-de-bordo:target),
+    #caderno-de-bordo:has(#termos-de-servico:target) {
       display: block;
     }
     main:has(.apresentacao-projeto:target) .introducao-portal {
       display: none;
     }
-    main:has(#privacidade-caderno-de-bordo:target) .introducao-portal {
+    main:has(#privacidade-caderno-de-bordo:target) .introducao-portal,
+    main:has(#termos-de-servico:target) .introducao-portal {
       display: none;
     }
 
     body:has(.apresentacao-projeto:target) .primeira-tela,
-    body:has(#privacidade-caderno-de-bordo:target) .primeira-tela {
+    body:has(#privacidade-caderno-de-bordo:target) .primeira-tela,
+    body:has(#termos-de-servico:target) .primeira-tela {
       min-height: 0;
       height: 0;
     }
     body:has(.apresentacao-projeto:target) .primeira-tela > header,
-    body:has(#privacidade-caderno-de-bordo:target) .primeira-tela > header {
+    body:has(#privacidade-caderno-de-bordo:target) .primeira-tela > header,
+    body:has(#termos-de-servico:target) .primeira-tela > header {
       display: none;
     }
     body:has(.apresentacao-projeto:target) .home-icon,
-    body:has(#privacidade-caderno-de-bordo:target) .home-icon {
+    body:has(#privacidade-caderno-de-bordo:target) .home-icon,
+    body:has(#termos-de-servico:target) .home-icon {
       display: inline-flex;
     }
     .privacidade-caderno {
@@ -604,12 +609,13 @@
         overflow-wrap: anywhere;
       }
 
-      body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)) main {
+      body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) main {
         min-height: 100svh;
       }
 
       body:has(.apresentacao-projeto:target) main,
-      body:has(#privacidade-caderno-de-bordo:target) main {
+      body:has(#privacidade-caderno-de-bordo:target) main,
+      body:has(#termos-de-servico:target) main {
         min-height: 100svh;
         padding-top: 4.6rem;
       }
@@ -800,14 +806,42 @@
     <section class="apresentacao-projeto" id="caderno-de-bordo" aria-labelledby="caderno-title">
       <h2 id="caderno-title">Caderno de Bordo</h2>
       <p>Um diário visual que trata fotografias e palavras como objetos sobre o papel: elas podem ser escritas, movidas, giradas e levadas de uma página para outra.</p>
-      <p>O aplicativo está em desenvolvimento privado para uma futura edição comercial.</p>
-      <p>A página pública mostra uma edição navegável do meu próprio caderno. Ela é gerada pelo aplicativo privado em modo de leitura, sem distribuir o editor, o armazenamento ou os serviços comerciais.</p>
+      <p>O aplicativo está em desenvolvimento privado. A demonstração pública permite editar textos e fotografias temporariamente no navegador, mantendo o código-fonte completo, o armazenamento pessoal e as ferramentas internas no repositório privado.</p>
+      <p>As alterações da demonstração permanecem somente durante a visita e desaparecem ao recarregar a página. A exportação de leitura é um produto digital separado.</p>
       <p><a href="https://rebojar.netlify.app/">Abrir o caderno público →</a></p>
+      <p><a href="#privacidade-caderno-de-bordo">Privacidade</a> · <a href="#termos-de-servico">Termos de Serviço</a></p>
       <section class="privacidade-caderno" id="privacidade-caderno-de-bordo" aria-labelledby="privacidade-caderno-title">
         <h3 id="privacidade-caderno-title">Privacidade no Caderno de Bordo</h3>
-        <p><strong>A demonstração pública não oferece campos de escrita, envio de fotografias ou contas.</strong> Ela exibe somente as páginas escolhidas para publicação e não recebe conteúdo de outros cadernos.</p>
-        <p>As regras de privacidade da futura versão comercial serão apresentadas junto do produto antes de sua disponibilização.</p>
-        <p>A demonstração do caderno é hospedada pelo Netlify; este portal e o RSS são hospedados pelo GitHub Pages. O navegador, o Netlify e o GitHub podem tratar dados técnicos da conexão e da visita, como endereço IP, dispositivo, horário, páginas vistas e links acessados, conforme as políticas de privacidade do <a href="https://www.netlify.com/privacy/">Netlify ↗</a> e do <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub ↗</a>.</p>
+        <p><strong>O conteúdo colocado na demonstração fica temporariamente no navegador.</strong> Textos, fotografias e posições editadas não são enviados ao Rebojar e desaparecem quando a página é recarregada. A pessoa visitante deve preservar fora da demonstração qualquer conteúdo que queira conservar.</p>
+        <p>A compra avulsa não exige conta. Para assinar ou recuperar uma assinatura, o Netlify Identity trata o endereço de e-mail e os dados necessários de autenticação. O serviço de pagamentos do Rebojar associa à conta apenas os identificadores e estados necessários para reconhecer a assinatura.</p>
+        <p>Os pagamentos são processados pela Stripe. O Rebojar pode receber confirmação do pagamento, produto ou preço escolhido, identificadores de cliente e assinatura e o e-mail associado quando necessário, mas não recebe os dados completos do cartão nem as credenciais bancárias usadas no Pix.</p>
+        <p>A demonstração é hospedada pela Netlify; este portal e o RSS são hospedados pelo GitHub Pages. Esses serviços podem tratar dados técnicos da conexão e da visita, como endereço IP, dispositivo, horário, páginas vistas e links acessados. Consulte as políticas de privacidade da <a href="https://stripe.com/br/privacy">Stripe ↗</a>, da <a href="https://www.netlify.com/privacy/">Netlify ↗</a> e do <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub ↗</a>.</p>
+        <p>Pedidos relacionados a dados pessoais podem ser apresentados pelos canais públicos indicados no portal <a href="https://linktr.ee/rebojar">Rebojar ↗</a>.</p>
+      </section>
+      <section class="privacidade-caderno" id="termos-de-servico" aria-labelledby="termos-de-servico-title">
+        <h3 id="termos-de-servico-title">Termos de Serviço do Caderno de Bordo</h3>
+        <p><small>Última atualização: 10 de outubro de 2026.</small></p>
+        <h4>1. Serviço oferecido</h4>
+        <p>O Caderno de Bordo é um projeto autoral independente do Rebojar. A demonstração pública permite preparar temporariamente uma composição com textos e fotografias e adquirir uma exportação de leitura em arquivo HTML. O aplicativo completo continua sendo um produto separado e não é transferido com a exportação.</p>
+        <h4>2. Conteúdo temporário e arquivos</h4>
+        <p>A demonstração não oferece armazenamento permanente do conteúdo criado durante a visita. Recarregar ou fechar a página pode apagar as alterações. A pessoa usuária é responsável por guardar o arquivo exportado e manter suas próprias cópias de segurança.</p>
+        <h4>3. Compra avulsa</h4>
+        <p>A compra avulsa não exige conta e libera a exportação indicada no checkout para a composição preparada naquela visita. O preço e as formas de pagamento disponíveis são apresentados antes da confirmação. O pagamento por Pix pode levar alguns instantes para ser confirmado.</p>
+        <h4>4. Assinatura</h4>
+        <p>A assinatura é recorrente, exige uma conta de acesso e permanece ativa até o cancelamento. A cobrança, a periodicidade e o preço vigente aparecem no checkout. O cancelamento pode ser solicitado no Portal do Cliente e produz efeito ao final do período já pago, salvo quando a legislação aplicável exigir solução diferente. A assinatura de teste não concede acesso no ambiente de produção.</p>
+        <h4>5. Conta e serviços de terceiros</h4>
+        <p>A autenticação é fornecida pelo Netlify Identity e os pagamentos são processados pela Stripe. A pessoa usuária deve fornecer informações corretas e proteger o acesso ao próprio e-mail. A disponibilidade desses serviços também está sujeita às condições técnicas e políticas dos respectivos fornecedores.</p>
+        <h4>6. Conteúdo e propriedade intelectual</h4>
+        <p>A pessoa usuária mantém os direitos sobre os textos e imagens que inserir e declara possuir autorização para utilizá-los. A marca, a interface, os textos editoriais e o código do Caderno de Bordo pertencem aos respectivos titulares e não podem ser copiados, redistribuídos ou explorados fora das permissões legais ou de autorização expressa.</p>
+        <h4>7. Uso responsável</h4>
+        <p>Não é permitido utilizar o serviço para violar direitos de terceiros, praticar fraude, distribuir conteúdo ilegal, comprometer a segurança do sistema ou interferir no funcionamento da demonstração, do checkout ou das contas de outras pessoas.</p>
+        <h4>8. Cancelamento, arrependimento e reembolso</h4>
+        <p>Solicitações serão tratadas conforme a legislação aplicável, inclusive o direito de arrependimento quando cabível. O pedido deve ser feito pelos canais públicos indicados no portal Rebojar, com informações suficientes para localizar o pagamento. O exercício de direitos legais do consumidor não é limitado por estes termos.</p>
+        <h4>9. Disponibilidade e responsabilidade</h4>
+        <p>A demonstração pode ser corrigida, atualizada, suspensa ou descontinuada. Dentro dos limites permitidos por lei, o Rebojar não responde por perda de conteúdo temporário, indisponibilidade de serviços de terceiros ou uso de arquivos fora da finalidade apresentada. Nada nesta cláusula exclui responsabilidade que não possa ser afastada pela legislação aplicável.</p>
+        <h4>10. Privacidade, alterações e lei aplicável</h4>
+        <p>O tratamento de dados é descrito na seção <a href="#privacidade-caderno-de-bordo">Privacidade no Caderno de Bordo</a>. Estes termos podem ser atualizados para refletir mudanças no produto ou na legislação, com indicação da data da revisão. Aplicam-se as leis brasileiras, preservados os direitos obrigatórios do consumidor e o foro que a legislação assegurar.</p>
+        <p>Dúvidas e solicitações podem ser encaminhadas pelos canais públicos do <a href="https://linktr.ee/rebojar">Rebojar ↗</a>.</p>
       </section>
     </section>
     <section class="apresentacao-projeto" id="audicanvas" aria-labelledby="audicanvas-title">
@@ -843,8 +877,14 @@
 
   <script>
     (() => {
-      // A home sempre inicia pelo header, mesmo após recarregar uma seção com hash.
-      if (window.location.hash) {
+      // Endereços jurídicos e a apresentação do Caderno permanecem acessíveis por link direto.
+      const hashInicial = window.location.hash;
+      const destinosPersistentes = new Set([
+        '#caderno-de-bordo',
+        '#privacidade-caderno-de-bordo',
+        '#termos-de-servico'
+      ]);
+      if (hashInicial && !destinosPersistentes.has(hashInicial)) {
         history.replaceState(null, '', window.location.pathname + window.location.search);
         window.scrollTo(0, 0);
       }
