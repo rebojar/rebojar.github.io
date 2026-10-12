@@ -405,6 +405,19 @@
     .privacidade-caderno p:last-child {
       margin-bottom: 0;
     }
+    .estante-portal {
+      width: min(100%, 60rem);
+      margin: 3rem auto 0;
+    }
+    .estante-portal rebojar-estante {
+      width: 100%;
+      --estante-altura: 700px;
+    }
+    main:has(.apresentacao-projeto:target) .estante-portal,
+    main:has(#privacidade-caderno-de-bordo:target) .estante-portal,
+    main:has(#termos-de-servico:target) .estante-portal {
+      display: none;
+    }
     footer {
       text-align: center;
       padding: 2rem;
@@ -465,6 +478,9 @@
     @media (max-width: 38rem) {
       header {
         min-height: 24rem;
+      }
+      .estante-portal rebojar-estante {
+        --estante-altura: 440px;
       }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -702,6 +718,7 @@
       }
     }
   </style>
+  <script src="assets/widget-estante/rebojar-estante.js" defer></script>
 </head>
 <body>
   <div class="scroll-indicador" aria-hidden="true"></div>
@@ -788,6 +805,9 @@
     <section class="introducao-portal" aria-labelledby="boas-vindas-title">
       <h2 id="boas-vindas-title">Bem-vinde ao Rebojar 🌿</h2>
       <p>Um espaço onde os ciclos naturais se encontram com a exploração curiosa e artística num mesmo fluxo.</p>
+    </section>
+    <section class="estante-portal" aria-label="Estante de projetos Rebojar">
+      <rebojar-estante mostrar-album destino-caderno="https://rebojar.netlify.app/"></rebojar-estante>
     </section>
     <section class="apresentacao-projeto" id="labvisual" aria-labelledby="labvisual-title">
       <h2 id="labvisual-title">LabVisual</h2>
@@ -903,6 +923,28 @@
       botao.addEventListener('click', () => {
         definirMenu(botao.getAttribute('aria-expanded') !== 'true');
       });
+
+      const interacaoComHover = matchMedia('(hover: hover) and (pointer: fine)');
+      let temporizadorFechamento;
+      const cancelarFechamento = () => clearTimeout(temporizadorFechamento);
+      const abrirPorHover = () => {
+        if (!interacaoComHover.matches) return;
+        cancelarFechamento();
+        definirMenu(true);
+      };
+      const fecharDepoisDoHover = () => {
+        if (!interacaoComHover.matches) return;
+        cancelarFechamento();
+        temporizadorFechamento = setTimeout(() => {
+          if (!botao.matches(':hover') && !menu.matches(':hover')) definirMenu(false);
+        }, 140);
+      };
+
+      botao.addEventListener('pointerenter', abrirPorHover);
+      botao.addEventListener('pointerleave', fecharDepoisDoHover);
+      menu.addEventListener('pointerenter', cancelarFechamento);
+      menu.addEventListener('pointerleave', fecharDepoisDoHover);
+      menu.addEventListener('focusin', cancelarFechamento);
 
       document.addEventListener('click', event => {
         const aberto = botao.getAttribute('aria-expanded') === 'true';
