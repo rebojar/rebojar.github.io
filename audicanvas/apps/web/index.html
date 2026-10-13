@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AUDICANVAS · Ensaio espacial</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main>
+    <p class="eyebrow">AUDICANVAS / LABORATÓRIO 01</p>
+    <h1>Som em movimento.</h1>
+    <p class="intro">Compare quem se move, onde o som parece passar e como um sinal mais rico muda a percepção.</p>
+    <section aria-label="Ensaio de áudio">
+      <label for="scene">Trajetória de teste</label>
+      <select id="scene">
+        <option value="pass">Você passa pela fonte</option>
+        <option value="cross">Fonte cruza à sua frente</option>
+        <option value="far">Você se afasta mais</option>
+        <option value="pass-right">Passagem mais à direita (novo teste)</option>
+        <option value="pass-right-rich">Mesmo trajeto, som mais rico (novo teste)</option>
+      </select>
+      <p id="scene-description">Uma fonte fica à sua direita enquanto você passa por ela.</p>
+      <div class="track" aria-hidden="true"><span id="listener">●</span><span id="source" class="source">◇ fonte</span></div>
+      <p>Passagem de 12 segundos · sinal de diagnóstico · volume suave</p>
+      <div class="buttons"><button id="start">Iniciar passagem</button><button id="stop" disabled>Pausar</button><button id="restart" disabled>Recomeçar</button></div>
+      <p id="status" role="status">Pronto para iniciar. Use um volume confortável.</p>
+      <p id="signal">Sinal: —</p>
+    </section>
+    <section aria-label="Laboratório de movimento">
+      <h2>Movimento plano</h2>
+      <p>Controle a caminhada simulada. A distância vem do tempo e da velocidade. Os passos são sintéticos e provisórios; gravações entram depois.</p>
+      <label for="movement-speed">Velocidade: <output id="movement-speed-value" for="movement-speed">1,0 m/s</output></label>
+      <input id="movement-speed" type="range" min="0.2" max="2" step="0.1" value="1">
+      <div class="buttons"><button id="movement-start">Começar a andar</button><button id="movement-stop" disabled>Parar</button><button id="movement-reset">Zerar distância</button></div>
+      <p id="movement-status" role="status">Parado.</p>
+      <p id="step-status">Passos: desligados.</p>
+      <p class="note">Passos sintéticos programados nesta caminhada: <output id="step-count">0</output></p>
+      <p class="distance">Distância: <output id="movement-distance">0,00 m</output></p>
+    </section>
+    <p class="note">Use fones para a primeira comparação. O indicador de sinal não garante o que chega aos seus ouvidos. Os passos são sintéticos e provisórios; esta versão ainda não contém passos gravados, brincos ou ambientes.</p>
+    <details><summary>O que avaliar</summary><ol><li>Na primeira trajetória, parece que você se move ou que algo passa por você?</li><li>Na segunda, o som cruza da direita para a esquerda à sua frente?</li><li>Na terceira, ele termina mais distante atrás?</li><li>Nas duas opções novas, a fonte parece ficar à direita? O som mais rico ajuda ou atrapalha?</li><li>Pausar e continuar preserva o ponto da passagem?</li></ol><p>Registrar fone/dispositivo, navegador e percepção de cada trajetória.</p></details>
+  </main>
+  <script type="module" src="./main.mjs"></script>
+</body>
+</html>
