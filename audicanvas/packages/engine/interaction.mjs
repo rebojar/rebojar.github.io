@@ -1,7 +1,19 @@
-import { surfaceContact, SURFACES } from './surface.mjs?v=86453f847b44';
+import { surfaceContact, SURFACES } from './surface.mjs?v=b687164b3843';
+import { cadenceForSpeed } from './gait.mjs?v=b687164b3843';
 
 export const MICRO_INTERACTION_V0 = 'micro.interaction.v0';
 export const MICRO_KINDS = Object.freeze(['dry_flower', 'dry_leaf', 'pebble']);
+
+// Density is specified for a walked distance. Faster steps cover more ground,
+// so each step may meet more objects; combined with cadence this raises the
+// number of encounters per second without forcing a metronomic pattern.
+export function densityScaleForSpeed(sliderScale, speed) {
+  if (!Number.isFinite(sliderScale) || sliderScale < 0 || sliderScale > 2) {
+    throw new RangeError('Frequência manual deve estar entre 0 e 2.');
+  }
+  const cadence = cadenceForSpeed(speed);
+  return cadence === 0 ? 0 : sliderScale * speed * cadenceForSpeed(1) / cadence;
+}
 
 function unitHash(seed, index, salt) {
   let value = (seed ^ Math.imul(index, 0x9e3779b1) ^ Math.imul(salt, 0x85ebca6b)) >>> 0;
@@ -61,9 +73,19 @@ export class InteractionEngine {
   }
 
   setDensityScale(scale) {
-    if (!Number.isFinite(scale) || scale < 0 || scale > 2) throw new RangeError('Densidade deve estar entre 0 e 2.');
+    if (!Number.isFinite(scale) || scale < 0 || scale > 5) throw new RangeError('Densidade efetiva deve estar entre 0 e 5.');
     this.densityScale = scale;
     this.resetPlan();
+  }
+
+  estimatedEncountersPerMinute(speed) {
+    const cadence = cadenceForSpeed(speed);
+    if (!cadence) return 0;
+    const sampleSteps = 1000;
+    this.planThrough(sampleSteps);
+    let encounters = 0;
+    for (let index = 1; index <= sampleSteps; index++) if (this.plan[index]) encounters++;
+    return encounters * cadence * 60 / sampleSteps;
   }
 
   planThrough(index) {

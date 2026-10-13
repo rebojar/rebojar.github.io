@@ -1,5 +1,6 @@
-import { GaitClock } from '../engine/gait.mjs?v=86453f847b44';
-import { MicroInteractionAudio } from './interactions.mjs?v=86453f847b44';
+import { GaitClock } from '../engine/gait.mjs?v=b687164b3843';
+import { MicroInteractionAudio } from './interactions.mjs?v=b687164b3843';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=b687164b3843';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
@@ -30,6 +31,7 @@ export class FootstepAudio {
     this.interactionPlan = null;
     this.interactions = new MicroInteractionAudio();
     this.interactionCounts = { dry_flower: 0, dry_leaf: 0, pebble: 0 };
+    this.previewVersion = 0;
   }
 
   setInteractionPlan(plan) {
@@ -37,8 +39,7 @@ export class FootstepAudio {
     this.interactionPlan = plan;
   }
 
-  async start(speed) {
-    if (this.active) return performance.now() / 1000;
+  async ensureContext() {
     const AudioContextClass = globalThis.AudioContext || globalThis.webkitAudioContext;
     if (!AudioContextClass) throw new Error('Web Audio não está disponível.');
     this.context ??= new AudioContextClass();
@@ -50,6 +51,31 @@ export class FootstepAudio {
       ]);
     } finally { clearTimeout(timeout); }
     if (this.context.state !== 'running') throw new Error(`Contexto de áudio: ${this.context.state}`);
+  }
+
+  async previewInteraction(kind) {
+    if (!MICRO_KINDS.includes(kind)) throw new RangeError('Contato desconhecido.');
+    if (this.active) throw new Error('Pare a caminhada antes de ouvir o contato isolado.');
+    const request = ++this.previewVersion;
+    await this.ensureContext();
+    if (request !== this.previewVersion || this.active) return false;
+    this.interactions.cancelVoices(true, this.context);
+    const time = performance.now() / 1000;
+    const offset = time - this.context.currentTime;
+    for (let index = 0; index < 3; index++) {
+      this.interactions.play({
+        kind, stepIndex: index + 101, foot: index % 2 ? 'left' : 'right',
+        time: time + 0.04 + index * 0.3, intensity: 0.8,
+      }, this.context, offset);
+    }
+    return true;
+  }
+
+  async start(speed) {
+    if (this.active) return performance.now() / 1000;
+    this.previewVersion++;
+    await this.ensureContext();
+    this.interactions.cancelVoices(true, this.context);
     const time = performance.now() / 1000;
     this.clockOffset = time - this.context.currentTime;
     this.gait.update(time, { moving: true, speed });
@@ -142,12 +168,13 @@ export class FootstepAudio {
   }
 
   stop(time = performance.now() / 1000) {
+    this.previewVersion++;
+    this.interactions.cancelVoices(true, this.context);
     if (!this.active) return;
     this.active = false;
     clearInterval(this.timer);
     this.timer = null;
     this.gait.update(time, { moving: false, speed: 0 });
     this.cancelVoices(true);
-    this.interactions.cancelVoices(true, this.context);
   }
 }

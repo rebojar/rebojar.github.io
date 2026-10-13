@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=86453f847b44';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=86453f847b44';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=86453f847b44';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=86453f847b44';
-import { InteractionEngine } from '../../packages/engine/interaction.mjs?v=86453f847b44';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=b687164b3843';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=b687164b3843';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=b687164b3843';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=b687164b3843';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=b687164b3843';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -30,9 +30,12 @@ const stepCount = document.querySelector('#step-count');
 const interactionDensity = document.querySelector('#interaction-density');
 const interactionDensityValue = document.querySelector('#interaction-density-value');
 const interactionStatus = document.querySelector('#interaction-status');
+const encounterSpeedNote = document.querySelector('#encounter-speed-note');
+const contactPreviewStatus = document.querySelector('#contact-preview-status');
 const flowerCount = document.querySelector('#flower-count');
 const leafCount = document.querySelector('#leaf-count');
 const pebbleCount = document.querySelector('#pebble-count');
+const contactPreviewButtons = document.querySelectorAll('[data-contact-kind]');
 let interactionEngine = null;
 let surfaceReady = false;
 let frame;
@@ -202,14 +205,36 @@ movementSpeed.addEventListener('input', () => {
   const time = movementTime();
   const speed = Number(movementSpeed.value);
   const snapshot = movement.setSpeed(speed, time);
+  updateEncounterRate();
   steps.setSpeed(speed, time);
   renderMovement(snapshot);
 });
-interactionDensity.addEventListener('input', () => {
+
+function updateEncounterRate() {
+  if (!interactionEngine) return;
   const scale = Number(interactionDensity.value);
-  interactionEngine.setDensityScale(scale);
+  const speed = Number(movementSpeed.value);
+  interactionEngine.setDensityScale(densityScaleForSpeed(scale, speed));
   steps.interactions.cancelVoices(false, steps.context);
   interactionDensityValue.textContent = scale === 0 ? 'desligados' : scale < 0.8 ? 'raros' : scale > 1.2 ? 'frequentes' : 'normal';
+  encounterSpeedNote.textContent = `A ${speed.toFixed(1).replace('.', ',')} m/s: cerca de ${Math.round(interactionEngine.estimatedEncountersPerMinute(speed))} encontros por minuto. Estimativa; os contatos continuam irregulares.`;
+}
+interactionDensity.addEventListener('input', updateEncounterRate);
+
+const contactNames = { dry_flower: 'flor seca', dry_leaf: 'folha seca', pebble: 'pedrinha' };
+for (const button of contactPreviewButtons) button.addEventListener('click', async () => {
+  const kind = button.dataset.contactKind;
+  if (audio.active || start.disabled || passagePaused) halt('Passagem interrompida para comparar contatos.');
+  stopMovement();
+  contactPreviewStatus.textContent = `Preparando ${contactNames[kind]}…`;
+  for (const control of contactPreviewButtons) control.disabled = true;
+  try {
+    const played = await steps.previewInteraction(kind);
+    contactPreviewStatus.textContent = played
+      ? `Três contatos de ${contactNames[kind]} programados. Compare com outro material.`
+      : 'Comparação interrompida por outro ensaio.';
+  } catch (error) { contactPreviewStatus.textContent = `Não foi possível ouvir: ${error.message}`; }
+  finally { for (const control of contactPreviewButtons) control.disabled = false; }
 });
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { void pausePassage('Pausado ao sair da página.'); stopMovement('Ensaio interrompido ao sair da aba.'); }
@@ -231,6 +256,7 @@ async function loadSurfaceScene() {
     }));
     surfaceReady = true;
     interactionDensity.disabled = false;
+    updateEncounterRate();
     interactionStatus.textContent = 'Cena de asfalto pronta. A frequência muda os próximos contatos.';
     renderMovement(movement.observe(movementTime()));
   } catch (error) { interactionStatus.textContent = `Não foi possível preparar o chão: ${error.message}`; }

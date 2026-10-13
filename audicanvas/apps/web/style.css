@@ -26,6 +26,8 @@ button { border: 1px solid #a8cbbc; border-radius: 8px; padding: 13px 18px; back
 .ground-controls { border-top: 1px solid #435256; margin: 0 0 24px; padding-top: 20px; }
 .ground-controls p { margin: 0 0 12px; }
 .ground-controls input[type="range"] { margin-bottom: 8px; }
+.contact-preview { margin: 8px 0 12px; }
+.contact-preview button { background: transparent; color: #ebe9e2; }
 button:disabled { opacity: .45; cursor: default; }
 button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid #e9cfa4; outline-offset: 5px; }
 .note, #signal { color: #b3c1c1; font-size: 14px; }
