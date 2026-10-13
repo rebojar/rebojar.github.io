@@ -1,4 +1,4 @@
-const VERSAO = "estante-rebojar-v13";
+const VERSAO = "estante-rebojar-v14";
 const ARQUIVOS = [
   "./",
   "./index.html",
