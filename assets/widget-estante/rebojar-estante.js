@@ -31,10 +31,7 @@ modelo.innerHTML = `
       overflow: visible;
       border: 1px solid #061725;
       border-radius: 5px 5px 3px 3px;
-      background:
-        repeating-linear-gradient(2deg, transparent 0 15px, #e7f2f608 16px, transparent 18px 31px),
-        repeating-linear-gradient(91deg, #ffffff05 0 1px, transparent 2px 11px),
-        linear-gradient(100deg, var(--madeira-escura), var(--madeira-clara) 17%, var(--madeira-media) 48%, #102f48 78%, #071a2a);
+      background: linear-gradient(100deg, var(--madeira-escura), var(--madeira-clara) 17%, var(--madeira-media) 48%, #102f48 78%, #071a2a);
       box-shadow:
         0 24px 45px #11273c35,
         0 5px 0 #061522,
@@ -50,7 +47,7 @@ modelo.innerHTML = `
       top: 12px;
       left: 14px;
       right: 14px;
-      z-index: 6;
+      z-index: 9;
       height: clamp(30px, 5vw, 42px);
       border: 1px solid #061827;
       border-radius: 3px 3px 1px 1px;
@@ -72,7 +69,7 @@ modelo.innerHTML = `
       left: 14px;
       right: 14px;
       bottom: 13px;
-      z-index: 6;
+      z-index: 9;
       height: clamp(31px, 5vw, 43px);
       border: 1px solid #061725;
       border-radius: 1px 1px 4px 4px;
@@ -87,7 +84,7 @@ modelo.innerHTML = `
       position: absolute;
       top: -18px;
       left: 50%;
-      z-index: 8;
+      z-index: 10;
       transform: translateX(-50%);
       display: flex;
       align-items: baseline;
@@ -119,10 +116,11 @@ modelo.innerHTML = `
       border-bottom: 0;
       border-radius: 1px 1px 0 0;
       background:
-        repeating-linear-gradient(0deg, transparent 0 37px, #8fb2c50b 38px, transparent 39px 76px),
-        repeating-linear-gradient(90deg, #ffffff05 0 1px, transparent 2px 29px),
+        url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMzYwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj4KICA8ZGVmcz4KICAgIDxmaWx0ZXIgaWQ9IndhcnAiIHg9Ii0xNSUiIHk9Ii0yMCUiIHdpZHRoPSIxMzAlIiBoZWlnaHQ9IjE0MCUiPgogICAgICA8ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC4wMDYgMC4wMzUiIG51bU9jdGF2ZXM9IjIiIHNlZWQ9IjE3IiByZXN1bHQ9Im5vaXNlIi8+CiAgICAgIDxmZURpc3BsYWNlbWVudE1hcCBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJub2lzZSIgc2NhbGU9IjI0IiB4Q2hhbm5lbFNlbGVjdG9yPSJSIiB5Q2hhbm5lbFNlbGVjdG9yPSJHIi8+CiAgICA8L2ZpbHRlcj4KICA8L2RlZnM+CiAgPGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjYjhkMGRhIiBzdHJva2Utd2lkdGg9IjEuMyIgb3BhY2l0eT0iMC4xOSIgZmlsdGVyPSJ1cmwoI3dhcnApIj4KICAgIDxwYXRoIGQ9Ik0tODAgMzQgQzcwIDEwIDE1MCA1OCAyOTAgMzUgUzU0MCAxOCA4MDAgNDIiLz4KICAgIDxwYXRoIGQ9Ik0tNzAgNTggQzcwIDM0IDE4MCA4MCAzMjAgNTYgUzU5MCA0MCA3OTAgNjciLz4KICAgIDxwYXRoIGQ9Ik0tOTAgODggQzg1IDY0IDE4NSAxMDggMzMwIDg0IFM1OTAgNjggODEwIDk4Ii8+CiAgICA8cGF0aCBkPSJNLTgwIDEyMiBDNzAgMTAwIDIwNSAxNDAgMzQ2IDExNyBTNTkwIDEwMiA4MDAgMTMyIi8+CiAgICA8cGF0aCBkPSJNLTcwIDE2MCBDOTAgMTMyIDIwMiAxODYgMzU2IDE1NyBTNjEwIDE0MiA4MDAgMTcwIi8+CiAgICA8cGF0aCBkPSJNLTgwIDIwMyBDNzggMTc0IDIxOCAyMzAgMzcwIDE5OSBTNjIwIDE4MyA4MTAgMjE0Ii8+CiAgICA8cGF0aCBkPSJNLTcwIDI0OCBDOTIgMjE4IDIyMCAyNzAgMzc2IDI0NCBTNjEyIDIyNSA4MDAgMjU2Ii8+CiAgICA8cGF0aCBkPSJNLTgwIDI5NCBDNzggMjY2IDIxMiAzMTYgMzYwIDI5MCBTNjAwIDI3MCA4MTAgMzAyIi8+CiAgICA8cGF0aCBkPSJNLTcwIDMzMyBDOTYgMzA2IDIxNCAzNTIgMzYwIDMyOSBTNjEwIDMxMCA4MDAgMzQwIi8+CiAgICA8cGF0aCBkPSJNNDAyIDE0MiBDNDM4IDExMCA1MTIgMTEyIDU0NCAxNDYgQzUxMSAxNzQgNDM4IDE3NyA0MDIgMTQyWiIvPgogICAgPHBhdGggZD0iTTQyMSAxNDIgQzQ0OSAxMjUgNDk1IDEyNiA1MjIgMTQ2IEM0OTMgMTU5IDQ1MCAxNjEgNDIxIDE0MloiLz4KICAgIDxwYXRoIGQ9Ik00NDggMTQzIEM0NjMgMTM1IDQ4MiAxMzYgNDk2IDE0NiBDNDgxIDE1MSA0NjMgMTUzIDQ0OCAxNDNaIi8+CiAgPC9nPgogIDxnIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAyMGMxNCIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjI0IiBmaWx0ZXI9InVybCgjd2FycCkiPgogICAgPHBhdGggZD0iTS02MCA3MiBDOTUgNTAgMTkwIDk0IDM0MiA3MCBTNjA0IDU0IDc5MCA4MCIvPgogICAgPHBhdGggZD0iTS02MCAxODEgQzk4IDE1MiAyMTggMjA3IDM3MCAxNzggUzYxMCAxNjQgNzkwIDE5MCIvPgogICAgPHBhdGggZD0iTS02MCAyNzAgQzEwMiAyNDIgMjIwIDI5MSAzNzQgMjY2IFM2MTAgMjQ4IDc5MCAyNzgiLz4KICA8L2c+Cjwvc3ZnPg=="),
         radial-gradient(ellipse at 50% 115%, #2eaee81c, transparent 63%),
         linear-gradient(90deg, #061624, #0c2b40 13%, #12354d 50%, #0a273b 87%, #051521);
+      background-size: 100% 100%, auto, auto;
+      background-repeat: no-repeat;
       box-shadow:
         inset 22px 0 29px #0008,
         inset -22px 0 29px #0008,
@@ -142,8 +140,10 @@ modelo.innerHTML = `
       width: clamp(25px, 4vw, 39px);
       border: 1px solid #061624;
       background:
-        repeating-linear-gradient(2deg, transparent 0 11px, #ffffff0a 12px, transparent 13px 25px),
+        repeating-radial-gradient(ellipse at 50% 12%, transparent 0 14px, #b8d0db16 15px 16px, transparent 17px 34px),
+        repeating-linear-gradient(91deg, transparent 0 6px, #ffffff0a 7px 8px, transparent 10px 18px),
         linear-gradient(90deg, #0a263a, #28516d 32%, #173b56 66%, #071d2e);
+      background-size: 74px 180px, 19px 100%, auto;
       box-shadow: inset 1px 0 #ffffff17, inset -4px 0 #02091170, 3px 5px 9px #0209118f;
       pointer-events: none;
     }
