@@ -87,7 +87,7 @@ export class MicroInteractionAudio {
     gain.gain.setValueAtTime(0, end);
     const pan = context.createStereoPanner?.();
     if (pan) {
-      pan.pan.value = event.foot === 'left' ? -0.12 : 0.12;
+      pan.pan.value = event.foot === 'left' ? -0.22 : 0.22;
       gain.connect(pan).connect(context.destination);
     } else gain.connect(context.destination);
 

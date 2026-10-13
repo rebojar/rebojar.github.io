@@ -1,5 +1,5 @@
-import { surfaceContact, SURFACES } from './surface.mjs?v=328536c4ff0f';
-import { cadenceForSpeed } from './gait.mjs?v=328536c4ff0f';
+import { surfaceContact, SURFACES } from './surface.mjs?v=8d87044a2445';
+import { cadenceForSpeed } from './gait.mjs?v=8d87044a2445';
 
 export const MICRO_INTERACTION_V0 = 'micro.interaction.v0';
 export const MICRO_KINDS = Object.freeze(['dry_flower', 'dry_leaf', 'pebble']);
@@ -130,7 +130,8 @@ export class InteractionEngine {
       surface: contact.surface,
       stepIndex: contact.stepIndex,
       foot: contact.foot,
-      time: contact.time + 0.006 + unitHash(this.config.seed, step.index, 30 + salt) * 0.018,
+      // Pressure from the footfall comes first; the material responds shortly after.
+      time: contact.time + 0.042 + unitHash(this.config.seed, step.index, 30 + salt) * 0.008,
       intensity: contact.intensity * (item.intensity[0] + unitHash(this.config.seed, step.index, 40 + salt) * (item.intensity[1] - item.intensity[0])),
       position: contact.position,
     }];

@@ -1,6 +1,6 @@
-import { GaitClock } from '../engine/gait.mjs?v=328536c4ff0f';
-import { MicroInteractionAudio } from './interactions.mjs?v=328536c4ff0f';
-import { MICRO_KINDS } from '../engine/interaction.mjs?v=328536c4ff0f';
+import { GaitClock } from '../engine/gait.mjs?v=8d87044a2445';
+import { MicroInteractionAudio } from './interactions.mjs?v=8d87044a2445';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=8d87044a2445';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
@@ -137,8 +137,11 @@ export class FootstepAudio {
       thumpGain.gain.value = 0.3;
       const gain = ctx.createGain();
       gain.gain.setValueAtTime(0, start);
-      // Give a coincident microcontact room in the mix without muting gait.
-      gain.gain.linearRampToValueAtTime((plannedInteractions.length ? 0.045 : 0.07) * event.intensity, start + 0.008);
+      // The footfall attacks first, then recedes to reveal the material it struck.
+      gain.gain.linearRampToValueAtTime(0.07 * event.intensity, start + 0.008);
+      if (plannedInteractions.length) {
+        gain.gain.linearRampToValueAtTime(0.045 * event.intensity, start + 0.032);
+      }
       gain.gain.exponentialRampToValueAtTime(0.001, end - 0.008);
       gain.gain.setValueAtTime(0, end);
       const pan = ctx.createStereoPanner?.();
