@@ -60,7 +60,7 @@
   --muted: #52665a;
   --line: rgba(13, 46, 26, 0.2);
   --line-blue: rgba(0, 78, 146, 0.24);
-  --focus: var(--purple);
+  --focus: var(--yellow);
 }
 /* ==================================================
    02 — NORMALIZAÇÃO GLOBAL, SCROLLBAR E ACESSIBILIDADE
@@ -972,3 +972,8 @@ footer::after { content: ''; position: absolute; right: 0; bottom: 0; left: 0; d
 .batch-check-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.65rem 1rem; margin-top: 1rem; }
 .batch-check-row p { flex: 1 1 28rem; margin: 0; }
 .batch-check-row .button { margin-left: auto; }
+/* Padrão Rebojar para navegação por teclado. */
+:where(a, button, input, select, textarea, summary, [contenteditable], [tabindex]):focus-visible {
+  outline: 3px solid var(--yellow) !important;
+  outline-offset: 3px !important;
+}

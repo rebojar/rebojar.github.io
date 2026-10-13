@@ -29,7 +29,7 @@ button { border: 1px solid #a8cbbc; border-radius: 8px; padding: 13px 18px; back
 .contact-preview { margin: 8px 0 12px; }
 .contact-preview button { background: transparent; color: #ebe9e2; }
 button:disabled { opacity: .45; cursor: default; }
-button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid #e9cfa4; outline-offset: 5px; }
+button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid #e8d73a; outline-offset: 5px; }
 .note, #signal { color: #b3c1c1; font-size: 14px; }
 summary { cursor: pointer; }
 @media(max-width:480px) { main { padding: 32px 20px; } section { padding: 18px; } }
