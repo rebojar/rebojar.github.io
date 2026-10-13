@@ -156,6 +156,7 @@
         transform 420ms cubic-bezier(0.2, 0.75, 0.25, 1);
     }
     .onda-alvo:hover .onda-brilho,
+    .onda-alvo.onda-tocada .onda-brilho,
     .onda-link:focus-visible .onda-brilho {
       stroke: rgba(214, 238, 255, 0.82);
       stroke-width: 2.5px;
@@ -488,6 +489,7 @@
         transition: stroke 120ms ease, stroke-width 120ms ease;
       }
       .onda-alvo:hover .onda-brilho,
+      .onda-alvo.onda-tocada .onda-brilho,
       .onda-link:focus-visible .onda-brilho {
         transform: none;
         animation: none;
@@ -504,6 +506,78 @@
     .primeira-tela > header {
       --centro-ondas-y: calc(100% - 23rem);
     }
+
+    @media (min-width: 42.01rem) {
+      html {
+        scroll-snap-type: x proximity;
+      }
+
+      body {
+        display: flex;
+        width: max-content;
+        min-width: 100%;
+        height: 100vh;
+        height: 100svh;
+        flex-flow: row nowrap;
+        overflow-y: hidden;
+      }
+
+      .primeira-tela,
+      body > main,
+      body > footer {
+        box-sizing: border-box;
+        width: 100vw;
+        min-width: 100vw;
+        height: 100vh;
+        height: 100svh;
+        min-height: 100vh;
+        min-height: 100svh;
+        max-height: 100vh;
+        max-height: 100svh;
+        flex: 0 0 100vw;
+        scroll-snap-align: start;
+        scroll-snap-stop: normal;
+      }
+
+      body > main,
+      body > footer {
+        overflow-y: auto;
+        scrollbar-width: none;
+      }
+
+      body > main::-webkit-scrollbar,
+      body > footer::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+
+      body > footer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      body:has(.apresentacao-projeto:target) .primeira-tela,
+      body:has(#privacidade-caderno-de-bordo:target) .primeira-tela,
+      body:has(#termos-de-servico:target) .primeira-tela {
+        width: 0;
+        min-width: 0;
+        flex-basis: 0;
+      }
+
+      .scroll-indicador {
+        top: auto;
+        right: auto;
+        bottom: 3px;
+        left: 0;
+        width: 28px;
+        min-width: 28px;
+        height: 6px;
+        min-height: 0;
+        transform: translateX(0);
+      }
+    }
+
     @media (max-width: 38rem) {
       .primeira-tela > header {
         --centro-ondas-y: calc(100% - 20rem);
@@ -734,8 +808,9 @@
 
       footer details,
       footer details.sponsor-card {
-        width: min(100%, 30rem);
-        max-width: 100%;
+        width: min(100%, 16rem);
+        max-width: 16rem;
+        text-align: left;
       }
 
       .sponsor-card-frame {
@@ -757,8 +832,8 @@
       }
     }
   </style>
-  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261012f" defer></script>
-  <script src="assets/rebojar-som.min.js?v=widgets-20261012f" defer></script>
+  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261013c" defer></script>
+  <script src="assets/rebojar-som.min.js?v=widgets-20261013c" defer></script>
 </head>
 <body>
   <div class="scroll-indicador" aria-hidden="true"></div>
@@ -986,6 +1061,67 @@
       menu.addEventListener('pointerleave', fecharDepoisDoHover);
       menu.addEventListener('focusin', cancelarFechamento);
 
+      const cabecalho = document.getElementById('inicio');
+      let arcoSobDedo;
+      let origemDoToque;
+      let toqueDeslizou = false;
+      let impedirCliqueDoArco = false;
+      let temporizadorCliqueDoArco;
+
+      const encontrarArcoNoPonto = (x, y) => {
+        const area = document.elementsFromPoint(x, y).find(elemento => elemento.classList?.contains('onda-hit'));
+        return area?.closest('.onda-alvo[data-anel]');
+      };
+
+      const iluminarArcoDoToque = (toque) => {
+        const arco = encontrarArcoNoPonto(toque.clientX, toque.clientY);
+        if (arco === arcoSobDedo) return;
+        arcoSobDedo?.classList.remove('onda-tocada');
+        arcoSobDedo = arco;
+        if (!arco) return;
+        arco.classList.add('onda-tocada');
+        const indice = Math.max(0, Number(arco.dataset.anel || 1) - 1);
+        window.RebojarSom?.arcoAquatico(indice);
+      };
+
+      const iniciarDeslizamentoNosArcos = event => {
+        if (event.touches.length !== 1) return;
+        const toque = event.touches[0];
+        origemDoToque = { x: toque.clientX, y: toque.clientY };
+        toqueDeslizou = false;
+        iluminarArcoDoToque(toque);
+      };
+
+      const continuarDeslizamentoNosArcos = event => {
+        if (event.touches.length !== 1) return;
+        const toque = event.touches[0];
+        if (origemDoToque && Math.hypot(toque.clientX - origemDoToque.x, toque.clientY - origemDoToque.y) > 8) {
+          toqueDeslizou = true;
+        }
+        iluminarArcoDoToque(toque);
+      };
+
+      const terminarDeslizamentoNosArcos = () => {
+        arcoSobDedo?.classList.remove('onda-tocada');
+        arcoSobDedo = undefined;
+        origemDoToque = undefined;
+        if (!toqueDeslizou) return;
+        impedirCliqueDoArco = true;
+        clearTimeout(temporizadorCliqueDoArco);
+        temporizadorCliqueDoArco = setTimeout(() => { impedirCliqueDoArco = false; }, 500);
+      };
+
+      cabecalho.addEventListener('touchstart', iniciarDeslizamentoNosArcos, { passive: true });
+      cabecalho.addEventListener('touchmove', continuarDeslizamentoNosArcos, { passive: true });
+      cabecalho.addEventListener('touchend', terminarDeslizamentoNosArcos, { passive: true });
+      cabecalho.addEventListener('touchcancel', terminarDeslizamentoNosArcos, { passive: true });
+      cabecalho.addEventListener('click', event => {
+        if (!impedirCliqueDoArco || !event.target.closest('.onda-link')) return;
+        event.preventDefault();
+        event.stopPropagation();
+        impedirCliqueDoArco = false;
+      }, true);
+
       document.addEventListener('click', event => {
         const aberto = botao.getAttribute('aria-expanded') === 'true';
         if (aberto && !menu.contains(event.target) && !botao.contains(event.target)) {
@@ -1005,11 +1141,13 @@
       });
 
       const indicador = document.querySelector('.scroll-indicador');
+      const rolagemHorizontal = matchMedia('(min-width: 42.01rem)');
       const atualizarIndicador = () => {
         const raiz = document.documentElement;
-        const total = raiz.scrollHeight;
-        const visivel = raiz.clientHeight;
-        const rolavel = total - visivel;
+        const horizontal = rolagemHorizontal.matches;
+        const total = horizontal ? raiz.scrollWidth : raiz.scrollHeight;
+        const visivel = horizontal ? raiz.clientWidth : raiz.clientHeight;
+        const rolavel = Math.max(0, total - visivel);
 
         if (rolavel <= 0) {
           indicador.hidden = true;
@@ -1019,11 +1157,33 @@
         indicador.hidden = false;
         const altura = Math.max(28, visivel * visivel / total);
         const percurso = visivel - altura;
-        const progresso = Math.min(1, Math.max(0, window.scrollY / rolavel));
+        const posicao = horizontal ? window.scrollX : window.scrollY;
+        const progresso = Math.min(1, Math.max(0, posicao / rolavel));
 
-        indicador.style.height = `${altura}px`;
-        indicador.style.transform = `translateY(${percurso * progresso}px)`;
+        if (horizontal) {
+          indicador.style.width = `${altura}px`;
+          indicador.style.height = '';
+          indicador.style.transform = `translateX(${percurso * progresso}px)`;
+        } else {
+          indicador.style.width = '';
+          indicador.style.height = `${altura}px`;
+          indicador.style.transform = `translateY(${percurso * progresso}px)`;
+        }
       };
+
+      window.addEventListener('wheel', event => {
+        if (!rolagemHorizontal.matches || event.defaultPrevented) return;
+        if (event.target.closest?.('rebojar-estante')) return;
+        if (Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
+        const painelVertical = event.target.closest?.('main, footer');
+        if (painelVertical && painelVertical.scrollHeight > painelVertical.clientHeight) {
+          const podeSubir = event.deltaY < 0 && painelVertical.scrollTop > 0;
+          const podeDescer = event.deltaY > 0 && painelVertical.scrollTop < painelVertical.scrollHeight - painelVertical.clientHeight - 1;
+          if (podeSubir || podeDescer) return;
+        }
+        event.preventDefault();
+        window.scrollBy({ left: event.deltaY, behavior: 'auto' });
+      }, { passive: false });
 
       atualizarIndicador();
       window.addEventListener('scroll', atualizarIndicador, { passive: true });
