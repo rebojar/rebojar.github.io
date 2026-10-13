@@ -209,7 +209,7 @@ modelo.innerHTML = `
     }
 
     .livro-miolo {
-      inset: 3px -3px 2px 4px;
+      inset: 3px 0 2px 4px;
       background: repeating-linear-gradient(90deg, #ded8c6 0 2px, #f8f3e5 2px 4px);
       box-shadow: 5px 6px 13px #0008;
     }
