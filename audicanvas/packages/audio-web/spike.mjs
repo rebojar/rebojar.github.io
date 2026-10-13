@@ -1,5 +1,5 @@
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES, diagnosticPose } from '../engine/diagnostic-scenes.mjs?v=462ff8cde912';
-import { AUDIO_FORWARD, AUDIO_UP, toAudioPosition } from './coordinates.mjs?v=462ff8cde912';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES, diagnosticPose } from '../engine/diagnostic-scenes.mjs?v=34d15d81069c';
+import { AUDIO_FORWARD, AUDIO_UP, toAudioPosition } from './coordinates.mjs?v=34d15d81069c';
 
 const STOP_FADE_SECONDS = 0.12;
 const STOP_TAIL_SECONDS = 0.05;

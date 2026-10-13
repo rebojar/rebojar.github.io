@@ -1,6 +1,6 @@
-import { GaitClock } from '../engine/gait.mjs?v=462ff8cde912';
-import { MicroInteractionAudio } from './interactions.mjs?v=462ff8cde912';
-import { MICRO_KINDS } from '../engine/interaction.mjs?v=462ff8cde912';
+import { GaitClock } from '../engine/gait.mjs?v=34d15d81069c';
+import { MicroInteractionAudio } from './interactions.mjs?v=34d15d81069c';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=34d15d81069c';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
@@ -32,11 +32,18 @@ export class FootstepAudio {
     this.interactions = new MicroInteractionAudio();
     this.interactionCounts = { dry_flower: 0, dry_leaf: 0, pebble: 0 };
     this.previewVersion = 0;
+    this.footstepsMuted = false;
   }
 
   setInteractionPlan(plan) {
     if (plan !== null && typeof plan !== 'function') throw new TypeError('O planejador de interações deve ser uma função.');
     this.interactionPlan = plan;
+  }
+
+  setFootstepsMuted(muted) {
+    if (typeof muted !== 'boolean') throw new TypeError('Silêncio de passos deve ser booleano.');
+    this.footstepsMuted = muted;
+    if (muted) this.cancelVoices(true);
   }
 
   async ensureContext() {
@@ -111,43 +118,45 @@ export class FootstepAudio {
     const ctx = this.context;
     const when = event.time - this.clockOffset;
     if (when < ctx.currentTime - 0.03) return; // Drop delayed steps; do not burst after a throttled tab.
-    const start = Math.max(when, ctx.currentTime + 0.003);
-    const end = start + 0.13;
-    const source = ctx.createBufferSource();
-    source.buffer = noiseBuffer(ctx, event.index);
-    source.playbackRate.value = event.pitch;
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 850 * event.pitch;
-    const thump = ctx.createOscillator();
-    thump.type = 'sine';
-    thump.frequency.setValueAtTime(115 * event.pitch, start);
-    thump.frequency.exponentialRampToValueAtTime(65 * event.pitch, end);
-    const thumpGain = ctx.createGain();
-    thumpGain.gain.value = 0.3;
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0, start);
-    gain.gain.linearRampToValueAtTime(0.07 * event.intensity, start + 0.008);
-    gain.gain.exponentialRampToValueAtTime(0.001, end - 0.008);
-    gain.gain.setValueAtTime(0, end);
-    const pan = ctx.createStereoPanner?.();
-    source.connect(filter).connect(gain);
-    thump.connect(thumpGain).connect(gain);
-    if (pan) {
-      pan.pan.value = event.foot === 'left' ? -0.22 : 0.22;
-      gain.connect(pan).connect(ctx.destination);
-    } else gain.connect(ctx.destination);
-    const voice = { source, thump, filter, thumpGain, gain, pan, start };
-    this.voices.add(voice);
     this.scheduledCount++;
-    source.onended = () => {
-      source.disconnect(); thump.disconnect(); filter.disconnect(); thumpGain.disconnect(); gain.disconnect(); pan?.disconnect();
-      this.voices.delete(voice);
-    };
-    source.start(start);
-    thump.start(start);
-    source.stop(end);
-    thump.stop(end);
+    if (!this.footstepsMuted) {
+      const start = Math.max(when, ctx.currentTime + 0.003);
+      const end = start + 0.13;
+      const source = ctx.createBufferSource();
+      source.buffer = noiseBuffer(ctx, event.index);
+      source.playbackRate.value = event.pitch;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.value = 850 * event.pitch;
+      const thump = ctx.createOscillator();
+      thump.type = 'sine';
+      thump.frequency.setValueAtTime(115 * event.pitch, start);
+      thump.frequency.exponentialRampToValueAtTime(65 * event.pitch, end);
+      const thumpGain = ctx.createGain();
+      thumpGain.gain.value = 0.3;
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.07 * event.intensity, start + 0.008);
+      gain.gain.exponentialRampToValueAtTime(0.001, end - 0.008);
+      gain.gain.setValueAtTime(0, end);
+      const pan = ctx.createStereoPanner?.();
+      source.connect(filter).connect(gain);
+      thump.connect(thumpGain).connect(gain);
+      if (pan) {
+        pan.pan.value = event.foot === 'left' ? -0.22 : 0.22;
+        gain.connect(pan).connect(ctx.destination);
+      } else gain.connect(ctx.destination);
+      const voice = { source, thump, filter, thumpGain, gain, pan, start };
+      this.voices.add(voice);
+      source.onended = () => {
+        source.disconnect(); thump.disconnect(); filter.disconnect(); thumpGain.disconnect(); gain.disconnect(); pan?.disconnect();
+        this.voices.delete(voice);
+      };
+      source.start(start);
+      thump.start(start);
+      source.stop(end);
+      thump.stop(end);
+    }
     for (const interaction of this.interactionPlan?.(event) ?? []) {
       if (this.interactions.play(interaction, ctx, this.clockOffset)) this.interactionCounts[interaction.kind]++;
     }

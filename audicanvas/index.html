@@ -4,7 +4,7 @@
   <base href="./apps/web/">
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>AUDICANVAS · Ensaio espacial</title>
-  <link rel="stylesheet" href="./style.css?v=462ff8cde912">
+  <link rel="stylesheet" href="./style.css?v=34d15d81069c">
 </head>
 <body>
   <main>
@@ -40,6 +40,8 @@
         <input id="interaction-density" type="range" min="0" max="2" step="0.1" value="1" disabled>
         <p id="interaction-status" class="note">Preparando a cena de chão…</p>
         <p id="encounter-speed-note" class="note">A velocidade também ajusta os encontros automaticamente.</p>
+        <label class="blind-toggle" for="isolate-contacts"><input id="isolate-contacts" type="checkbox">Ouvir só os encontros (teste sem passos)</label>
+        <p class="note">Para comparar a frequência: deixe os encontros em “normal”, ouça 30 segundos a 0,5 m/s e depois 30 segundos a 2,0 m/s. Esta opção silencia apenas os passos; os contatos continuam ligados à velocidade.</p>
         <p class="note">Contatos programados: flores <output id="flower-count">0</output> · folhas <output id="leaf-count">0</output> · pedras <output id="pebble-count">0</output></p>
         <p class="note">Ouça cada contato isolado para comparar os novos candidatos:</p>
         <div class="buttons contact-preview"><button type="button" data-contact-kind="dry_flower">Ouvir flor</button><button type="button" data-contact-kind="dry_leaf">Ouvir folha</button><button type="button" data-contact-kind="pebble">Ouvir pedra</button></div>
@@ -50,12 +52,12 @@
       <p id="movement-status" role="status">Parado.</p>
       <p id="step-status">Passos: desligados.</p>
       <p class="note">Tempo desta caminhada: <output id="movement-elapsed">0:00</output> · escute até 2:00 para avaliar repetição.</p>
-      <p class="note">Passos sintéticos programados nesta caminhada: <output id="step-count">0</output></p>
+      <p class="note">Passos calculados nesta caminhada: <output id="step-count">0</output></p>
       <p class="distance">Distância: <output id="movement-distance">0,00 m</output></p>
     </section>
     <p class="note">Ouça um ensaio de cada vez, com fones e volume confortável. O indicador de sinal não garante o que chega aos seus ouvidos. Os passos são sintéticos e provisórios; esta versão ainda não contém passos gravados, brincos ou ambientes.</p>
     <details><summary>O que avaliar</summary><ol><li>Na primeira trajetória, parece que você se move ou que algo passa por você?</li><li>Na segunda, o som cruza da direita para a esquerda à sua frente?</li><li>Na terceira, ele termina mais distante atrás?</li><li>Nas duas opções novas, a fonte parece ficar à direita? O som mais rico ajuda ou atrapalha?</li><li>Pausar e continuar preserva o ponto da passagem?</li></ol><p>Registrar fone/dispositivo, navegador e percepção de cada trajetória.</p></details>
   </main>
-  <script type="module" src="./main.mjs?v=462ff8cde912"></script>
+  <script type="module" src="./main.mjs?v=34d15d81069c"></script>
 </body>
 </html>

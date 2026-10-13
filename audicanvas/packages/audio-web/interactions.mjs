@@ -79,7 +79,8 @@ export class MicroInteractionAudio {
     const duration = source.buffer.duration / source.playbackRate.value;
     const end = start + duration;
     const gain = context.createGain();
-    const amount = (event.kind === 'dry_flower' ? 0.13 : event.kind === 'pebble' ? 0.033 : 0.065) * event.intensity;
+    // Keep brief contacts audible beside the provisional synthesized footsteps.
+    const amount = (event.kind === 'dry_flower' ? 0.17 : event.kind === 'pebble' ? 0.06 : 0.14) * event.intensity;
     gain.gain.setValueAtTime(0, start);
     gain.gain.linearRampToValueAtTime(amount, start + (event.kind === 'dry_leaf' ? 0.006 : 0.001));
     gain.gain.exponentialRampToValueAtTime(0.0001, end - 0.006);

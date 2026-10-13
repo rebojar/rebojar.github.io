@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=462ff8cde912';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=462ff8cde912';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=462ff8cde912';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=462ff8cde912';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=462ff8cde912';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=34d15d81069c';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=34d15d81069c';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=34d15d81069c';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=34d15d81069c';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=34d15d81069c';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -27,6 +27,7 @@ const movementDistance = document.querySelector('#movement-distance');
 const movementElapsed = document.querySelector('#movement-elapsed');
 const stepStatus = document.querySelector('#step-status');
 const stepCount = document.querySelector('#step-count');
+const isolateContacts = document.querySelector('#isolate-contacts');
 const interactionDensity = document.querySelector('#interaction-density');
 const interactionDensityValue = document.querySelector('#interaction-density-value');
 const interactionStatus = document.querySelector('#interaction-status');
@@ -164,6 +165,12 @@ function stopMovement(reason) {
   stepStatus.textContent = 'Passos: desligados.';
   if (reason && movementElapsedSeconds > 0) movementStatus.textContent = reason;
 }
+isolateContacts.addEventListener('change', () => {
+  steps.setFootstepsMuted(isolateContacts.checked);
+  if (steps.active) stepStatus.textContent = isolateContacts.checked
+    ? 'Passos silenciados para comparar os encontros.'
+    : 'Passos sintéticos ligados. Use fones e volume confortável.';
+});
 movementStart.addEventListener('click', async () => {
   if (audio.active || start.disabled || passagePaused) halt('Passagem interrompida para ouvir os passos separadamente.');
   const request = ++movementStartRequest;
@@ -172,7 +179,9 @@ movementStart.addEventListener('click', async () => {
   let time;
   try {
     time = await steps.start(Number(movementSpeed.value));
-    stepStatus.textContent = 'Passos sintéticos ligados. Use fones e volume confortável.';
+    stepStatus.textContent = isolateContacts.checked
+      ? 'Passos silenciados para comparar os encontros.'
+      : 'Passos sintéticos ligados. Use fones e volume confortável.';
   } catch (error) {
     time = movementTime();
     stepStatus.textContent = `Passos indisponíveis: ${error.message}`;
