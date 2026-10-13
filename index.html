@@ -475,6 +475,53 @@
       margin: 0 auto 1.5rem;
       text-align: center;
     }
+    .apoio-painel {
+      margin-top: 0.8rem;
+      padding: clamp(0.85rem, 2.5vw, 1.2rem);
+      border: 1px solid rgba(183, 217, 255, 0.2);
+      border-radius: 12px;
+      background: rgba(0, 4, 40, 0.34);
+      text-align: left;
+    }
+    .apoio-introducao {
+      margin: 0 0 1rem;
+      color: #dce8e4;
+      line-height: 1.55;
+    }
+    .apoio-opcoes {
+      display: grid;
+      gap: 0.8rem;
+    }
+    .apoio-opcao {
+      padding: 0.9rem;
+      border: 1px solid rgba(159, 189, 85, 0.25);
+      border-radius: 9px;
+      background: rgba(13, 46, 26, 0.56);
+    }
+    .apoio-opcao h3 {
+      margin: 0 0 0.35rem;
+      color: #f4efdf;
+      font-size: 1rem;
+    }
+    .apoio-opcao p {
+      margin: 0.35rem 0 0;
+      line-height: 1.5;
+    }
+    .apoio-link {
+      display: inline-flex;
+      margin-top: 0.75rem;
+      padding: 0.55rem 0.8rem;
+      border: 1px solid #18B0C4;
+      border-radius: 6px;
+      color: #e9ffff;
+      background: rgba(24, 176, 196, 0.16);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .kofi-widget {
+      min-height: 36px;
+      margin-top: 0.75rem;
+    }
     .sponsor-card-frame {
       display: block;
       width: min(100%, 600px);
@@ -658,7 +705,7 @@
       }
 
       .menu-toggle {
-        top: 3.8rem;
+        top: 0.8rem;
         left: 0.8rem;
       }
 
@@ -673,7 +720,31 @@
         width: max-content;
         max-width: calc(100vw - 1rem);
         gap: 0.18rem;
-        padding: 6.8rem 0.7rem 0.8rem;
+        padding: 4.25rem 0.7rem 0.8rem;
+      }
+
+      body:has(.apresentacao-projeto:target) .menu-toggle,
+      body:has(#privacidade-caderno-de-bordo:target) .menu-toggle,
+      body:has(#termos-de-servico:target) .menu-toggle {
+        top: 3.8rem;
+      }
+
+      body:has(.apresentacao-projeto:target) .menu-lateral,
+      body:has(#privacidade-caderno-de-bordo:target) .menu-lateral,
+      body:has(#termos-de-servico:target) .menu-lateral {
+        padding-top: 6.8rem;
+      }
+
+      body:has(.apresentacao-projeto:target) .menu-lateral.aberto,
+      body:has(#privacidade-caderno-de-bordo:target) .menu-lateral.aberto,
+      body:has(#termos-de-servico:target) .menu-lateral.aberto {
+        border: 1px solid rgba(183, 217, 255, 0.18);
+        border-top: 0;
+        border-left: 0;
+        border-radius: 0 0 12px 0;
+        background: rgba(0, 4, 40, 0.96);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.34);
+        backdrop-filter: blur(10px);
       }
 
       .menu-lateral a {
@@ -1023,7 +1094,29 @@
     </div>
     <details class="sponsor-card">
       <summary>Conhecer formas de apoiar o Rebojar</summary>
-      <iframe class="sponsor-card-frame" src="https://github.com/sponsors/rebojar/card" title="Cartão de apoio ao Rebojar no GitHub Sponsors" height="225" width="600" loading="lazy"></iframe>
+      <div class="apoio-painel">
+        <p class="apoio-introducao">O apoio ajuda a sustentar as ferramentas, os serviços e o tempo dedicado aos projetos do Rebojar. Escolha a forma que fizer mais sentido para você.</p>
+        <div class="apoio-opcoes">
+          <section class="apoio-opcao" aria-labelledby="apoio-github-title">
+            <h3 id="apoio-github-title">GitHub Sponsors</h3>
+            <p>Para apoiar pelo GitHub e acompanhar as opções oferecidas por lá.</p>
+            <iframe class="sponsor-card-frame" src="https://github.com/sponsors/rebojar/card" title="Cartão de apoio ao Rebojar no GitHub Sponsors" height="225" width="600" loading="lazy"></iframe>
+          </section>
+          <section class="apoio-opcao" aria-labelledby="apoio-kofi-title">
+            <h3 id="apoio-kofi-title">Ko-fi</h3>
+            <p>Para enviar um café ou fazer uma contribuição direta pelo Ko-fi.</p>
+            <div class="kofi-widget">
+              <script src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
+              <script>kofiwidget2.init('Apoiar no Ko-fi', '#0d365e', 'D8P827NADN');kofiwidget2.draw();</script>
+            </div>
+          </section>
+          <section class="apoio-opcao" aria-labelledby="apoio-apoia-title">
+            <h3 id="apoio-apoia-title">Apoia.se</h3>
+            <p>Para contribuir de forma recorrente, em reais, pela plataforma brasileira.</p>
+            <a class="apoio-link" href="https://apoia.se/rebojar">Abrir o Apoia.se ↗</a>
+          </section>
+        </div>
+      </div>
     </details>
     <details>
       <summary>Outros trabalhos</summary>
