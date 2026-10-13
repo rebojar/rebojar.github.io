@@ -584,13 +584,14 @@
       margin: 0.8rem auto 0;
       border: 0;
     }
-    @media (max-width: 38rem) {
+    @media (max-width: 42rem) {
       header {
         min-height: 24rem;
       }
       .estante-portal {
         width: min(90vw, 33.25rem);
-        height: auto;
+        height: clamp(270px, 72vw, 330px);
+        aspect-ratio: auto;
         transform: none;
       }
     }
@@ -660,8 +661,15 @@
         overflow-y: hidden;
       }
 
+      body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main .introducao-portal {
+        position: relative;
+        top: -16px;
+      }
+
       body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main .estante-portal {
         margin-top: 1.5rem;
+        position: relative;
+        top: -39px;
       }
 
       body > main::-webkit-scrollbar,
@@ -891,7 +899,7 @@
       }
 
       .onda-brilho {
-        stroke: rgba(214, 238, 255, 0.22);
+        stroke: transparent;
         stroke-width: 1.4px;
       }
 
@@ -1107,7 +1115,7 @@
       <p>Um espaço onde os ciclos naturais se encontram com a exploração curiosa e artística num mesmo fluxo.</p>
     </section>
     <section class="estante-portal" aria-label="Estante de projetos Rebojar">
-      <iframe src="widget-estante/index.html?embed=1&amp;v=20261013-19" title="Estante Rebojar" loading="eager"></iframe>
+      <iframe src="widget-estante/index.html?embed=1&amp;v=20261013-20" title="Estante Rebojar" loading="eager"></iframe>
     </section>
     <section class="apresentacao-projeto" id="labvisual" aria-labelledby="labvisual-title">
       <h2 id="labvisual-title">LabVisual</h2>

@@ -1,0 +1,16 @@
+{
+  "name": "Caderno de Bordo · Rebojar",
+  "short_name": "Caderno",
+  "id": "./",
+  "description": "O Caderno de Bordo em uma janela própria do Rebojar.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#d5d3c4",
+  "theme_color": "#11273c",
+  "icons": [
+    { "src": "icone-caderno.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

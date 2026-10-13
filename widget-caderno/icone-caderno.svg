@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="titulo descricao">
+  <title id="titulo">Caderno de Bordo Rebojar</title>
+  <desc id="descricao">Caderno azul com lombada laranja e páginas claras</desc>
+  <rect width="128" height="128" rx="26" fill="#11273c"/>
+  <rect x="34" y="22" width="72" height="88" rx="9" fill="#f4efdf" opacity=".92"/>
+  <rect x="23" y="17" width="74" height="90" rx="9" fill="#183a56" stroke="#f4efdf" stroke-opacity=".28" stroke-width="3"/>
+  <path d="M35 18v88" stroke="#f2992e" stroke-width="7"/>
+  <path d="M47 43h35M47 55h27M47 67h35" stroke="#f4efdf" stroke-width="5" stroke-linecap="round"/>
+  <path d="M48 86h24" stroke="#e8d73a" stroke-width="5" stroke-linecap="round"/>
+</svg>
