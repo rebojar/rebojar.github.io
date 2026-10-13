@@ -409,19 +409,18 @@
       margin-bottom: 0;
     }
     .estante-portal {
-      --estante-desktop-lado: min(30rem, calc(100dvh - 12rem), calc(100vw - 12rem));
-      width: calc(var(--estante-desktop-lado) + 120px);
-      height: calc(var(--estante-desktop-lado) + 25px);
+      --estante-desktop-base: min(76dvh, calc(100vw - 28px), 48rem);
+      width: calc(var(--estante-desktop-base) + 120px);
+      height: calc(var(--estante-desktop-base) + 25px);
       margin: 3rem auto 0;
       transform: translateY(5px);
     }
     .estante-portal rebojar-estante {
-      width: 150%;
-      height: 150%;
-      margin-left: -25%;
-      --estante-altura: 150%;
-      transform: translateY(-8px) scale(.666667);
-      transform-origin: top center;
+      width: 100%;
+      height: 100%;
+      margin-left: 0;
+      --estante-altura: 100%;
+      transform: none;
     }
     main:has(.apresentacao-projeto:target) .estante-portal,
     main:has(#privacidade-caderno-de-bordo:target) .estante-portal,
@@ -992,7 +991,7 @@
       }
     }
   </style>
-  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261013q" defer></script>
+  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261013r" defer></script>
   <script src="assets/rebojar-som.min.js?v=sound-bau-close-1" defer></script>
 </head>
 <body>
