@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=6030691e9309';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=6030691e9309';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=6030691e9309';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=6030691e9309';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=6030691e9309';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=9de99ce8c698';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=9de99ce8c698';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=9de99ce8c698';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=9de99ce8c698';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=9de99ce8c698';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -31,6 +31,8 @@ const isolateContacts = document.querySelector('#isolate-contacts');
 const bodyEarrings = document.querySelector('#body-earrings');
 const bodyStatus = document.querySelector('#body-status');
 const bodyCount = document.querySelector('#body-count');
+const bodyVolume = document.querySelector('#body-volume');
+const bodyVolumeValue = document.querySelector('#body-volume-value');
 const interactionDensity = document.querySelector('#interaction-density');
 const interactionDensityValue = document.querySelector('#interaction-density-value');
 const interactionStatus = document.querySelector('#interaction-status');
@@ -173,7 +175,7 @@ isolateContacts.addEventListener('change', () => {
   steps.setFootstepsMuted(isolateContacts.checked);
   bodyStatus.textContent = isolateContacts.checked && bodyEarrings.checked
     ? 'Brincos silenciados durante o teste só de encontros.'
-    : bodyEarrings.checked ? 'Brincos ligados; aparecem com algumas pisadas.' : 'Brincos desligados.';
+    : bodyEarrings.checked ? 'Brincos ligados; acompanham os passos.' : 'Brincos desligados.';
   if (steps.active) stepStatus.textContent = isolateContacts.checked
     ? 'Passos silenciados para comparar os encontros.'
     : 'Passos sintéticos ligados. Use fones e volume confortável.';
@@ -181,8 +183,13 @@ isolateContacts.addEventListener('change', () => {
 bodyEarrings.addEventListener('change', () => {
   steps.setBodyEnabled(bodyEarrings.checked);
   bodyStatus.textContent = bodyEarrings.checked
-    ? isolateContacts.checked ? 'Brincos silenciados durante o teste só de encontros.' : 'Brincos ligados; aparecem com algumas pisadas.'
+    ? isolateContacts.checked ? 'Brincos silenciados durante o teste só de encontros.' : 'Brincos ligados; acompanham os passos.'
     : 'Brincos desligados.';
+});
+bodyVolume.addEventListener('input', () => {
+  const volume = Number(bodyVolume.value);
+  steps.setBodyVolume(volume);
+  bodyVolumeValue.textContent = volume === 0 ? 'mudo' : volume <= 0.4 ? 'baixo' : volume <= 0.7 ? 'médio' : 'alto';
 });
 movementStart.addEventListener('click', async () => {
   if (audio.active || start.disabled || passagePaused) halt('Passagem interrompida para ouvir os passos separadamente.');

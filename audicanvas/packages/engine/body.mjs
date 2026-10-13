@@ -1,4 +1,4 @@
-import { GAIT_STEP_V0 } from './gait.mjs?v=6030691e9309';
+import { GAIT_STEP_V0 } from './gait.mjs?v=9de99ce8c698';
 
 export const BODY_EARRING_V0 = 'body.earring.v0';
 
@@ -12,7 +12,8 @@ function unitHash(seed, index, salt) {
   return (value >>> 0) / 0x100000000;
 }
 
-// A step excites a small, damped earring motion. No clock or audio API lives here.
+// Each step excites a small earring sway; some steps produce a stronger collision.
+// The gait clock, not an independent random timer, fixes the audible pulse rate.
 export function earringEventForStep(step, {
   speed, enabled = true, seed = 20261013, mobility = 0.8,
   collisionProbability = 0.5, decay = 0.32, intensity = 0.8, variation = 0.2,
@@ -28,17 +29,17 @@ export function earringEventForStep(step, {
   if (typeof enabled !== 'boolean') throw new TypeError('Estado corporal inválido.');
   if (!enabled || speed === 0 || mobility === 0 || collisionProbability === 0) return null;
 
-  const excitation = Math.min(1, mobility * step.intensity * (0.35 + 0.32 * speed));
-  const chance = collisionProbability * excitation;
-  if (unitHash(seed, step.index, 1) >= chance) return null;
-  const side = unitHash(seed, step.index, 2) < 0.5 ? 'left' : 'right';
+  const excitation = Math.min(1, mobility * step.intensity * (0.55 + 0.22 * speed));
+  const collision = unitHash(seed, step.index, 1) < collisionProbability * excitation;
+  const side = step.foot;
   const color = unitHash(seed, step.index, 3);
   return {
     schema: BODY_EARRING_V0,
     stepIndex: step.index,
-    time: step.time + 0.055 + unitHash(seed, step.index, 4) * 0.04,
+    time: step.time + 0.055 + unitHash(seed, step.index, 4) * 0.02,
     side,
-    intensity: intensity * excitation * (1 - variation / 2 + variation * color),
+    collision,
+    intensity: intensity * excitation * (collision ? 1 : 0.5) * (1 - variation / 2 + variation * color),
     frequency: 1180 + 620 * color,
     decay: decay * (0.86 + 0.28 * unitHash(seed, step.index, 5)),
   };

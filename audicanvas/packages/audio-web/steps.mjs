@@ -1,8 +1,8 @@
-import { GaitClock } from '../engine/gait.mjs?v=6030691e9309';
-import { MicroInteractionAudio } from './interactions.mjs?v=6030691e9309';
-import { MICRO_KINDS } from '../engine/interaction.mjs?v=6030691e9309';
-import { earringEventForStep } from '../engine/body.mjs?v=6030691e9309';
-import { BodyEarringAudio } from './body.mjs?v=6030691e9309';
+import { GaitClock } from '../engine/gait.mjs?v=9de99ce8c698';
+import { MicroInteractionAudio } from './interactions.mjs?v=9de99ce8c698';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=9de99ce8c698';
+import { earringEventForStep } from '../engine/body.mjs?v=9de99ce8c698';
+import { BodyEarringAudio } from './body.mjs?v=9de99ce8c698';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
@@ -57,6 +57,8 @@ export class FootstepAudio {
     this.bodyEnabled = enabled;
     if (!enabled) this.body.cancelVoices(true, this.context);
   }
+
+  setBodyVolume(volume) { this.body.setVolume(volume); }
 
   async ensureContext() {
     const AudioContextClass = globalThis.AudioContext || globalThis.webkitAudioContext;

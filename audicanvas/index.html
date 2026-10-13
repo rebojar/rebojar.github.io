@@ -4,7 +4,7 @@
   <base href="./apps/web/">
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>AUDICANVAS · Ensaio espacial</title>
-  <link rel="stylesheet" href="./style.css?v=6030691e9309">
+  <link rel="stylesheet" href="./style.css?v=9de99ce8c698">
 </head>
 <body>
   <main>
@@ -50,10 +50,12 @@
       </div>
       <div class="ground-controls">
         <h3>Corpo: brincos</h3>
-        <p>Brincos sintéticos de teste podem tilintar perto da cabeça com algumas pisadas. Compare com e sem esse som; ao parar, a última vibração se apaga rapidamente.</p>
+        <p>Brincos sintéticos de teste tilintam suavemente no ritmo das pisadas, com alguns choques mais fortes. Compare com e sem esse som; ao parar, a última vibração se apaga rapidamente.</p>
         <label class="blind-toggle" for="body-earrings"><input id="body-earrings" type="checkbox"> Ouvir brincos durante a caminhada</label>
+        <label for="body-volume">Volume dos brincos: <output id="body-volume-value" for="body-volume">baixo</output></label>
+        <input id="body-volume" type="range" min="0" max="1" step="0.1" value="0.4">
         <p id="body-status" class="note">Brincos desligados.</p>
-        <p class="note">Choques dos brincos programados: <output id="body-count">0</output></p>
+        <p class="note">Tilintares programados: <output id="body-count">0</output></p>
       </div>
       <div class="buttons"><button id="movement-start">Começar a andar</button><button id="movement-stop" disabled>Parar</button><button id="movement-reset">Zerar distância</button></div>
       <p id="movement-status" role="status">Parado.</p>
@@ -65,6 +67,6 @@
     <p class="note">Ouça um ensaio de cada vez, com fones e volume confortável. O indicador de sinal não garante o que chega aos seus ouvidos. Passos e brincos são sintéticos e provisórios; esta versão ainda não contém passos gravados ou ambientes.</p>
     <details><summary>O que avaliar</summary><ol><li>Na primeira trajetória, parece que você se move ou que algo passa por você?</li><li>Na segunda, o som cruza da direita para a esquerda à sua frente?</li><li>Na terceira, ele termina mais distante atrás?</li><li>Nas duas opções novas, a fonte parece ficar à direita? O som mais rico ajuda ou atrapalha?</li><li>Pausar e continuar preserva o ponto da passagem?</li></ol><p>Registrar fone/dispositivo, navegador e percepção de cada trajetória.</p></details>
   </main>
-  <script type="module" src="./main.mjs?v=6030691e9309"></script>
+  <script type="module" src="./main.mjs?v=9de99ce8c698"></script>
 </body>
 </html>

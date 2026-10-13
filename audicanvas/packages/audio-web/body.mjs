@@ -1,8 +1,13 @@
-import { BODY_EARRING_V0 } from '../engine/body.mjs?v=6030691e9309';
+import { BODY_EARRING_V0 } from '../engine/body.mjs?v=9de99ce8c698';
 
 // A short, low-level metallic double resonance close to the listener.
 export class BodyEarringAudio {
-  constructor() { this.voices = new Set(); }
+  constructor() { this.voices = new Set(); this.volume = 0.4; }
+
+  setVolume(volume) {
+    if (!Number.isFinite(volume) || volume < 0 || volume > 1) throw new RangeError('Volume dos brincos inválido.');
+    this.volume = volume;
+  }
 
   play(event, context, clockOffset) {
     if (event?.schema !== BODY_EARRING_V0) throw new TypeError('Evento corporal inválido.');
@@ -11,7 +16,7 @@ export class BodyEarringAudio {
     const end = start + event.decay;
     const gain = context.createGain();
     gain.gain.setValueAtTime(0, start);
-    gain.gain.linearRampToValueAtTime(0.055 * event.intensity, start + 0.009);
+    gain.gain.linearRampToValueAtTime(0.04 * this.volume * event.intensity, start + 0.009);
     gain.gain.exponentialRampToValueAtTime(0.0001, end - 0.008);
     gain.gain.setValueAtTime(0, end);
     const pan = context.createStereoPanner?.();
