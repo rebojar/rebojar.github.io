@@ -410,9 +410,10 @@
     }
     .estante-portal {
       --estante-desktop-lado: min(30rem, calc(100dvh - 12rem), calc(100vw - 12rem));
-      width: calc(var(--estante-desktop-lado) + 20px);
-      height: calc(var(--estante-desktop-lado) + 5px);
+      width: calc(var(--estante-desktop-lado) + 120px);
+      height: calc(var(--estante-desktop-lado) + 25px);
       margin: 3rem auto 0;
+      transform: translateY(-20px);
     }
     .estante-portal rebojar-estante {
       width: 150%;
@@ -573,6 +574,7 @@
         --estante-mobile-altura: clamp(264px, 82vw, 323px);
         width: min(90vw, 33.25rem);
         height: var(--estante-mobile-altura);
+        transform: none;
       }
       .estante-portal rebojar-estante {
         width: 100%;
@@ -990,8 +992,8 @@
       }
     }
   </style>
-  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261013j" defer></script>
-  <script src="assets/rebojar-som.min.js?v=sound-mobile-left-stack-4" defer></script>
+  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261013l" defer></script>
+  <script src="assets/rebojar-som.min.js?v=sound-mobile-left-stack-5" defer></script>
 </head>
 <body>
   <div class="scroll-indicador" aria-hidden="true"></div>
