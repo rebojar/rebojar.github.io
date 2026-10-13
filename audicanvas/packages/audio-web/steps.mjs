@@ -1,6 +1,8 @@
-import { GaitClock } from '../engine/gait.mjs?v=8d87044a2445';
-import { MicroInteractionAudio } from './interactions.mjs?v=8d87044a2445';
-import { MICRO_KINDS } from '../engine/interaction.mjs?v=8d87044a2445';
+import { GaitClock } from '../engine/gait.mjs?v=6030691e9309';
+import { MicroInteractionAudio } from './interactions.mjs?v=6030691e9309';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=6030691e9309';
+import { earringEventForStep } from '../engine/body.mjs?v=6030691e9309';
+import { BodyEarringAudio } from './body.mjs?v=6030691e9309';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
@@ -33,6 +35,10 @@ export class FootstepAudio {
     this.interactionCounts = { dry_flower: 0, dry_leaf: 0, pebble: 0 };
     this.previewVersion = 0;
     this.footstepsMuted = false;
+    this.bodyEnabled = false;
+    this.body = new BodyEarringAudio();
+    this.speed = 0;
+    this.bodyCount = 0;
   }
 
   setInteractionPlan(plan) {
@@ -43,7 +49,13 @@ export class FootstepAudio {
   setFootstepsMuted(muted) {
     if (typeof muted !== 'boolean') throw new TypeError('Silêncio de passos deve ser booleano.');
     this.footstepsMuted = muted;
-    if (muted) this.cancelVoices(true);
+    if (muted) { this.cancelVoices(true); this.body.cancelVoices(true, this.context); }
+  }
+
+  setBodyEnabled(enabled) {
+    if (typeof enabled !== 'boolean') throw new TypeError('Estado dos brincos deve ser booleano.');
+    this.bodyEnabled = enabled;
+    if (!enabled) this.body.cancelVoices(true, this.context);
   }
 
   async ensureContext() {
@@ -68,6 +80,7 @@ export class FootstepAudio {
     await this.ensureContext();
     if (request !== this.previewVersion || this.active) return false;
     this.interactions.cancelVoices(true, this.context);
+    this.body.cancelVoices(true, this.context);
     const time = performance.now() / 1000;
     const offset = time - this.context.currentTime;
     const interval = kind === 'dry_leaf' ? 0.65 : 0.3;
@@ -85,12 +98,15 @@ export class FootstepAudio {
     this.previewVersion++;
     await this.ensureContext();
     this.interactions.cancelVoices(true, this.context);
+    this.body.cancelVoices(true, this.context);
     const time = performance.now() / 1000;
     this.clockOffset = time - this.context.currentTime;
     this.gait.update(time, { moving: true, speed });
+    this.speed = speed;
     this.scheduledThrough = time;
     this.scheduledCount = 0;
     this.interactionCounts = { dry_flower: 0, dry_leaf: 0, pebble: 0 };
+    this.bodyCount = 0;
     this.active = true;
     this.tick();
     this.timer = setInterval(() => this.tick(), POLL_MS);
@@ -100,8 +116,10 @@ export class FootstepAudio {
   setSpeed(speed, time) {
     if (!this.active) return;
     this.gait.update(time, { moving: true, speed });
+    this.speed = speed;
     this.cancelVoices(false);
     this.interactions.cancelVoices(false, this.context);
+    this.body.cancelVoices(false, this.context);
     this.scheduledThrough = time;
     this.tick();
   }
@@ -165,6 +183,10 @@ export class FootstepAudio {
     for (const interaction of plannedInteractions) {
       if (this.interactions.play(interaction, ctx, this.clockOffset)) this.interactionCounts[interaction.kind]++;
     }
+    if (this.bodyEnabled && !this.footstepsMuted) {
+      const earring = earringEventForStep(event, { speed: this.speed });
+      if (earring && this.body.play(earring, ctx, this.clockOffset)) this.bodyCount++;
+    }
   }
 
   cancelVoices(includeCurrent) {
@@ -186,6 +208,8 @@ export class FootstepAudio {
   stop(time = performance.now() / 1000) {
     this.previewVersion++;
     this.interactions.cancelVoices(true, this.context);
+    // A current earring resonance fades naturally; future collisions are cancelled.
+    this.body.cancelVoices(false, this.context);
     if (!this.active) return;
     this.active = false;
     clearInterval(this.timer);

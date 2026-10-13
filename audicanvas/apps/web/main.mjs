@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=8d87044a2445';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=8d87044a2445';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=8d87044a2445';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=8d87044a2445';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=8d87044a2445';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=6030691e9309';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=6030691e9309';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=6030691e9309';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=6030691e9309';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=6030691e9309';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -28,6 +28,9 @@ const movementElapsed = document.querySelector('#movement-elapsed');
 const stepStatus = document.querySelector('#step-status');
 const stepCount = document.querySelector('#step-count');
 const isolateContacts = document.querySelector('#isolate-contacts');
+const bodyEarrings = document.querySelector('#body-earrings');
+const bodyStatus = document.querySelector('#body-status');
+const bodyCount = document.querySelector('#body-count');
 const interactionDensity = document.querySelector('#interaction-density');
 const interactionDensityValue = document.querySelector('#interaction-density-value');
 const interactionStatus = document.querySelector('#interaction-status');
@@ -143,6 +146,7 @@ function renderMovement(snapshot) {
   flowerCount.textContent = String(steps.interactionCounts.dry_flower);
   leafCount.textContent = String(steps.interactionCounts.dry_leaf);
   pebbleCount.textContent = String(steps.interactionCounts.pebble);
+  bodyCount.textContent = String(steps.bodyCount);
   movementStatus.textContent = snapshot.moving ? 'Andando em terreno plano.' : 'Parado.';
   movementStart.disabled = snapshot.moving || !surfaceReady;
   movementStop.disabled = !snapshot.moving;
@@ -167,9 +171,18 @@ function stopMovement(reason) {
 }
 isolateContacts.addEventListener('change', () => {
   steps.setFootstepsMuted(isolateContacts.checked);
+  bodyStatus.textContent = isolateContacts.checked && bodyEarrings.checked
+    ? 'Brincos silenciados durante o teste só de encontros.'
+    : bodyEarrings.checked ? 'Brincos ligados; aparecem com algumas pisadas.' : 'Brincos desligados.';
   if (steps.active) stepStatus.textContent = isolateContacts.checked
     ? 'Passos silenciados para comparar os encontros.'
     : 'Passos sintéticos ligados. Use fones e volume confortável.';
+});
+bodyEarrings.addEventListener('change', () => {
+  steps.setBodyEnabled(bodyEarrings.checked);
+  bodyStatus.textContent = bodyEarrings.checked
+    ? isolateContacts.checked ? 'Brincos silenciados durante o teste só de encontros.' : 'Brincos ligados; aparecem com algumas pisadas.'
+    : 'Brincos desligados.';
 });
 movementStart.addEventListener('click', async () => {
   if (audio.active || start.disabled || passagePaused) halt('Passagem interrompida para ouvir os passos separadamente.');
