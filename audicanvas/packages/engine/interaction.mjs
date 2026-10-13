@@ -1,5 +1,5 @@
-import { surfaceContact, SURFACES } from './surface.mjs?v=28727a895113';
-import { cadenceForSpeed } from './gait.mjs?v=28727a895113';
+import { surfaceContact, SURFACES } from './surface.mjs?v=591128fa5ebf';
+import { cadenceForSpeed } from './gait.mjs?v=591128fa5ebf';
 
 export const MICRO_INTERACTION_V0 = 'micro.interaction.v0';
 export const MICRO_KINDS = Object.freeze(['dry_flower', 'dry_leaf', 'pebble']);

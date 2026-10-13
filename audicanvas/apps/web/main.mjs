@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=28727a895113';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=28727a895113';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=28727a895113';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=28727a895113';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=28727a895113';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=591128fa5ebf';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=591128fa5ebf';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=591128fa5ebf';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=591128fa5ebf';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=591128fa5ebf';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -154,7 +154,8 @@ function renderMovement(snapshot) {
   pebbleCount.textContent = String(steps.interactionCounts.pebble);
   bodyCount.textContent = String(steps.bodyCount);
   trafficCount.textContent = String(steps.trafficCount);
-  movementStatus.textContent = snapshot.moving ? 'Andando em terreno plano.' : 'Parado.';
+  const movementMessage = snapshot.moving ? 'Andando em terreno plano.' : 'Parado.';
+  if (movementStatus.textContent !== movementMessage) movementStatus.textContent = movementMessage;
   movementStart.disabled = snapshot.moving || !surfaceReady;
   movementStop.disabled = !snapshot.moving;
 }
@@ -173,15 +174,13 @@ function stopMovement(reason) {
   renderMovementElapsed(time);
   movementStartedAt = null;
   renderMovement(movement.stop(time));
-  stepStatus.textContent = 'Passos: desligados.';
+  stepStatus.textContent = 'Passos desligados. Pronto para recomeçar.';
   if (reason && movementElapsedSeconds > 0) movementStatus.textContent = reason;
 }
 isolateContacts.addEventListener('change', () => {
   steps.setFootstepsMuted(isolateContacts.checked);
   updateTrafficAudibility();
-  bodyStatus.textContent = isolateContacts.checked && bodyEarrings.checked
-    ? 'Brincos silenciados durante o teste só de encontros.'
-    : bodyEarrings.checked ? 'Brincos ligados; acompanham os passos.' : 'Brincos desligados.';
+  updateBodyControls();
   if (steps.active) stepStatus.textContent = isolateContacts.checked
     ? 'Passos silenciados para comparar os encontros.'
     : 'Passos sintéticos ligados. Use fones e volume confortável.';
@@ -193,17 +192,27 @@ function updateTrafficAudibility() {
     : worldTraffic.checked ? 'Trânsito ligado; o próximo veículo passa ocasionalmente ao longe.' : 'Trânsito desligado.';
 }
 worldTraffic.addEventListener('change', updateTrafficAudibility);
+function updateBodyControls() {
+  bodyVolume.disabled = !bodyEarrings.checked || isolateContacts.checked;
+  bodyStatus.textContent = !bodyEarrings.checked
+    ? 'Brincos desligados. Ligue para ajustar o volume.'
+    : isolateContacts.checked
+      ? 'Brincos silenciados neste teste; volume indisponível.'
+      : Number(bodyVolume.value) === 0
+        ? 'Brincos ligados, mas volume mudo.'
+        : 'Brincos ligados; acompanham os passos.';
+}
 bodyEarrings.addEventListener('change', () => {
   steps.setBodyEnabled(bodyEarrings.checked);
-  bodyStatus.textContent = bodyEarrings.checked
-    ? isolateContacts.checked ? 'Brincos silenciados durante o teste só de encontros.' : 'Brincos ligados; acompanham os passos.'
-    : 'Brincos desligados.';
+  updateBodyControls();
 });
 bodyVolume.addEventListener('input', () => {
   const volume = Number(bodyVolume.value);
   steps.setBodyVolume(volume);
   bodyVolumeValue.textContent = volume === 0 ? 'mudo' : volume <= 0.4 ? 'baixo' : volume <= 0.7 ? 'médio' : 'alto';
+  updateBodyControls();
 });
+updateBodyControls();
 movementStart.addEventListener('click', async () => {
   if (audio.active || start.disabled || passagePaused) halt('Passagem interrompida para ouvir os passos separadamente.');
   const request = ++movementStartRequest;
@@ -215,13 +224,17 @@ movementStart.addEventListener('click', async () => {
     stepStatus.textContent = isolateContacts.checked
       ? 'Passos silenciados para comparar os encontros.'
       : 'Passos sintéticos ligados. Use fones e volume confortável.';
-  } catch (error) {
-    time = movementTime();
-    stepStatus.textContent = `Passos indisponíveis: ${error.message}`;
+  } catch {
+    steps.stop(movementTime());
+    if (request !== movementStartRequest || document.hidden) return;
+    movementStatus.textContent = 'Não foi possível começar.';
+    stepStatus.textContent = 'Áudio indisponível. Tente novamente; se persistir, recarregue a página.';
+    movementStart.disabled = false;
+    return;
   }
   if (request !== movementStartRequest || document.hidden) {
     steps.stop(time);
-    stepStatus.textContent = 'Passos: desligados.';
+    stepStatus.textContent = 'Cena pronta. Comece a andar.';
     movementStart.disabled = false;
     return;
   }
@@ -241,7 +254,7 @@ movementReset.addEventListener('click', () => {
   movementElapsedSeconds = 0;
   renderMovementElapsed(time);
   renderMovement(movement.reset(time));
-  stepStatus.textContent = 'Passos: desligados.';
+  stepStatus.textContent = 'Passos desligados. Pronto para recomeçar.';
 });
 movementSpeed.addEventListener('input', () => {
   const time = movementTime();
@@ -318,7 +331,12 @@ async function loadSurfaceScene() {
     updateTrafficAudibility();
     updateEncounterRate();
     interactionStatus.textContent = 'Cena de asfalto pronta. Materiais e frequência mudam os próximos contatos.';
+    stepStatus.textContent = 'Cena pronta. Comece a andar.';
     renderMovement(movement.observe(movementTime()));
-  } catch (error) { interactionStatus.textContent = `Não foi possível preparar o chão: ${error.message}`; }
+  } catch {
+    interactionStatus.textContent = 'Cena não carregada. Atualize a página para tentar novamente.';
+    movementStatus.textContent = 'Cena indisponível.';
+    stepStatus.textContent = 'Atualize a página para tentar novamente.';
+  }
 }
 void loadSurfaceScene();

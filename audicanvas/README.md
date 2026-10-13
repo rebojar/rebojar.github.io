@@ -1,5 +1,7 @@
 # AUDICANVAS — espelho público da demo
 
-Esta pasta contém somente a demonstração experimental que aparece em https://rebojar.github.io/audicanvas/. A fonte do projeto é o repositório privado `rebojar/audicanvas`; este espelho foi gerado a partir do commit `63ae650` por `scripts/build-demo.mjs`. Não edite o espelho como segunda fonte.
+Esta pasta publica a interface atual em https://rebojar.github.io/audicanvas/. A fonte é o repositório privado `rebojar/audicanvas`; o pacote de 23 arquivos de execução foi gerado pelo `scripts/build-demo.mjs` a partir do commit `801853a` e conferido arquivo por arquivo por SHA-256. Não edite este espelho como segunda fonte.
 
-O JavaScript necessário para executar a demo é público por ser entregue ao navegador. O pacote não inclui documentos de coordenação, biblioteca de gravações, arquivos locais ou analytics remoto. Os sons atuais são sintéticos e provisórios. Arquivos de estilo e módulos têm versão por conteúdo para evitar JavaScript antigo em cache. A interface permite ocultar a trajetória visual, isola os ensaios e mostra o tempo da caminhada. A cena de asfalto usa uma configuração JSON com flor seca, folha e pedrinha. A frequência manual agora acompanha a velocidade automaticamente, com estimativa de encontros por minuto; três botões permitem ouvir cada material isolado. Gates 1 e 3 receberam aprovação perceptual; a primeira escuta do Gate 4 reprovou flor e pedra, e esta revisão aguarda reteste. A demo não é produto final.
+A interface apresenta a caminhada e a composição do caminho, corpo e ambiente. O áudio e a cena continuam experimentais; a publicação da interface não aprova o Gate 6 nem transforma sons em ativos comerciais. A demo não coleta analytics remotos.
+
+A versão anterior usada para o ensaio de presença está preservada em https://rebojar.github.io/audicanvas-gate6-51383ab/. Use esse endereço fixo para todas as sessões da rodada Gate 6 e não misture resultados com a interface atual.

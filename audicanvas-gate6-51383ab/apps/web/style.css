@@ -1,0 +1,38 @@
+:root { color-scheme: dark; font-family: system-ui, sans-serif; color: #ebe9e2; background: #131b20; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 760px; margin: 0 auto; padding: 64px 24px; }
+.eyebrow { color: #a8cbbc; font-size: 12px; letter-spacing: .15em; }
+h1 { font-size: clamp(36px, 7vw, 64px); line-height: 1.08; letter-spacing: -.04em; margin: 28px 0; }
+h2 { font-size: 26px; margin-top: 0; }
+h3 { font-size: 18px; margin: 0 0 8px; }
+p, li { line-height: 1.65; }
+.intro { font-size: 18px; max-width: 600px; }
+section { border: 1px solid #435256; border-radius: 16px; padding: 24px; margin: 36px 0 24px; background: #1a252b; }
+.track { position: relative; height: 70px; border-bottom: 1px solid #839994; margin: 0 14px 24px; }
+.track[hidden] { display: none; }
+.blind-toggle { display: flex; align-items: center; gap: 8px; font-weight: 500; margin: 12px 0 18px; cursor: pointer; }
+.blind-toggle input { width: 18px; height: 18px; accent-color: #b2edcf; }
+#listener { position: absolute; bottom: -11px; left: 0; transform: translateX(-50%); color: #b2edcf; font-size: 22px; }
+.source { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); white-space: nowrap; color: #e9cfa4; }
+label { display: block; font-weight: 650; margin-bottom: 8px; }
+select { width: 100%; border: 1px solid #839994; border-radius: 8px; padding: 12px; background: #132027; color: #ebe9e2; font: inherit; }
+input[type="range"] { width: 100%; accent-color: #b2edcf; margin: 4px 0 24px; }
+.buttons { display: flex; flex-wrap: wrap; gap: 12px; }
+button { border: 1px solid #a8cbbc; border-radius: 8px; padding: 13px 18px; background: #b2edcf; color: #132820; font: inherit; font-weight: 650; cursor: pointer; }
+#stop, #restart { color: #ebe9e2; background: transparent; }
+#movement-stop, #movement-reset { color: #ebe9e2; background: transparent; }
+.distance { font-size: 20px; font-weight: 650; }
+.ground-controls { border-top: 1px solid #435256; margin: 0 0 24px; padding-top: 20px; }
+.ground-controls p { margin: 0 0 12px; }
+.ground-controls input[type="range"] { margin-bottom: 8px; }
+.material-choice { border: 1px solid #435256; border-radius: 8px; margin: 16px 0 12px; padding: 6px 14px 8px; }
+.material-choice legend { padding: 0 4px; font-weight: 650; }
+.material-choice .blind-toggle { margin: 8px 0; }
+.contact-preview { margin: 8px 0 12px; }
+.contact-preview button { background: transparent; color: #ebe9e2; }
+button:disabled { opacity: .45; cursor: default; }
+button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid #e8d73a; outline-offset: 5px; }
+.note, #signal { color: #b3c1c1; font-size: 14px; }
+summary { cursor: pointer; }
+@media(max-width:480px) { main { padding: 32px 20px; } section { padding: 18px; } }

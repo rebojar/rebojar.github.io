@@ -2,85 +2,159 @@
 <html lang="pt-BR">
 <head>
   <base href="./apps/web/">
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>AUDICANVAS · Ensaio espacial</title>
-  <link rel="stylesheet" href="./style.css?v=28727a895113">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="AUDICANVAS: um laboratório de paisagens sonoras que respondem ao movimento.">
+  <title>AUDICANVAS · Escuta em movimento</title>
+  <link rel="stylesheet" href="./style.css?v=591128fa5ebf">
 </head>
 <body>
+  <a class="skip-link" href="#escuta">Ir para a caminhada</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <span class="product-mark">audicanvas</span>
+      <span class="brand-divider" aria-hidden="true">|</span>
+      <a class="rebojar-mark" href="https://rebojar.github.io/">rebojar<span aria-hidden="true"> ↗</span></a>
+      <span class="prototype-tag">protótipo de áudio espacial</span>
+    </div>
+  </header>
   <main>
-    <p class="eyebrow">AUDICANVAS / LABORATÓRIO 01</p>
-    <h1>Som em movimento.</h1>
-    <p class="intro">Compare quem se move, onde o som parece passar e como um sinal mais rico muda a percepção.</p>
-    <section aria-label="Ensaio de áudio">
-      <label for="scene">Trajetória de teste</label>
-      <select id="scene">
-        <option value="pass">Você passa pela fonte</option>
-        <option value="cross">Fonte cruza à sua frente</option>
-        <option value="far">Você se afasta mais</option>
-        <option value="pass-right">Passagem mais à direita (novo teste)</option>
-        <option value="pass-right-rich">Mesmo trajeto, som mais rico (novo teste)</option>
-      </select>
-      <p id="scene-description">Uma fonte fica à sua direita enquanto você passa por ela.</p>
-      <label class="blind-toggle" for="hide-track"><input id="hide-track" type="checkbox"> Ocultar o desenho da trajetória</label>
-      <div class="track" aria-hidden="true"><span id="listener">●</span><span id="source" class="source">◇ fonte</span></div>
-      <p>Passagem de 12 segundos · sinal de diagnóstico · volume suave</p>
-      <div class="buttons"><button id="start">Iniciar passagem</button><button id="stop" disabled>Pausar</button><button id="restart" disabled>Recomeçar</button></div>
-      <p id="status" role="status">Pronto para iniciar. Use um volume confortável.</p>
-      <p id="signal">Sinal: —</p>
+    <div class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">REBOJAR · EXPERIÊNCIA SONORA</p>
+        <h1>AUDICANVAS</h1>
+        <p class="hero-statement">Um lugar começa <em>pelos ouvidos.</em></p>
+        <p class="intro">Monte um caminho e escute como passos, pequenos encontros, sons do corpo e o ambiente mudam enquanto você anda.</p>
+        <p class="hero-hint">Use fones estéreo e escolha um volume confortável.</p>
+        <a class="hero-start" href="#movement-start">Ir para a caminhada <span aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+
+    <section id="escuta" class="panel listening-room" aria-labelledby="walking-title">
+      <div class="section-heading">
+        <span class="section-index">01 / ESCUTA</span>
+        <div>
+          <h2 id="walking-title">Entre na caminhada</h2>
+          <p>Uma rua quieta e passos no asfalto. Velocidade e escolhas transformam a cena.</p>
+        </div>
+      </div>
+      <div class="listening-layout">
+        <div class="soundstage">
+          <p class="stage-label">RUA QUIETA · CENA EXPERIMENTAL</p>
+          <p id="movement-status" class="stage-status" role="status">Parado.</p>
+          <p id="step-status" class="stage-substatus" role="status">Preparando a cena…</p>
+          <div class="stage-metrics">
+            <p><span>Tempo</span><strong id="movement-elapsed">0:00</strong></p>
+            <p><span>Distância</span><strong><output id="movement-distance">0,00 m</output></strong></p>
+          </div>
+        </div>
+        <div class="play-controls">
+          <p class="control-kicker">MOVIMENTO PLANO</p>
+          <h3>Encontre o seu ritmo</h3>
+          <p>Comece a andar, mude a velocidade e escute por dois minutos.</p>
+          <label for="movement-speed">Velocidade <output id="movement-speed-value" for="movement-speed">1,0 m/s</output></label>
+          <input id="movement-speed" type="range" min="0.2" max="2" step="0.1" value="1">
+          <div class="buttons movement-buttons">
+            <button id="movement-start" aria-describedby="step-status" disabled>Começar a andar</button>
+            <button id="movement-stop" class="button-secondary" disabled>Parar</button>
+            <button id="movement-reset" class="button-quiet">Zerar distância</button>
+          </div>
+          <p class="note">A cena é um protótipo. Passos, brincos e trânsito ainda são sons sintéticos.</p>
+        </div>
+      </div>
     </section>
-    <section aria-label="Laboratório de movimento">
-      <h2>Movimento plano</h2>
-      <p>Controle a caminhada simulada. A distância vem do tempo e da velocidade. Os passos são sintéticos e provisórios; gravações entram depois.</p>
-      <label for="movement-speed">Velocidade: <output id="movement-speed-value" for="movement-speed">1,0 m/s</output></label>
-      <input id="movement-speed" type="range" min="0.2" max="2" step="0.1" value="1">
-      <div class="ground-controls">
-        <h3>Chão e pequenos encontros</h3>
-        <p>Asfalto com flores secas, folhas e pedrinhas espalhadas pelo caminho. Flor e folha usam gravações CC0 experimentais; passos e pedra continuam sintéticos.</p>
-        <fieldset class="material-choice">
-          <legend>O que há no caminho</legend>
-          <label class="blind-toggle" for="material-flower"><input id="material-flower" type="checkbox" data-material-kind="dry_flower" checked disabled> Flores secas</label>
-          <label class="blind-toggle" for="material-leaf"><input id="material-leaf" type="checkbox" data-material-kind="dry_leaf" checked disabled> Folhas secas</label>
-          <label class="blind-toggle" for="material-pebble"><input id="material-pebble" type="checkbox" data-material-kind="pebble" checked disabled> Pedrinhas</label>
-        </fieldset>
-        <p class="note">Você pode mudar a seleção enquanto anda; ela vale para as próximas pisadas. Os botões “Ouvir” abaixo continuam disponíveis para comparar cada som isolado.</p>
-        <label for="interaction-density">Frequência dos encontros: <output id="interaction-density-value" for="interaction-density">normal</output></label>
-        <input id="interaction-density" type="range" min="0" max="2" step="0.1" value="1" disabled>
-        <p id="interaction-status" class="note">Preparando a cena de chão…</p>
-        <p id="encounter-speed-note" class="note">A velocidade também ajusta os encontros automaticamente.</p>
-        <label class="blind-toggle" for="isolate-contacts"><input id="isolate-contacts" type="checkbox">Ouvir só os encontros (teste sem passos)</label>
-        <p class="note">Para comparar a frequência: deixe os encontros em “normal”, ouça 30 segundos a 0,2 m/s e depois 30 segundos a 2,0 m/s. Repita com “Ouvir só os encontros” para separar os contatos dos passos. A escolha dos encontros permanece irregular.</p>
-        <p class="note">Contatos programados: flores <output id="flower-count">0</output> · folhas <output id="leaf-count">0</output> · pedras <output id="pebble-count">0</output></p>
-        <p class="note">Ouça cada contato isolado para comparar os novos candidatos:</p>
-        <div class="buttons contact-preview"><button type="button" data-contact-kind="dry_flower">Ouvir flor</button><button type="button" data-contact-kind="dry_leaf">Ouvir folha</button><button type="button" data-contact-kind="pebble">Ouvir pedra</button></div>
-        <p id="contact-preview-status" class="note" role="status">Pare a caminhada antes de comparar.</p>
-        <p class="note">Fontes CC0: <a href="https://freesound.org/people/Anthousai/sounds/399334/">estalo por Anthousai</a> (referência de flor) e <a href="https://lpc.opengameart.org/content/20-rustles-dry-leaves">folhas por qubodup</a>. Estes sons ainda aguardam sua avaliação.</p>
+
+    <section class="composition" aria-labelledby="composition-title">
+      <div class="section-heading section-heading-dark">
+        <span class="section-index">02 / COMPOSIÇÃO</span>
+        <div>
+          <h2 id="composition-title">Escolha o que há ao redor</h2>
+          <p>As escolhas alteram os próximos sons sem interromper a caminhada.</p>
+        </div>
       </div>
-      <div class="ground-controls">
-        <h3>Corpo: brincos</h3>
-        <p>Brincos sintéticos de teste tilintam suavemente no ritmo das pisadas, com alguns choques mais fortes. Compare com e sem esse som; ao parar, a última vibração se apaga rapidamente.</p>
-        <label class="blind-toggle" for="body-earrings"><input id="body-earrings" type="checkbox"> Ouvir brincos durante a caminhada</label>
-        <label for="body-volume">Volume dos brincos: <output id="body-volume-value" for="body-volume">baixo</output></label>
-        <input id="body-volume" type="range" min="0" max="1" step="0.1" value="0.4">
-        <p id="body-status" class="note">Brincos desligados.</p>
-        <p class="note">Tilintares programados: <output id="body-count">0</output></p>
+      <div class="composition-grid">
+        <section class="composition-card ground-card" aria-labelledby="ground-title">
+          <p class="card-index">CHÃO / 01</p>
+          <h3 id="ground-title">O caminho</h3>
+          <p>Flores, folhas e pedrinhas podem aparecer sob os pés. Cada contato nasce de uma pisada.</p>
+          <fieldset class="material-choice">
+            <legend>O que há no caminho</legend>
+            <label class="choice" for="material-flower"><input id="material-flower" type="checkbox" data-material-kind="dry_flower" checked disabled><span>Flores secas</span></label>
+            <label class="choice" for="material-leaf"><input id="material-leaf" type="checkbox" data-material-kind="dry_leaf" checked disabled><span>Folhas secas</span></label>
+            <label class="choice" for="material-pebble"><input id="material-pebble" type="checkbox" data-material-kind="pebble" checked disabled><span>Pedrinhas</span></label>
+          </fieldset>
+          <label class="range-label" for="interaction-density">Frequência dos encontros <output id="interaction-density-value" for="interaction-density">normal</output></label>
+          <input id="interaction-density" type="range" min="0" max="2" step="0.1" value="1" disabled>
+          <p id="interaction-status" class="note" role="status">Preparando a cena de chão…</p>
+          <p id="encounter-speed-note" class="note">A velocidade também ajusta os encontros automaticamente.</p>
+          <details class="card-details">
+            <summary>Comparar os sons do chão</summary>
+            <label class="choice" for="isolate-contacts"><input id="isolate-contacts" type="checkbox"><span>Ouvir só os encontros, sem passos</span></label>
+            <p class="note">Para comparar a frequência, ouça 30 segundos a 0,2 m/s e depois 30 segundos a 2,0 m/s. Os encontros continuam irregulares.</p>
+            <div class="buttons contact-preview">
+              <button type="button" data-contact-kind="dry_flower">Ouvir flor</button>
+              <button type="button" data-contact-kind="dry_leaf">Ouvir folha</button>
+              <button type="button" data-contact-kind="pebble">Ouvir pedra</button>
+            </div>
+            <p id="contact-preview-status" class="note" role="status">Pare a caminhada antes de comparar.</p>
+          </details>
+        </section>
+        <section class="composition-card body-card" aria-labelledby="body-title">
+          <p class="card-index">CORPO / 02</p>
+          <h3 id="body-title">Perto de você</h3>
+          <p>Um tilintar leve acompanha os passos, como brincos que se movem com o corpo.</p>
+          <label class="choice choice-feature" for="body-earrings"><input id="body-earrings" type="checkbox"><span>Ouvir brincos</span></label>
+          <label class="range-label" for="body-volume">Volume dos brincos <output id="body-volume-value" for="body-volume">baixo</output></label>
+          <input id="body-volume" type="range" min="0" max="1" step="0.1" value="0.4" disabled>
+          <p id="body-status" class="note" role="status">Brincos desligados. Ligue para ajustar o volume.</p>
+        </section>
+        <section class="composition-card world-card" aria-labelledby="world-title">
+          <p class="card-index">AMBIENTE / 03</p>
+          <h3 id="world-title">Ao longe</h3>
+          <p>Um veículo ocasional atravessa o fundo da cena, à direita, em espaço aberto.</p>
+          <label class="choice choice-feature" for="world-traffic"><input id="world-traffic" type="checkbox" checked disabled><span>Ouvir trânsito distante</span></label>
+          <p id="traffic-status" class="note" role="status">Preparando a cena de trânsito…</p>
+        </section>
       </div>
-      <div class="ground-controls">
-        <h3>Ambiente: trânsito distante</h3>
-        <p>Veículos sintéticos ocasionais passam ao longe, à direita, em espaço aberto. Ainda é uma referência de teste, sem gravações de trânsito nem reverberação de ambiente fechado.</p>
-        <label class="blind-toggle" for="world-traffic"><input id="world-traffic" type="checkbox" checked disabled> Ouvir trânsito distante durante a caminhada</label>
-        <p id="traffic-status" class="note">Preparando a cena de trânsito…</p>
-        <p class="note">Veículos programados: <output id="traffic-count">0</output></p>
-      </div>
-      <div class="buttons"><button id="movement-start">Começar a andar</button><button id="movement-stop" disabled>Parar</button><button id="movement-reset">Zerar distância</button></div>
-      <p id="movement-status" role="status">Parado.</p>
-      <p id="step-status">Passos: desligados.</p>
-      <p class="note">Tempo desta caminhada: <output id="movement-elapsed">0:00</output> · escute até 2:00 para avaliar repetição.</p>
-      <p class="note">Passos calculados nesta caminhada: <output id="step-count">0</output></p>
-      <p class="distance">Distância: <output id="movement-distance">0,00 m</output></p>
     </section>
-    <p class="note">Ouça um ensaio de cada vez, com fones e volume confortável. O indicador de sinal não garante o que chega aos seus ouvidos. Passos, brincos e trânsito são sintéticos e provisórios; esta versão ainda não contém passos ou trânsito gravados.</p>
-    <details><summary>O que avaliar</summary><ol><li>Na primeira trajetória, parece que você se move ou que algo passa por você?</li><li>Na segunda, o som cruza da direita para a esquerda à sua frente?</li><li>Na terceira, ele termina mais distante atrás?</li><li>Nas duas opções novas, a fonte parece ficar à direita? O som mais rico ajuda ou atrapalha?</li><li>Pausar e continuar preserva o ponto da passagem?</li></ol><p>Registrar fone/dispositivo, navegador e percepção de cada trajetória.</p></details>
+
+    <details class="lab-panel">
+      <summary><span><span class="section-index">03 / LABORATÓRIO</span><strong>Comparar trajetórias espaciais</strong></span><span aria-hidden="true" class="summary-plus">+</span></summary>
+      <div class="lab-content">
+        <p>Este ensaio de 12 segundos compara movimento da fonte e do ouvinte. Use o mesmo fone e volume; o sinal é apenas diagnóstico.</p>
+        <label for="scene">Trajetória de teste</label>
+        <select id="scene">
+          <option value="pass">Você passa pela fonte</option>
+          <option value="cross">Fonte cruza à sua frente</option>
+          <option value="far">Você se afasta mais</option>
+          <option value="pass-right">Passagem mais à direita</option>
+          <option value="pass-right-rich">Mesmo trajeto, som mais rico</option>
+        </select>
+        <p id="scene-description">Uma fonte fica à sua direita enquanto você passa por ela.</p>
+        <label class="choice" for="hide-track"><input id="hide-track" type="checkbox"><span>Ocultar o desenho da trajetória</span></label>
+        <div class="track" aria-hidden="true"><span id="listener">●</span><span id="source" class="source">◇ fonte</span></div>
+        <div class="buttons">
+          <button id="start">Iniciar passagem</button>
+          <button id="stop" class="button-secondary" disabled>Pausar</button>
+          <button id="restart" class="button-quiet" disabled>Recomeçar</button>
+        </div>
+        <p id="status" role="status">Pronto para iniciar. Use um volume confortável.</p>
+        <p id="signal" class="note">Sinal: —</p>
+        <details class="inner-details"><summary>O que avaliar</summary><ol><li>Parece que você se move ou que algo passa por você?</li><li>A fonte cruza à sua frente?</li><li>A fonte termina mais distante atrás?</li><li>Ela permanece à direita nas duas últimas opções?</li><li>Pausar e continuar preserva o ponto da passagem?</li></ol></details>
+      </div>
+    </details>
+
+    <details class="telemetry-panel">
+      <summary>Notas e contadores deste protótipo</summary>
+      <div class="telemetry-content">
+        <p>Os números representam eventos programados; não provam o que chegou aos seus ouvidos.</p>
+        <p>Passos calculados: <output id="step-count">0</output> · Tilintares: <output id="body-count">0</output> · Veículos: <output id="traffic-count">0</output></p>
+        <p>Contatos programados: flores <output id="flower-count">0</output> · folhas <output id="leaf-count">0</output> · pedras <output id="pebble-count">0</output></p>
+        <p>Flor e folha usam gravações CC0 experimentais: <a href="https://freesound.org/people/Anthousai/sounds/399334/">estalo por Anthousai</a> e <a href="https://lpc.opengameart.org/content/20-rustles-dry-leaves">folhas por qubodup</a>. Passos, brincos, pedra e trânsito são sintéticos. Os sons gravados ainda não constituem um lote comercial aprovado.</p>
+      </div>
+    </details>
   </main>
-  <script type="module" src="./main.mjs?v=28727a895113"></script>
+  <footer class="site-footer"><span>AUDICANVAS · laboratório sonoro do Rebojar</span><a href="https://rebojar.github.io/">Voltar ao Rebojar ↗</a></footer>
+  <script type="module" src="./main.mjs?v=591128fa5ebf"></script>
 </body>
 </html>
