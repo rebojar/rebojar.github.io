@@ -705,7 +705,7 @@
       }
 
       .menu-toggle {
-        top: 3.8rem;
+        top: 0.8rem;
         left: 0.8rem;
       }
 
@@ -720,7 +720,31 @@
         width: max-content;
         max-width: calc(100vw - 1rem);
         gap: 0.18rem;
-        padding: 6.8rem 0.7rem 0.8rem;
+        padding: 4.25rem 0.7rem 0.8rem;
+      }
+
+      body:has(.apresentacao-projeto:target) .menu-toggle,
+      body:has(#privacidade-caderno-de-bordo:target) .menu-toggle,
+      body:has(#termos-de-servico:target) .menu-toggle {
+        top: 3.8rem;
+      }
+
+      body:has(.apresentacao-projeto:target) .menu-lateral,
+      body:has(#privacidade-caderno-de-bordo:target) .menu-lateral,
+      body:has(#termos-de-servico:target) .menu-lateral {
+        padding-top: 6.8rem;
+      }
+
+      body:has(.apresentacao-projeto:target) .menu-lateral.aberto,
+      body:has(#privacidade-caderno-de-bordo:target) .menu-lateral.aberto,
+      body:has(#termos-de-servico:target) .menu-lateral.aberto {
+        border: 1px solid rgba(183, 217, 255, 0.18);
+        border-top: 0;
+        border-left: 0;
+        border-radius: 0 0 12px 0;
+        background: rgba(0, 4, 40, 0.96);
+        box-shadow: 0 14px 28px rgba(0, 0, 0, 0.34);
+        backdrop-filter: blur(10px);
       }
 
       .menu-lateral a {
