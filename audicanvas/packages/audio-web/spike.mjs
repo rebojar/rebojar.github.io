@@ -36,17 +36,19 @@ export function schedulePosition(node, fromWorld, toWorld, startTime, endTime) {
 
 // Diagnostic source only. Foley and event scheduling belong to later gates.
 export class SpatialSpike {
-  constructor() { this.context = null; this.active = null; this.silenceUntil = 0; }
+  constructor() { this.context = null; this.active = null; this.silenceUntil = 0; this.requestId = 0; }
 
   async start(scene = DIAGNOSTIC_SCENES.PASS) {
     const initialPose = diagnosticPose(scene, 0);
     const finalPose = diagnosticPose(scene, DIAGNOSTIC_DURATION);
     this.stop();
+    const request = ++this.requestId;
     const AudioContextClass = globalThis.AudioContext || globalThis.webkitAudioContext;
     if (!AudioContextClass) throw new Error('Web Audio não está disponível neste navegador.');
     this.context ??= new AudioContextClass();
     const ctx = this.context;
     await ensureRunning(ctx);
+    if (request !== this.requestId) return;
     const oscillator = ctx.createOscillator();
     const gain = ctx.createGain();
     const panner = ctx.createPanner();
@@ -119,6 +121,7 @@ export class SpatialSpike {
   }
 
   stop() {
+    this.requestId++;
     if (!this.active) return;
     const { gain, oscillator } = this.active;
     const now = this.context.currentTime;

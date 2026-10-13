@@ -9,6 +9,9 @@ p, li { line-height: 1.65; }
 .intro { font-size: 18px; max-width: 600px; }
 section { border: 1px solid #435256; border-radius: 16px; padding: 24px; margin: 36px 0 24px; background: #1a252b; }
 .track { position: relative; height: 70px; border-bottom: 1px solid #839994; margin: 0 14px 24px; }
+.track[hidden] { display: none; }
+.blind-toggle { display: flex; align-items: center; gap: 8px; font-weight: 500; margin: 12px 0 18px; cursor: pointer; }
+.blind-toggle input { width: 18px; height: 18px; accent-color: #b2edcf; }
 #listener { position: absolute; bottom: -11px; left: 0; transform: translateX(-50%); color: #b2edcf; font-size: 22px; }
 .source { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); white-space: nowrap; color: #e9cfa4; }
 label { display: block; font-weight: 650; margin-bottom: 8px; }

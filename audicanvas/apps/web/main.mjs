@@ -12,6 +12,8 @@ const status = document.querySelector('#status');
 const signal = document.querySelector('#signal');
 const listener = document.querySelector('#listener');
 const source = document.querySelector('#source');
+const track = document.querySelector('.track');
+const hideTrack = document.querySelector('#hide-track');
 const movement = new MovementSimulator();
 const steps = new FootstepAudio();
 const movementSpeed = document.querySelector('#movement-speed');
@@ -26,6 +28,7 @@ const stepCount = document.querySelector('#step-count');
 let frame;
 let movementFrame;
 let movementStartRequest = 0;
+let passageRequest = 0;
 let passagePaused = false;
 const descriptions = {
   [DIAGNOSTIC_SCENES.PASS]: 'Uma fonte fica à sua direita enquanto você passa por ela. Esta é a versão que você já ouviu.',
@@ -47,6 +50,7 @@ function renderScene(progress = 0) {
   }
 }
 function halt(message = 'Passagem interrompida.') {
+  passageRequest++;
   cancelAnimationFrame(frame);
   audio.stop();
   passagePaused = false;
@@ -67,6 +71,8 @@ function draw() {
   frame = requestAnimationFrame(draw);
 }
 async function beginPassage(restartFromBeginning = false) {
+  const request = ++passageRequest;
+  stopMovement();
   if (restartFromBeginning) { audio.stop(); passagePaused = false; }
   start.disabled = true;
   restart.disabled = true;
@@ -75,6 +81,7 @@ async function beginPassage(restartFromBeginning = false) {
   try {
     if (passagePaused) await audio.resume();
     else await audio.start(scene.value);
+    if (request !== passageRequest) return;
     passagePaused = false;
     if (document.hidden) { await pausePassage('Pausado ao sair da página.'); return; }
     start.textContent = 'Iniciar passagem';
@@ -82,14 +89,16 @@ async function beginPassage(restartFromBeginning = false) {
     restart.disabled = false;
     status.textContent = 'Ouça a trajetória selecionada.';
     draw();
-  } catch (error) { halt(`Não foi possível iniciar: ${error.message}`); }
+  } catch (error) { if (request === passageRequest) halt(`Não foi possível iniciar: ${error.message}`); }
 }
 async function pausePassage(message = 'Passagem pausada. Continue de onde parou.') {
   if (!audio.active || passagePaused) return;
+  const request = passageRequest;
   cancelAnimationFrame(frame);
   stop.disabled = true;
   try {
     await audio.pause();
+    if (request !== passageRequest) return;
     passagePaused = true;
     start.disabled = false;
     start.textContent = 'Continuar passagem';
@@ -97,12 +106,13 @@ async function pausePassage(message = 'Passagem pausada. Continue de onde parou.
     status.textContent = message;
     const sample = audio.sample();
     signal.textContent = `Pausado em ${sample.elapsed.toFixed(1)} s`;
-  } catch (error) { halt(`Não foi possível pausar: ${error.message}`); }
+  } catch (error) { if (request === passageRequest) halt(`Não foi possível pausar: ${error.message}`); }
 }
 start.addEventListener('click', () => { void beginPassage(); });
 stop.addEventListener('click', () => { void pausePassage(); });
 restart.addEventListener('click', () => { void beginPassage(true); });
 scene.addEventListener('change', () => renderScene());
+hideTrack.addEventListener('change', () => { track.hidden = hideTrack.checked; });
 
 function movementTime() { return performance.now() / 1000; }
 function renderMovement(snapshot) {
@@ -127,6 +137,7 @@ function stopMovement() {
   stepStatus.textContent = 'Passos: desligados.';
 }
 movementStart.addEventListener('click', async () => {
+  if (audio.active || start.disabled || passagePaused) halt('Passagem interrompida para ouvir os passos separadamente.');
   const request = ++movementStartRequest;
   movementStart.disabled = true;
   stepStatus.textContent = 'Iniciando passos sintéticos…';

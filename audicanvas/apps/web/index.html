@@ -20,6 +20,7 @@
         <option value="pass-right-rich">Mesmo trajeto, som mais rico (novo teste)</option>
       </select>
       <p id="scene-description">Uma fonte fica à sua direita enquanto você passa por ela.</p>
+      <label class="blind-toggle" for="hide-track"><input id="hide-track" type="checkbox"> Ocultar o desenho da trajetória</label>
       <div class="track" aria-hidden="true"><span id="listener">●</span><span id="source" class="source">◇ fonte</span></div>
       <p>Passagem de 12 segundos · sinal de diagnóstico · volume suave</p>
       <div class="buttons"><button id="start">Iniciar passagem</button><button id="stop" disabled>Pausar</button><button id="restart" disabled>Recomeçar</button></div>
@@ -37,7 +38,7 @@
       <p class="note">Passos sintéticos programados nesta caminhada: <output id="step-count">0</output></p>
       <p class="distance">Distância: <output id="movement-distance">0,00 m</output></p>
     </section>
-    <p class="note">Use fones para a primeira comparação. O indicador de sinal não garante o que chega aos seus ouvidos. Os passos são sintéticos e provisórios; esta versão ainda não contém passos gravados, brincos ou ambientes.</p>
+    <p class="note">Ouça um ensaio de cada vez, com fones e volume confortável. O indicador de sinal não garante o que chega aos seus ouvidos. Os passos são sintéticos e provisórios; esta versão ainda não contém passos gravados, brincos ou ambientes.</p>
     <details><summary>O que avaliar</summary><ol><li>Na primeira trajetória, parece que você se move ou que algo passa por você?</li><li>Na segunda, o som cruza da direita para a esquerda à sua frente?</li><li>Na terceira, ele termina mais distante atrás?</li><li>Nas duas opções novas, a fonte parece ficar à direita? O som mais rico ajuda ou atrapalha?</li><li>Pausar e continuar preserva o ponto da passagem?</li></ol><p>Registrar fone/dispositivo, navegador e percepção de cada trajetória.</p></details>
   </main>
   <script type="module" src="./main.mjs"></script>
