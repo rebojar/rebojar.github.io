@@ -410,14 +410,14 @@
     }
     .estante-portal {
       width: min(76.5%, 45.9rem);
-      height: 382.5px;
+      height: 374px;
       margin: 3rem auto 0;
     }
     .estante-portal rebojar-estante {
       width: 111.111111%;
       margin-left: -5.555556%;
       --estante-altura: 425px;
-      transform: scale(.9);
+      transform: translateY(-4px) scale(.88);
       transform-origin: top center;
     }
     main:has(.apresentacao-projeto:target) .estante-portal,
@@ -568,15 +568,15 @@
         min-height: 24rem;
       }
       .estante-portal {
-        --estante-mobile-altura: clamp(270px, 84vw, 330px);
-        width: min(92vw, 34rem);
+        --estante-mobile-altura: clamp(264px, 82vw, 323px);
+        width: min(90vw, 33.25rem);
         height: var(--estante-mobile-altura);
       }
       .estante-portal rebojar-estante {
         width: 100%;
         margin-left: 0;
         --estante-altura: var(--estante-mobile-altura);
-        transform: none;
+        transform: translateY(-4px);
       }
     }
     @media (prefers-reduced-motion: reduce) {
