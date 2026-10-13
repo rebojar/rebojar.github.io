@@ -552,6 +552,15 @@
         scrollbar-width: none;
       }
 
+      body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main {
+        padding-block: 1.5rem;
+        overflow-y: hidden;
+      }
+
+      body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main .estante-portal {
+        margin-top: 1.5rem;
+      }
+
       body > main::-webkit-scrollbar,
       body > footer::-webkit-scrollbar {
         width: 0;
@@ -1180,7 +1189,6 @@
 
       window.addEventListener('wheel', event => {
         if (!rolagemHorizontal.matches || event.defaultPrevented) return;
-        if (event.target.closest?.('rebojar-estante')) return;
         if (Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
         const painelVertical = event.target.closest?.('main, footer');
         if (painelVertical && painelVertical.scrollHeight > painelVertical.clientHeight) {
