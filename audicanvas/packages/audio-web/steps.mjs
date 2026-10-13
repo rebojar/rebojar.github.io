@@ -1,4 +1,4 @@
-import { GaitClock } from '../engine/gait.mjs';
+import { GaitClock } from '../engine/gait.mjs?v=6e014f8c3934';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;

@@ -1,7 +1,7 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs';
-import { MovementSimulator } from '../../packages/engine/movement.mjs';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=6e014f8c3934';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=6e014f8c3934';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=6e014f8c3934';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=6e014f8c3934';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -23,11 +23,14 @@ const movementStop = document.querySelector('#movement-stop');
 const movementReset = document.querySelector('#movement-reset');
 const movementStatus = document.querySelector('#movement-status');
 const movementDistance = document.querySelector('#movement-distance');
+const movementElapsed = document.querySelector('#movement-elapsed');
 const stepStatus = document.querySelector('#step-status');
 const stepCount = document.querySelector('#step-count');
 let frame;
 let movementFrame;
 let movementStartRequest = 0;
+let movementStartedAt = null;
+let movementElapsedSeconds = 0;
 let passageRequest = 0;
 let passagePaused = false;
 const descriptions = {
@@ -115,6 +118,11 @@ scene.addEventListener('change', () => renderScene());
 hideTrack.addEventListener('change', () => { track.hidden = hideTrack.checked; });
 
 function movementTime() { return performance.now() / 1000; }
+function renderMovementElapsed(time) {
+  if (movementStartedAt !== null) movementElapsedSeconds = Math.max(0, time - movementStartedAt);
+  const seconds = Math.floor(movementElapsedSeconds);
+  movementElapsed.textContent = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}${seconds >= 120 ? ' ✓' : ''}`;
+}
 function renderMovement(snapshot) {
   movementSpeedValue.textContent = `${snapshot.speed.toFixed(1).replace('.', ',')} m/s`;
   movementDistance.textContent = `${snapshot.position.z.toFixed(2).replace('.', ',')} m`;
@@ -124,17 +132,22 @@ function renderMovement(snapshot) {
   movementStop.disabled = !snapshot.moving;
 }
 function drawMovement() {
-  const snapshot = movement.observe(movementTime());
+  const time = movementTime();
+  const snapshot = movement.observe(time);
   renderMovement(snapshot);
+  renderMovementElapsed(time);
   if (snapshot.moving) movementFrame = requestAnimationFrame(drawMovement);
 }
-function stopMovement() {
+function stopMovement(reason) {
   movementStartRequest++;
   cancelAnimationFrame(movementFrame);
   const time = movementTime();
   steps.stop(time);
+  renderMovementElapsed(time);
+  movementStartedAt = null;
   renderMovement(movement.stop(time));
   stepStatus.textContent = 'Passos: desligados.';
+  if (reason && movementElapsedSeconds > 0) movementStatus.textContent = reason;
 }
 movementStart.addEventListener('click', async () => {
   if (audio.active || start.disabled || passagePaused) halt('Passagem interrompida para ouvir os passos separadamente.');
@@ -155,15 +168,21 @@ movementStart.addEventListener('click', async () => {
     movementStart.disabled = false;
     return;
   }
+  movementStartedAt = time;
+  movementElapsedSeconds = 0;
+  renderMovementElapsed(time);
   renderMovement(movement.start(time));
   movementFrame = requestAnimationFrame(drawMovement);
 });
-movementStop.addEventListener('click', stopMovement);
+movementStop.addEventListener('click', () => stopMovement());
 movementReset.addEventListener('click', () => {
   movementStartRequest++;
   cancelAnimationFrame(movementFrame);
   const time = movementTime();
   steps.stop(time);
+  movementStartedAt = null;
+  movementElapsedSeconds = 0;
+  renderMovementElapsed(time);
   renderMovement(movement.reset(time));
   stepStatus.textContent = 'Passos: desligados.';
 });
@@ -174,7 +193,7 @@ movementSpeed.addEventListener('input', () => {
   renderMovement(movement.setSpeed(speed, time));
 });
 document.addEventListener('visibilitychange', () => {
-  if (document.hidden) { void pausePassage('Pausado ao sair da página.'); stopMovement(); }
+  if (document.hidden) { void pausePassage('Pausado ao sair da página.'); stopMovement('Ensaio interrompido ao sair da aba.'); }
 });
 window.addEventListener('pagehide', () => { halt(); stopMovement(); });
 renderScene();
