@@ -5,6 +5,7 @@ main { max-width: 760px; margin: 0 auto; padding: 64px 24px; }
 .eyebrow { color: #a8cbbc; font-size: 12px; letter-spacing: .15em; }
 h1 { font-size: clamp(36px, 7vw, 64px); line-height: 1.08; letter-spacing: -.04em; margin: 28px 0; }
 h2 { font-size: 26px; margin-top: 0; }
+h3 { font-size: 18px; margin: 0 0 8px; }
 p, li { line-height: 1.65; }
 .intro { font-size: 18px; max-width: 600px; }
 section { border: 1px solid #435256; border-radius: 16px; padding: 24px; margin: 36px 0 24px; background: #1a252b; }
@@ -22,6 +23,9 @@ button { border: 1px solid #a8cbbc; border-radius: 8px; padding: 13px 18px; back
 #stop, #restart { color: #ebe9e2; background: transparent; }
 #movement-stop, #movement-reset { color: #ebe9e2; background: transparent; }
 .distance { font-size: 20px; font-weight: 650; }
+.ground-controls { border-top: 1px solid #435256; margin: 0 0 24px; padding-top: 20px; }
+.ground-controls p { margin: 0 0 12px; }
+.ground-controls input[type="range"] { margin-bottom: 8px; }
 button:disabled { opacity: .45; cursor: default; }
 button:focus-visible, select:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid #e9cfa4; outline-offset: 5px; }
 .note, #signal { color: #b3c1c1; font-size: 14px; }

@@ -4,7 +4,7 @@
   <base href="./apps/web/">
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>AUDICANVAS · Ensaio espacial</title>
-  <link rel="stylesheet" href="./style.css?v=6e014f8c3934">
+  <link rel="stylesheet" href="./style.css?v=86453f847b44">
 </head>
 <body>
   <main>
@@ -33,6 +33,14 @@
       <p>Controle a caminhada simulada. A distância vem do tempo e da velocidade. Os passos são sintéticos e provisórios; gravações entram depois.</p>
       <label for="movement-speed">Velocidade: <output id="movement-speed-value" for="movement-speed">1,0 m/s</output></label>
       <input id="movement-speed" type="range" min="0.2" max="2" step="0.1" value="1">
+      <div class="ground-controls">
+        <h3>Chão e pequenos encontros</h3>
+        <p>Asfalto com flores secas, folhas e pedrinhas ocasionais. Os sons ainda são sintéticos.</p>
+        <label for="interaction-density">Frequência dos encontros: <output id="interaction-density-value" for="interaction-density">normal</output></label>
+        <input id="interaction-density" type="range" min="0" max="2" step="0.1" value="1" disabled>
+        <p id="interaction-status" class="note">Preparando a cena de chão…</p>
+        <p class="note">Contatos programados: flores <output id="flower-count">0</output> · folhas <output id="leaf-count">0</output> · pedras <output id="pebble-count">0</output></p>
+      </div>
       <div class="buttons"><button id="movement-start">Começar a andar</button><button id="movement-stop" disabled>Parar</button><button id="movement-reset">Zerar distância</button></div>
       <p id="movement-status" role="status">Parado.</p>
       <p id="step-status">Passos: desligados.</p>
@@ -43,6 +51,6 @@
     <p class="note">Ouça um ensaio de cada vez, com fones e volume confortável. O indicador de sinal não garante o que chega aos seus ouvidos. Os passos são sintéticos e provisórios; esta versão ainda não contém passos gravados, brincos ou ambientes.</p>
     <details><summary>O que avaliar</summary><ol><li>Na primeira trajetória, parece que você se move ou que algo passa por você?</li><li>Na segunda, o som cruza da direita para a esquerda à sua frente?</li><li>Na terceira, ele termina mais distante atrás?</li><li>Nas duas opções novas, a fonte parece ficar à direita? O som mais rico ajuda ou atrapalha?</li><li>Pausar e continuar preserva o ponto da passagem?</li></ol><p>Registrar fone/dispositivo, navegador e percepção de cada trajetória.</p></details>
   </main>
-  <script type="module" src="./main.mjs?v=6e014f8c3934"></script>
+  <script type="module" src="./main.mjs?v=86453f847b44"></script>
 </body>
 </html>

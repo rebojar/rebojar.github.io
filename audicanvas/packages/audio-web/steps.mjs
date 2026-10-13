@@ -1,4 +1,5 @@
-import { GaitClock } from '../engine/gait.mjs?v=6e014f8c3934';
+import { GaitClock } from '../engine/gait.mjs?v=86453f847b44';
+import { MicroInteractionAudio } from './interactions.mjs?v=86453f847b44';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
@@ -26,6 +27,14 @@ export class FootstepAudio {
     this.scheduledThrough = 0;
     this.clockOffset = 0;
     this.scheduledCount = 0;
+    this.interactionPlan = null;
+    this.interactions = new MicroInteractionAudio();
+    this.interactionCounts = { dry_flower: 0, dry_leaf: 0, pebble: 0 };
+  }
+
+  setInteractionPlan(plan) {
+    if (plan !== null && typeof plan !== 'function') throw new TypeError('O planejador de interações deve ser uma função.');
+    this.interactionPlan = plan;
   }
 
   async start(speed) {
@@ -46,6 +55,7 @@ export class FootstepAudio {
     this.gait.update(time, { moving: true, speed });
     this.scheduledThrough = time;
     this.scheduledCount = 0;
+    this.interactionCounts = { dry_flower: 0, dry_leaf: 0, pebble: 0 };
     this.active = true;
     this.tick();
     this.timer = setInterval(() => this.tick(), POLL_MS);
@@ -56,6 +66,7 @@ export class FootstepAudio {
     if (!this.active) return;
     this.gait.update(time, { moving: true, speed });
     this.cancelVoices(false);
+    this.interactions.cancelVoices(false, this.context);
     this.scheduledThrough = time;
     this.tick();
   }
@@ -109,6 +120,9 @@ export class FootstepAudio {
     thump.start(start);
     source.stop(end);
     thump.stop(end);
+    for (const interaction of this.interactionPlan?.(event) ?? []) {
+      if (this.interactions.play(interaction, ctx, this.clockOffset)) this.interactionCounts[interaction.kind]++;
+    }
   }
 
   cancelVoices(includeCurrent) {
@@ -134,5 +148,6 @@ export class FootstepAudio {
     this.timer = null;
     this.gait.update(time, { moving: false, speed: 0 });
     this.cancelVoices(true);
+    this.interactions.cancelVoices(true, this.context);
   }
 }

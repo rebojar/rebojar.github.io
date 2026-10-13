@@ -1,7 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=6e014f8c3934';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=6e014f8c3934';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=6e014f8c3934';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=6e014f8c3934';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=86453f847b44';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=86453f847b44';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=86453f847b44';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=86453f847b44';
+import { InteractionEngine } from '../../packages/engine/interaction.mjs?v=86453f847b44';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -26,6 +27,14 @@ const movementDistance = document.querySelector('#movement-distance');
 const movementElapsed = document.querySelector('#movement-elapsed');
 const stepStatus = document.querySelector('#step-status');
 const stepCount = document.querySelector('#step-count');
+const interactionDensity = document.querySelector('#interaction-density');
+const interactionDensityValue = document.querySelector('#interaction-density-value');
+const interactionStatus = document.querySelector('#interaction-status');
+const flowerCount = document.querySelector('#flower-count');
+const leafCount = document.querySelector('#leaf-count');
+const pebbleCount = document.querySelector('#pebble-count');
+let interactionEngine = null;
+let surfaceReady = false;
 let frame;
 let movementFrame;
 let movementStartRequest = 0;
@@ -127,8 +136,11 @@ function renderMovement(snapshot) {
   movementSpeedValue.textContent = `${snapshot.speed.toFixed(1).replace('.', ',')} m/s`;
   movementDistance.textContent = `${snapshot.position.z.toFixed(2).replace('.', ',')} m`;
   stepCount.textContent = String(steps.scheduledCount);
+  flowerCount.textContent = String(steps.interactionCounts.dry_flower);
+  leafCount.textContent = String(steps.interactionCounts.dry_leaf);
+  pebbleCount.textContent = String(steps.interactionCounts.pebble);
   movementStatus.textContent = snapshot.moving ? 'Andando em terreno plano.' : 'Parado.';
-  movementStart.disabled = snapshot.moving;
+  movementStart.disabled = snapshot.moving || !surfaceReady;
   movementStop.disabled = !snapshot.moving;
 }
 function drawMovement() {
@@ -189,8 +201,15 @@ movementReset.addEventListener('click', () => {
 movementSpeed.addEventListener('input', () => {
   const time = movementTime();
   const speed = Number(movementSpeed.value);
+  const snapshot = movement.setSpeed(speed, time);
   steps.setSpeed(speed, time);
-  renderMovement(movement.setSpeed(speed, time));
+  renderMovement(snapshot);
+});
+interactionDensity.addEventListener('input', () => {
+  const scale = Number(interactionDensity.value);
+  interactionEngine.setDensityScale(scale);
+  steps.interactions.cancelVoices(false, steps.context);
+  interactionDensityValue.textContent = scale === 0 ? 'desligados' : scale < 0.8 ? 'raros' : scale > 1.2 ? 'frequentes' : 'normal';
 });
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { void pausePassage('Pausado ao sair da página.'); stopMovement('Ensaio interrompido ao sair da aba.'); }
@@ -198,3 +217,22 @@ document.addEventListener('visibilitychange', () => {
 window.addEventListener('pagehide', () => { halt(); stopMovement(); });
 renderScene();
 renderMovement(movement.observe(movementTime()));
+async function loadSurfaceScene() {
+  try {
+    const url = new URL('../../scenes/quiet-street.v0.json', import.meta.url);
+    const version = new URL(import.meta.url).searchParams.get('v');
+    if (version) url.searchParams.set('v', version);
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Cena não carregada (${response.status}).`);
+    interactionEngine = new InteractionEngine(await response.json());
+    steps.setInteractionPlan((step) => interactionEngine.eventsForStep(step, {
+      speed: Number(movementSpeed.value),
+      position: { x: 0, y: 0, z: movement.positionAt(step.time) },
+    }));
+    surfaceReady = true;
+    interactionDensity.disabled = false;
+    interactionStatus.textContent = 'Cena de asfalto pronta. A frequência muda os próximos contatos.';
+    renderMovement(movement.observe(movementTime()));
+  } catch (error) { interactionStatus.textContent = `Não foi possível preparar o chão: ${error.message}`; }
+}
+void loadSurfaceScene();
