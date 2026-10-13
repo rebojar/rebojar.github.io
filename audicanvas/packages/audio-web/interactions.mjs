@@ -1,64 +1,87 @@
-// Temporary diagnostic sound for each micro-object; licensed one-shots replace it later.
-function noiseBuffer(context, index, salt) {
-  const length = Math.ceil(context.sampleRate * 0.12);
-  const buffer = context.createBuffer(1, length, context.sampleRate);
-  const samples = buffer.getChannelData(0);
-  let state = (Math.imul(index, 1664525) + Math.imul(salt, 1013904223)) >>> 0;
-  for (let i = 0; i < length; i++) {
-    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
-    samples[i] = state / 0x80000000 - 1;
-  }
-  return buffer;
+// Small, locally packaged CC0 recordings are Gate 4 candidates, not approved
+// flower/leaf foley. The pebble remains a temporary diagnostic synthesis.
+export const CONTACT_SAMPLE_FILES = Object.freeze({
+  dry_flower: Object.freeze(['flower-pop-cc0.wav']),
+  dry_leaf: Object.freeze([
+    'leaf-rustle-09-cc0.wav', 'leaf-rustle-10-cc0.wav', 'leaf-rustle-12-cc0.wav',
+  ]),
+});
+
+function sampleUrl(filename) {
+  const url = new URL(`../../assets/audio/processed/gate4-a05c/${filename}`, import.meta.url);
+  const version = new URL(import.meta.url).searchParams.get('v');
+  if (version) url.searchParams.set('v', version);
+  return url;
 }
 
-function pulse(time, from, to) {
-  if (time <= from || time >= to) return 0;
-  return Math.sin(Math.PI * (time - from) / (to - from)) ** 2;
-}
-
-// Diagnostic synthesis only: a soft succession of petal-like friction and a
-// short, hard stone impact. These are not recordings or approved foley.
 export function renderDiagnosticContact(kind, sampleRate, index) {
-  if (!['dry_flower', 'pebble'].includes(kind) || !Number.isFinite(sampleRate) || sampleRate < 8000
+  if (kind !== 'pebble' || !Number.isFinite(sampleRate) || sampleRate < 8000
       || !Number.isInteger(index) || index < 0) throw new RangeError('Contato diagnóstico inválido.');
-  const duration = kind === 'dry_flower' ? 0.1 : 0.05;
-  const samples = new Float32Array(Math.ceil(sampleRate * duration));
-  let state = (Math.imul(index, 1664525) + (kind === 'pebble' ? 901 : 317)) >>> 0;
-  let softened = 0;
-  const alpha = 1 - Math.exp(-2 * Math.PI * 1800 / sampleRate);
+  const samples = new Float32Array(Math.ceil(sampleRate * 0.05));
+  let state = (Math.imul(index, 1664525) + 901) >>> 0;
   for (let i = 0; i < samples.length; i++) {
     const time = i / sampleRate;
     state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
     const noise = state / 0x80000000 - 1;
-    if (kind === 'dry_flower') {
-      softened += alpha * (noise - softened);
-      const flutter = 0.55 * pulse(time, 0, 0.035)
-        + 0.4 * pulse(time, 0.037, 0.071)
-        + 0.3 * pulse(time, 0.073, 0.1);
-      samples[i] = softened * flutter;
-    } else {
-      const impact = time < 0.009 ? noise * (1 - time / 0.009) ** 2 * 0.65 : 0;
-      const ring = Math.sin(2 * Math.PI * 1750 * time) * Math.exp(-115 * time) * 0.5
-        + Math.sin(2 * Math.PI * 2650 * time) * Math.exp(-165 * time) * 0.25;
-      samples[i] = impact + ring;
-    }
+    const impact = time < 0.009 ? noise * (1 - time / 0.009) ** 2 * 0.65 : 0;
+    const ring = Math.sin(2 * Math.PI * 1750 * time) * Math.exp(-115 * time) * 0.5
+      + Math.sin(2 * Math.PI * 2650 * time) * Math.exp(-165 * time) * 0.25;
+    samples[i] = impact + ring;
   }
   return samples;
 }
 
 export class MicroInteractionAudio {
-  constructor() { this.voices = new Set(); }
+  constructor() {
+    this.voices = new Set();
+    this.samples = null;
+    this.loading = null;
+  }
+
+  async ensureSamples(context) {
+    if (this.samples) return;
+    this.loading ??= (async () => {
+      const decoded = {};
+      for (const [kind, filenames] of Object.entries(CONTACT_SAMPLE_FILES)) {
+        decoded[kind] = [];
+        for (const filename of filenames) {
+          const response = await fetch(sampleUrl(filename));
+          if (!response.ok) throw new Error(`Áudio de contato indisponível: ${filename} (${response.status}).`);
+          const buffer = await context.decodeAudioData(await response.arrayBuffer());
+          if (buffer.numberOfChannels !== 1 || buffer.duration <= 0 || buffer.duration > 1) {
+            throw new Error(`Formato de contato inválido: ${filename}.`);
+          }
+          decoded[kind].push(buffer);
+        }
+      }
+      this.samples = decoded;
+    })();
+    try { await this.loading; } finally { this.loading = null; }
+  }
 
   play(event, context, clockOffset) {
     const when = event.time - clockOffset;
     if (when < context.currentTime - 0.03) return false;
     const start = Math.max(when, context.currentTime + 0.003);
-    const duration = event.kind === 'dry_flower' ? 0.1 : event.kind === 'dry_leaf' ? 0.12 : 0.05;
+    const source = context.createBufferSource();
+    if (event.kind === 'pebble') {
+      const samples = renderDiagnosticContact(event.kind, context.sampleRate, event.stepIndex);
+      source.buffer = context.createBuffer(1, samples.length, context.sampleRate);
+      source.buffer.getChannelData(0).set(samples);
+    } else {
+      const variants = this.samples?.[event.kind];
+      if (!variants?.length) throw new Error(`Contato não carregado: ${event.kind}.`);
+      source.buffer = variants[event.stepIndex % variants.length];
+      source.playbackRate.value = event.kind === 'dry_flower'
+        ? 0.88 + (event.stepIndex % 5) * 0.01
+        : 0.96 + (event.stepIndex % 5) * 0.02;
+    }
+    const duration = source.buffer.duration / source.playbackRate.value;
     const end = start + duration;
     const gain = context.createGain();
-    const amount = (event.kind === 'dry_flower' ? 0.045 : event.kind === 'pebble' ? 0.033 : 0.022) * event.intensity;
+    const amount = (event.kind === 'dry_flower' ? 0.13 : event.kind === 'pebble' ? 0.033 : 0.065) * event.intensity;
     gain.gain.setValueAtTime(0, start);
-    gain.gain.linearRampToValueAtTime(amount, start + (event.kind === 'pebble' ? 0.001 : 0.006));
+    gain.gain.linearRampToValueAtTime(amount, start + (event.kind === 'dry_leaf' ? 0.006 : 0.001));
     gain.gain.exponentialRampToValueAtTime(0.0001, end - 0.006);
     gain.gain.setValueAtTime(0, end);
     const pan = context.createStereoPanner?.();
@@ -67,24 +90,11 @@ export class MicroInteractionAudio {
       gain.connect(pan).connect(context.destination);
     } else gain.connect(context.destination);
 
-    const source = context.createBufferSource();
-    let filter = null;
-    if (event.kind === 'dry_leaf') {
-      source.buffer = noiseBuffer(context, event.stepIndex, 2);
-      filter = context.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.value = 900;
-      source.connect(filter).connect(gain);
-    } else {
-      const samples = renderDiagnosticContact(event.kind, context.sampleRate, event.stepIndex);
-      source.buffer = context.createBuffer(1, samples.length, context.sampleRate);
-      source.buffer.getChannelData(0).set(samples);
-      source.connect(gain);
-    }
-    const voice = { source, filter, gain, pan, start };
+    source.connect(gain);
+    const voice = { source, gain, pan, start };
     this.voices.add(voice);
     source.onended = () => {
-      source.disconnect(); filter?.disconnect(); gain.disconnect(); pan?.disconnect();
+      source.disconnect(); gain.disconnect(); pan?.disconnect();
       this.voices.delete(voice);
     };
     source.start(start);

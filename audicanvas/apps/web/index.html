@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>AUDICANVAS · Ensaio espacial</title>
-  <link rel="stylesheet" href="./style.css?v=b687164b3843">
+  <link rel="stylesheet" href="./style.css?v=462ff8cde912">
 </head>
 <body>
   <main>
@@ -34,15 +34,16 @@
       <input id="movement-speed" type="range" min="0.2" max="2" step="0.1" value="1">
       <div class="ground-controls">
         <h3>Chão e pequenos encontros</h3>
-        <p>Asfalto com flores secas, folhas e pedrinhas ocasionais. Os sons ainda são sintéticos.</p>
+        <p>Asfalto com flores secas, folhas e pedrinhas ocasionais. Flor e folha agora usam gravações CC0 experimentais; passos e pedra continuam sintéticos.</p>
         <label for="interaction-density">Frequência dos encontros: <output id="interaction-density-value" for="interaction-density">normal</output></label>
         <input id="interaction-density" type="range" min="0" max="2" step="0.1" value="1" disabled>
         <p id="interaction-status" class="note">Preparando a cena de chão…</p>
         <p id="encounter-speed-note" class="note">A velocidade também ajusta os encontros automaticamente.</p>
         <p class="note">Contatos programados: flores <output id="flower-count">0</output> · folhas <output id="leaf-count">0</output> · pedras <output id="pebble-count">0</output></p>
-        <p class="note">Ouça cada contato isolado para comparar os timbres provisórios:</p>
+        <p class="note">Ouça cada contato isolado para comparar os novos candidatos:</p>
         <div class="buttons contact-preview"><button type="button" data-contact-kind="dry_flower">Ouvir flor</button><button type="button" data-contact-kind="dry_leaf">Ouvir folha</button><button type="button" data-contact-kind="pebble">Ouvir pedra</button></div>
         <p id="contact-preview-status" class="note" role="status">Pare a caminhada antes de comparar.</p>
+        <p class="note">Fontes CC0: <a href="https://freesound.org/people/Anthousai/sounds/399334/">estalo por Anthousai</a> (referência de flor) e <a href="https://lpc.opengameart.org/content/20-rustles-dry-leaves">folhas por qubodup</a>. Estes sons ainda aguardam sua avaliação.</p>
       </div>
       <div class="buttons"><button id="movement-start">Começar a andar</button><button id="movement-stop" disabled>Parar</button><button id="movement-reset">Zerar distância</button></div>
       <p id="movement-status" role="status">Parado.</p>
@@ -54,6 +55,6 @@
     <p class="note">Ouça um ensaio de cada vez, com fones e volume confortável. O indicador de sinal não garante o que chega aos seus ouvidos. Os passos são sintéticos e provisórios; esta versão ainda não contém passos gravados, brincos ou ambientes.</p>
     <details><summary>O que avaliar</summary><ol><li>Na primeira trajetória, parece que você se move ou que algo passa por você?</li><li>Na segunda, o som cruza da direita para a esquerda à sua frente?</li><li>Na terceira, ele termina mais distante atrás?</li><li>Nas duas opções novas, a fonte parece ficar à direita? O som mais rico ajuda ou atrapalha?</li><li>Pausar e continuar preserva o ponto da passagem?</li></ol><p>Registrar fone/dispositivo, navegador e percepção de cada trajetória.</p></details>
   </main>
-  <script type="module" src="./main.mjs?v=b687164b3843"></script>
+  <script type="module" src="./main.mjs?v=462ff8cde912"></script>
 </body>
 </html>

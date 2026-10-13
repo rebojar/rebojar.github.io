@@ -1,6 +1,6 @@
-import { GaitClock } from '../engine/gait.mjs?v=b687164b3843';
-import { MicroInteractionAudio } from './interactions.mjs?v=b687164b3843';
-import { MICRO_KINDS } from '../engine/interaction.mjs?v=b687164b3843';
+import { GaitClock } from '../engine/gait.mjs?v=462ff8cde912';
+import { MicroInteractionAudio } from './interactions.mjs?v=462ff8cde912';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=462ff8cde912';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
@@ -51,6 +51,7 @@ export class FootstepAudio {
       ]);
     } finally { clearTimeout(timeout); }
     if (this.context.state !== 'running') throw new Error(`Contexto de áudio: ${this.context.state}`);
+    await this.interactions.ensureSamples(this.context);
   }
 
   async previewInteraction(kind) {
@@ -62,10 +63,11 @@ export class FootstepAudio {
     this.interactions.cancelVoices(true, this.context);
     const time = performance.now() / 1000;
     const offset = time - this.context.currentTime;
+    const interval = kind === 'dry_leaf' ? 0.65 : 0.3;
     for (let index = 0; index < 3; index++) {
       this.interactions.play({
         kind, stepIndex: index + 101, foot: index % 2 ? 'left' : 'right',
-        time: time + 0.04 + index * 0.3, intensity: 0.8,
+        time: time + 0.04 + index * interval, intensity: 0.8,
       }, this.context, offset);
     }
     return true;
