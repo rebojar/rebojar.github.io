@@ -407,12 +407,16 @@
       margin-bottom: 0;
     }
     .estante-portal {
-      width: min(85%, 51rem);
+      width: min(76.5%, 45.9rem);
+      height: 382.5px;
       margin: 3rem auto 0;
     }
     .estante-portal rebojar-estante {
-      width: 100%;
+      width: 111.111111%;
+      margin-left: -5.555556%;
       --estante-altura: 425px;
+      transform: scale(.9);
+      transform-origin: top center;
     }
     main:has(.apresentacao-projeto:target) .estante-portal,
     main:has(#privacidade-caderno-de-bordo:target) .estante-portal,
@@ -479,6 +483,9 @@
     @media (max-width: 38rem) {
       header {
         min-height: 24rem;
+      }
+      .estante-portal {
+        height: 267.75px;
       }
       .estante-portal rebojar-estante {
         --estante-altura: 297.5px;
