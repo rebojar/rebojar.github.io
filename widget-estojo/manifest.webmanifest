@@ -1,0 +1,16 @@
+{
+  "name": "Estojo Rebojar",
+  "short_name": "Estojo",
+  "id": "./",
+  "description": "Ferramentas de texto do Caderno de Bordo Rebojar.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#d5d3c4",
+  "theme_color": "#11273c",
+  "icons": [
+    { "src": "icone-estojo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
