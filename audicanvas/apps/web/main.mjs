@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=9de99ce8c698';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=9de99ce8c698';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=9de99ce8c698';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=9de99ce8c698';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=9de99ce8c698';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=c1b34e0d8eb2';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=c1b34e0d8eb2';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=c1b34e0d8eb2';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=c1b34e0d8eb2';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=c1b34e0d8eb2';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -34,6 +34,7 @@ const bodyCount = document.querySelector('#body-count');
 const bodyVolume = document.querySelector('#body-volume');
 const bodyVolumeValue = document.querySelector('#body-volume-value');
 const interactionDensity = document.querySelector('#interaction-density');
+const materialChoices = document.querySelectorAll('[data-material-kind]');
 const interactionDensityValue = document.querySelector('#interaction-density-value');
 const interactionStatus = document.querySelector('#interaction-status');
 const encounterSpeedNote = document.querySelector('#encounter-speed-note');
@@ -246,9 +247,20 @@ function updateEncounterRate() {
   interactionEngine.setDensityScale(densityScaleForSpeed(scale, speed));
   steps.interactions.cancelVoices(false, steps.context);
   interactionDensityValue.textContent = scale === 0 ? 'desligados' : scale < 0.8 ? 'raros' : scale > 1.2 ? 'frequentes' : 'normal';
-  encounterSpeedNote.textContent = `A ${speed.toFixed(1).replace('.', ',')} m/s: cerca de ${Math.round(interactionEngine.estimatedEncountersPerMinute(speed))} encontros por minuto. Estimativa; os contatos continuam irregulares.`;
+  const estimate = Math.round(interactionEngine.estimatedEncountersPerMinute(speed));
+  encounterSpeedNote.textContent = [...materialChoices].some((choice) => choice.checked)
+    ? `A ${speed.toFixed(1).replace('.', ',')} m/s: cerca de ${estimate} encontros por minuto. Estimativa; os contatos continuam irregulares.`
+    : 'Nenhum material selecionado: só os passos e, se ligados, os brincos.';
 }
 interactionDensity.addEventListener('input', updateEncounterRate);
+function selectedMaterials() {
+  return Object.fromEntries([...materialChoices].map((choice) => [choice.dataset.materialKind, choice.checked]));
+}
+for (const choice of materialChoices) choice.addEventListener('change', () => {
+  if (!interactionEngine) return;
+  interactionEngine.setEnabledKinds(selectedMaterials());
+  updateEncounterRate();
+});
 
 const contactNames = { dry_flower: 'flor seca', dry_leaf: 'folha seca', pebble: 'pedrinha' };
 for (const button of contactPreviewButtons) button.addEventListener('click', async () => {
@@ -279,14 +291,16 @@ async function loadSurfaceScene() {
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Cena não carregada (${response.status}).`);
     interactionEngine = new InteractionEngine(await response.json());
+    interactionEngine.setEnabledKinds(selectedMaterials());
     steps.setInteractionPlan((step) => interactionEngine.eventsForStep(step, {
       speed: Number(movementSpeed.value),
       position: { x: 0, y: 0, z: movement.positionAt(step.time) },
     }));
     surfaceReady = true;
     interactionDensity.disabled = false;
+    for (const choice of materialChoices) choice.disabled = false;
     updateEncounterRate();
-    interactionStatus.textContent = 'Cena de asfalto pronta. A frequência muda os próximos contatos.';
+    interactionStatus.textContent = 'Cena de asfalto pronta. Materiais e frequência mudam os próximos contatos.';
     renderMovement(movement.observe(movementTime()));
   } catch (error) { interactionStatus.textContent = `Não foi possível preparar o chão: ${error.message}`; }
 }

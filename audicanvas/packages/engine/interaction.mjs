@@ -1,5 +1,5 @@
-import { surfaceContact, SURFACES } from './surface.mjs?v=9de99ce8c698';
-import { cadenceForSpeed } from './gait.mjs?v=9de99ce8c698';
+import { surfaceContact, SURFACES } from './surface.mjs?v=c1b34e0d8eb2';
+import { cadenceForSpeed } from './gait.mjs?v=c1b34e0d8eb2';
 
 export const MICRO_INTERACTION_V0 = 'micro.interaction.v0';
 export const MICRO_KINDS = Object.freeze(['dry_flower', 'dry_leaf', 'pebble']);
@@ -61,6 +61,7 @@ export class InteractionEngine {
       microObjects: Object.fromEntries(MICRO_KINDS.map((kind) => [kind, { ...config.microObjects[kind], intensity: [...config.microObjects[kind].intensity] }])),
     };
     this.densityScale = 1;
+    this.enabledKinds = Object.fromEntries(MICRO_KINDS.map((kind) => [kind, true]));
     this.resetPlan();
   }
 
@@ -75,6 +76,15 @@ export class InteractionEngine {
   setDensityScale(scale) {
     if (!Number.isFinite(scale) || scale < 0 || scale > 9) throw new RangeError('Densidade efetiva deve estar entre 0 e 9.');
     this.densityScale = scale;
+    this.resetPlan();
+  }
+
+  setEnabledKinds(kinds) {
+    if (!kinds || Object.keys(kinds).sort().join(',') !== [...MICRO_KINDS].sort().join(',')
+        || MICRO_KINDS.some((kind) => typeof kinds[kind] !== 'boolean')) {
+      throw new RangeError('Seleção de materiais inválida.');
+    }
+    this.enabledKinds = { ...kinds };
     this.resetPlan();
   }
 
@@ -95,6 +105,7 @@ export class InteractionEngine {
         const candidates = [];
         for (let i = 0; i < MICRO_KINDS.length; i++) {
           const kind = MICRO_KINDS[i];
+          if (!this.enabledKinds[kind]) continue;
           const item = this.config.microObjects[kind];
           if (n - this.lastByKind[kind] < item.cooldownSteps) continue;
           const clustered = kind === this.lastKind && n - this.lastKindIndex <= this.config.clusterWindowSteps;

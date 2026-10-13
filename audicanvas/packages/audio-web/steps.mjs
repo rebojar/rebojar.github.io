@@ -1,8 +1,8 @@
-import { GaitClock } from '../engine/gait.mjs?v=9de99ce8c698';
-import { MicroInteractionAudio } from './interactions.mjs?v=9de99ce8c698';
-import { MICRO_KINDS } from '../engine/interaction.mjs?v=9de99ce8c698';
-import { earringEventForStep } from '../engine/body.mjs?v=9de99ce8c698';
-import { BodyEarringAudio } from './body.mjs?v=9de99ce8c698';
+import { GaitClock } from '../engine/gait.mjs?v=c1b34e0d8eb2';
+import { MicroInteractionAudio } from './interactions.mjs?v=c1b34e0d8eb2';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=c1b34e0d8eb2';
+import { earringEventForStep } from '../engine/body.mjs?v=c1b34e0d8eb2';
+import { BodyEarringAudio } from './body.mjs?v=c1b34e0d8eb2';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;

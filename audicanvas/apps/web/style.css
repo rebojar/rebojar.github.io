@@ -26,6 +26,9 @@ button { border: 1px solid #a8cbbc; border-radius: 8px; padding: 13px 18px; back
 .ground-controls { border-top: 1px solid #435256; margin: 0 0 24px; padding-top: 20px; }
 .ground-controls p { margin: 0 0 12px; }
 .ground-controls input[type="range"] { margin-bottom: 8px; }
+.material-choice { border: 1px solid #435256; border-radius: 8px; margin: 16px 0 12px; padding: 6px 14px 8px; }
+.material-choice legend { padding: 0 4px; font-weight: 650; }
+.material-choice .blind-toggle { margin: 8px 0; }
 .contact-preview { margin: 8px 0 12px; }
 .contact-preview button { background: transparent; color: #ebe9e2; }
 button:disabled { opacity: .45; cursor: default; }
