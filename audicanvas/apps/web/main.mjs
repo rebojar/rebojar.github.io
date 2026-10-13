@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=34d15d81069c';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=34d15d81069c';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=34d15d81069c';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=34d15d81069c';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=34d15d81069c';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=328536c4ff0f';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=328536c4ff0f';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=328536c4ff0f';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=328536c4ff0f';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=328536c4ff0f';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');

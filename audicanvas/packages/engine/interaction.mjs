@@ -1,18 +1,18 @@
-import { surfaceContact, SURFACES } from './surface.mjs?v=34d15d81069c';
-import { cadenceForSpeed } from './gait.mjs?v=34d15d81069c';
+import { surfaceContact, SURFACES } from './surface.mjs?v=328536c4ff0f';
+import { cadenceForSpeed } from './gait.mjs?v=328536c4ff0f';
 
 export const MICRO_INTERACTION_V0 = 'micro.interaction.v0';
 export const MICRO_KINDS = Object.freeze(['dry_flower', 'dry_leaf', 'pebble']);
 
-// Density is specified for a walked distance. Faster steps cover more ground,
-// so each step may meet more objects; combined with cadence this raises the
-// number of encounters per second without forcing a metronomic pattern.
+// Perceptual calibration for the diagnostic scene: even slow walking should
+// encounter objects, while the chance per step and cadence both grow with speed.
+// The seeded planner still determines when each irregular contact occurs.
 export function densityScaleForSpeed(sliderScale, speed) {
   if (!Number.isFinite(sliderScale) || sliderScale < 0 || sliderScale > 2) {
     throw new RangeError('Frequência manual deve estar entre 0 e 2.');
   }
   const cadence = cadenceForSpeed(speed);
-  return cadence === 0 ? 0 : sliderScale * speed * cadenceForSpeed(1) / cadence;
+  return cadence === 0 ? 0 : sliderScale * (2.2 + speed);
 }
 
 function unitHash(seed, index, salt) {
@@ -73,7 +73,7 @@ export class InteractionEngine {
   }
 
   setDensityScale(scale) {
-    if (!Number.isFinite(scale) || scale < 0 || scale > 5) throw new RangeError('Densidade efetiva deve estar entre 0 e 5.');
+    if (!Number.isFinite(scale) || scale < 0 || scale > 9) throw new RangeError('Densidade efetiva deve estar entre 0 e 9.');
     this.densityScale = scale;
     this.resetPlan();
   }
