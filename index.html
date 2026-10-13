@@ -457,18 +457,51 @@
     .footer-actions p {
       margin: 0;
     }
-    .sponsor-button {
+    .plataforma-apoio {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 114px;
-      height: 32px;
-      border: 1px solid #18B0C4;
+      min-width: 114px;
+      height: 35px;
       border-radius: 6px;
-      background: #18B0C4;
-      color: #062b31;
+      overflow: hidden;
+    }
+    .plataforma-apoio iframe {
+      display: block;
+      border: 0;
+    }
+    .plataforma-apoio-kofi {
+      overflow: visible;
+    }
+    .plataforma-apoio-kofi .btn-container {
+      margin: 0 !important;
+    }
+    .plataforma-apoio-apoia {
+      gap: 0.5rem;
+      min-width: 160px;
+      padding: 0 0.85rem;
+      border: 1px solid #d83933;
+      background: #e5423b;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      font-size: 0.82rem;
       font-weight: 700;
       text-decoration: none;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+    }
+    .plataforma-apoio-apoia strong {
+      font-size: 1rem;
+      letter-spacing: -0.04em;
+    }
+    .plataforma-apoio-apoia:hover,
+    .plataforma-apoio-apoia:focus-visible {
+      background: #c9332e;
+      color: #fff;
+    }
+    .plataforma-apoio-apoia:focus-visible,
+    .plataforma-apoio iframe:focus-visible {
+      outline: 3px solid #E8D73A;
+      outline-offset: 3px;
     }
     footer details.sponsor-card {
       width: min(100%, 600px);
@@ -518,9 +551,15 @@
       font-weight: 700;
       text-decoration: none;
     }
-    .kofi-widget {
-      min-height: 36px;
-      margin-top: 0.75rem;
+    .kofi-panel-frame {
+      display: block;
+      width: 100%;
+      height: 712px;
+      margin-top: 0.8rem;
+      padding: 4px;
+      border: 0;
+      border-radius: 8px;
+      background: #f9f9f9;
     }
     .sponsor-card-frame {
       display: block;
@@ -895,9 +934,14 @@
         gap: 0.65rem;
       }
 
-      .sponsor-button {
+      .plataforma-apoio {
         width: min(100%, 16rem);
         min-height: 2.6rem;
+      }
+
+      .plataforma-apoio-kofi .btn-container {
+        width: 100% !important;
+        text-align: center !important;
       }
 
       footer details,
@@ -1088,9 +1132,16 @@
   </main>
   <footer>
     <div class="footer-actions">
-      <a class="sponsor-button" href="https://github.com/sponsors/rebojar" aria-label="Apoiar Rebojar pelo GitHub Sponsors">Apoiar ♡</a>
-      <a class="sponsor-button" href="https://ko-fi.com/rebojar" aria-label="Apoiar Rebojar pelo Ko-fi">Ko-fi</a>
-      <a class="sponsor-button" href="https://apoia.se/rebojar" aria-label="Apoiar Rebojar pelo Apoia.se">Apoia.se</a>
+      <span class="plataforma-apoio plataforma-apoio-github">
+        <iframe src="https://github.com/sponsors/rebojar/button" title="Apoiar Rebojar pelo GitHub Sponsors" height="35" width="116" loading="lazy"></iframe>
+      </span>
+      <span class="plataforma-apoio plataforma-apoio-kofi">
+        <script src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
+        <script>kofiwidget2.init('Apoiar no Ko-fi', '#ff5e5b', 'D8P827NADN');kofiwidget2.draw();</script>
+      </span>
+      <a class="plataforma-apoio plataforma-apoio-apoia" href="https://apoia.se/rebojar" aria-label="Apoiar Rebojar pelo APOIA.se">
+        <strong>APOIA.se</strong><span>Apoie este site</span>
+      </a>
     </div>
     <details class="sponsor-card">
       <summary>Conhecer formas de apoiar o Rebojar</summary>
@@ -1104,11 +1155,8 @@
           </section>
           <section class="apoio-opcao" aria-labelledby="apoio-kofi-title">
             <h3 id="apoio-kofi-title">Ko-fi</h3>
-            <p>Para enviar um café ou fazer uma contribuição direta pelo Ko-fi.</p>
-            <div class="kofi-widget">
-              <script src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
-              <script>kofiwidget2.init('Apoiar no Ko-fi', '#0d365e', 'D8P827NADN');kofiwidget2.draw();</script>
-            </div>
+            <p>Para enviar um café, fazer uma contribuição direta ou escolher uma opção de apoio sem sair do Rebojar.</p>
+            <iframe id="kofiframe" class="kofi-panel-frame" src="https://ko-fi.com/rebojar/?hidefeed=true&amp;widget=true&amp;embed=true&amp;preview=true" title="Apoiar o Rebojar pelo Ko-fi" loading="lazy"></iframe>
           </section>
           <section class="apoio-opcao" aria-labelledby="apoio-apoia-title">
             <h3 id="apoio-apoia-title">Apoia.se</h3>
