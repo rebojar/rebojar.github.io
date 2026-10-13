@@ -156,6 +156,7 @@
         transform 420ms cubic-bezier(0.2, 0.75, 0.25, 1);
     }
     .onda-alvo:hover .onda-brilho,
+    .onda-alvo.onda-tocada .onda-brilho,
     .onda-link:focus-visible .onda-brilho {
       stroke: rgba(214, 238, 255, 0.82);
       stroke-width: 2.5px;
@@ -488,6 +489,7 @@
         transition: stroke 120ms ease, stroke-width 120ms ease;
       }
       .onda-alvo:hover .onda-brilho,
+      .onda-alvo.onda-tocada .onda-brilho,
       .onda-link:focus-visible .onda-brilho {
         transform: none;
         animation: none;
@@ -736,6 +738,7 @@
       footer details.sponsor-card {
         width: min(100%, 30rem);
         max-width: 100%;
+        text-align: left;
       }
 
       .sponsor-card-frame {
@@ -985,6 +988,67 @@
       menu.addEventListener('pointerenter', cancelarFechamento);
       menu.addEventListener('pointerleave', fecharDepoisDoHover);
       menu.addEventListener('focusin', cancelarFechamento);
+
+      const cabecalho = document.getElementById('inicio');
+      let arcoSobDedo;
+      let origemDoToque;
+      let toqueDeslizou = false;
+      let impedirCliqueDoArco = false;
+      let temporizadorCliqueDoArco;
+
+      const encontrarArcoNoPonto = (x, y) => {
+        const area = document.elementsFromPoint(x, y).find(elemento => elemento.classList?.contains('onda-hit'));
+        return area?.closest('.onda-alvo[data-anel]');
+      };
+
+      const iluminarArcoDoToque = (toque) => {
+        const arco = encontrarArcoNoPonto(toque.clientX, toque.clientY);
+        if (arco === arcoSobDedo) return;
+        arcoSobDedo?.classList.remove('onda-tocada');
+        arcoSobDedo = arco;
+        if (!arco) return;
+        arco.classList.add('onda-tocada');
+        const indice = Math.max(0, Number(arco.dataset.anel || 1) - 1);
+        window.RebojarSom?.arcoAquatico(indice);
+      };
+
+      const iniciarDeslizamentoNosArcos = event => {
+        if (event.touches.length !== 1) return;
+        const toque = event.touches[0];
+        origemDoToque = { x: toque.clientX, y: toque.clientY };
+        toqueDeslizou = false;
+        iluminarArcoDoToque(toque);
+      };
+
+      const continuarDeslizamentoNosArcos = event => {
+        if (event.touches.length !== 1) return;
+        const toque = event.touches[0];
+        if (origemDoToque && Math.hypot(toque.clientX - origemDoToque.x, toque.clientY - origemDoToque.y) > 8) {
+          toqueDeslizou = true;
+        }
+        iluminarArcoDoToque(toque);
+      };
+
+      const terminarDeslizamentoNosArcos = () => {
+        arcoSobDedo?.classList.remove('onda-tocada');
+        arcoSobDedo = undefined;
+        origemDoToque = undefined;
+        if (!toqueDeslizou) return;
+        impedirCliqueDoArco = true;
+        clearTimeout(temporizadorCliqueDoArco);
+        temporizadorCliqueDoArco = setTimeout(() => { impedirCliqueDoArco = false; }, 500);
+      };
+
+      cabecalho.addEventListener('touchstart', iniciarDeslizamentoNosArcos, { passive: true });
+      cabecalho.addEventListener('touchmove', continuarDeslizamentoNosArcos, { passive: true });
+      cabecalho.addEventListener('touchend', terminarDeslizamentoNosArcos, { passive: true });
+      cabecalho.addEventListener('touchcancel', terminarDeslizamentoNosArcos, { passive: true });
+      cabecalho.addEventListener('click', event => {
+        if (!impedirCliqueDoArco || !event.target.closest('.onda-link')) return;
+        event.preventDefault();
+        event.stopPropagation();
+        impedirCliqueDoArco = false;
+      }, true);
 
       document.addEventListener('click', event => {
         const aberto = botao.getAttribute('aria-expanded') === 'true';
