@@ -4,7 +4,7 @@
   <base href="./apps/web/">
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>AUDICANVAS · Ensaio espacial</title>
-  <link rel="stylesheet" href="./style.css?v=c1b34e0d8eb2">
+  <link rel="stylesheet" href="./style.css?v=c01ff44198d8">
 </head>
 <body>
   <main>
@@ -64,6 +64,13 @@
         <p id="body-status" class="note">Brincos desligados.</p>
         <p class="note">Tilintares programados: <output id="body-count">0</output></p>
       </div>
+      <div class="ground-controls">
+        <h3>Ambiente: trânsito distante</h3>
+        <p>Veículos sintéticos ocasionais passam ao longe, à direita, em espaço aberto. Ainda é uma referência de teste, sem gravações de trânsito nem reverberação de ambiente fechado.</p>
+        <label class="blind-toggle" for="world-traffic"><input id="world-traffic" type="checkbox" checked disabled> Ouvir trânsito distante durante a caminhada</label>
+        <p id="traffic-status" class="note">Preparando a cena de trânsito…</p>
+        <p class="note">Veículos programados: <output id="traffic-count">0</output></p>
+      </div>
       <div class="buttons"><button id="movement-start">Começar a andar</button><button id="movement-stop" disabled>Parar</button><button id="movement-reset">Zerar distância</button></div>
       <p id="movement-status" role="status">Parado.</p>
       <p id="step-status">Passos: desligados.</p>
@@ -71,9 +78,9 @@
       <p class="note">Passos calculados nesta caminhada: <output id="step-count">0</output></p>
       <p class="distance">Distância: <output id="movement-distance">0,00 m</output></p>
     </section>
-    <p class="note">Ouça um ensaio de cada vez, com fones e volume confortável. O indicador de sinal não garante o que chega aos seus ouvidos. Passos e brincos são sintéticos e provisórios; esta versão ainda não contém passos gravados ou ambientes.</p>
+    <p class="note">Ouça um ensaio de cada vez, com fones e volume confortável. O indicador de sinal não garante o que chega aos seus ouvidos. Passos, brincos e trânsito são sintéticos e provisórios; esta versão ainda não contém passos ou trânsito gravados.</p>
     <details><summary>O que avaliar</summary><ol><li>Na primeira trajetória, parece que você se move ou que algo passa por você?</li><li>Na segunda, o som cruza da direita para a esquerda à sua frente?</li><li>Na terceira, ele termina mais distante atrás?</li><li>Nas duas opções novas, a fonte parece ficar à direita? O som mais rico ajuda ou atrapalha?</li><li>Pausar e continuar preserva o ponto da passagem?</li></ol><p>Registrar fone/dispositivo, navegador e percepção de cada trajetória.</p></details>
   </main>
-  <script type="module" src="./main.mjs?v=c1b34e0d8eb2"></script>
+  <script type="module" src="./main.mjs?v=c01ff44198d8"></script>
 </body>
 </html>

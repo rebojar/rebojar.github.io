@@ -1,8 +1,10 @@
-import { GaitClock } from '../engine/gait.mjs?v=c1b34e0d8eb2';
-import { MicroInteractionAudio } from './interactions.mjs?v=c1b34e0d8eb2';
-import { MICRO_KINDS } from '../engine/interaction.mjs?v=c1b34e0d8eb2';
-import { earringEventForStep } from '../engine/body.mjs?v=c1b34e0d8eb2';
-import { BodyEarringAudio } from './body.mjs?v=c1b34e0d8eb2';
+import { GaitClock } from '../engine/gait.mjs?v=c01ff44198d8';
+import { MicroInteractionAudio } from './interactions.mjs?v=c01ff44198d8';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=c01ff44198d8';
+import { earringEventForStep } from '../engine/body.mjs?v=c01ff44198d8';
+import { BodyEarringAudio } from './body.mjs?v=c01ff44198d8';
+import { TrafficPlanner } from '../engine/world.mjs?v=c01ff44198d8';
+import { DistantTrafficAudio } from './traffic.mjs?v=c01ff44198d8';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
@@ -39,6 +41,12 @@ export class FootstepAudio {
     this.body = new BodyEarringAudio();
     this.speed = 0;
     this.bodyCount = 0;
+    this.trafficPlanner = null;
+    this.traffic = new DistantTrafficAudio();
+    this.trafficEnabled = false;
+    this.trafficCount = 0;
+    this.trafficScheduledIndex = 0;
+    this.walkStartedAt = 0;
   }
 
   setInteractionPlan(plan) {
@@ -59,6 +67,17 @@ export class FootstepAudio {
   }
 
   setBodyVolume(volume) { this.body.setVolume(volume); }
+
+  setTrafficConfig(config) {
+    if (this.active) throw new Error('Pare a caminhada antes de trocar a cena de trânsito.');
+    this.trafficPlanner = config ? new TrafficPlanner(config) : null;
+  }
+
+  setTrafficEnabled(enabled) {
+    if (typeof enabled !== 'boolean') throw new TypeError('Estado do trânsito deve ser booleano.');
+    this.trafficEnabled = enabled;
+    if (!enabled) this.traffic.cancelVoices(this.context);
+  }
 
   async ensureContext() {
     const AudioContextClass = globalThis.AudioContext || globalThis.webkitAudioContext;
@@ -83,6 +102,7 @@ export class FootstepAudio {
     if (request !== this.previewVersion || this.active) return false;
     this.interactions.cancelVoices(true, this.context);
     this.body.cancelVoices(true, this.context);
+    this.traffic.cancelVoices(this.context);
     const time = performance.now() / 1000;
     const offset = time - this.context.currentTime;
     const interval = kind === 'dry_leaf' ? 0.65 : 0.3;
@@ -101,6 +121,7 @@ export class FootstepAudio {
     await this.ensureContext();
     this.interactions.cancelVoices(true, this.context);
     this.body.cancelVoices(true, this.context);
+    this.traffic.cancelVoices(this.context);
     const time = performance.now() / 1000;
     this.clockOffset = time - this.context.currentTime;
     this.gait.update(time, { moving: true, speed });
@@ -109,6 +130,10 @@ export class FootstepAudio {
     this.scheduledCount = 0;
     this.interactionCounts = { dry_flower: 0, dry_leaf: 0, pebble: 0 };
     this.bodyCount = 0;
+    this.trafficPlanner?.reset();
+    this.trafficScheduledIndex = 0;
+    this.trafficCount = 0;
+    this.walkStartedAt = time;
     this.active = true;
     this.tick();
     this.timer = setInterval(() => this.tick(), POLL_MS);
@@ -131,6 +156,14 @@ export class FootstepAudio {
     const now = performance.now() / 1000;
     const horizon = now + LOOKAHEAD_SECONDS;
     for (const event of this.gait.eventsBetween(this.scheduledThrough, horizon)) this.play(event);
+    if (this.trafficPlanner) {
+      for (const event of this.trafficPlanner.eventsThrough(Math.max(0, horizon - this.walkStartedAt))) {
+        if (event.index <= this.trafficScheduledIndex) continue;
+        this.trafficScheduledIndex = event.index;
+        if (this.trafficEnabled && this.traffic.play({ ...event, time: this.walkStartedAt + event.time },
+          this.context, this.clockOffset)) this.trafficCount++;
+      }
+    }
     this.scheduledThrough = horizon;
   }
 
@@ -212,6 +245,7 @@ export class FootstepAudio {
     this.interactions.cancelVoices(true, this.context);
     // A current earring resonance fades naturally; future collisions are cancelled.
     this.body.cancelVoices(false, this.context);
+    this.traffic.cancelVoices(this.context);
     if (!this.active) return;
     this.active = false;
     clearInterval(this.timer);

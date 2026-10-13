@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=c1b34e0d8eb2';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=c1b34e0d8eb2';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=c1b34e0d8eb2';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=c1b34e0d8eb2';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=c1b34e0d8eb2';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=c01ff44198d8';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=c01ff44198d8';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=c01ff44198d8';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=c01ff44198d8';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=c01ff44198d8';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -33,6 +33,9 @@ const bodyStatus = document.querySelector('#body-status');
 const bodyCount = document.querySelector('#body-count');
 const bodyVolume = document.querySelector('#body-volume');
 const bodyVolumeValue = document.querySelector('#body-volume-value');
+const worldTraffic = document.querySelector('#world-traffic');
+const trafficStatus = document.querySelector('#traffic-status');
+const trafficCount = document.querySelector('#traffic-count');
 const interactionDensity = document.querySelector('#interaction-density');
 const materialChoices = document.querySelectorAll('[data-material-kind]');
 const interactionDensityValue = document.querySelector('#interaction-density-value');
@@ -150,6 +153,7 @@ function renderMovement(snapshot) {
   leafCount.textContent = String(steps.interactionCounts.dry_leaf);
   pebbleCount.textContent = String(steps.interactionCounts.pebble);
   bodyCount.textContent = String(steps.bodyCount);
+  trafficCount.textContent = String(steps.trafficCount);
   movementStatus.textContent = snapshot.moving ? 'Andando em terreno plano.' : 'Parado.';
   movementStart.disabled = snapshot.moving || !surfaceReady;
   movementStop.disabled = !snapshot.moving;
@@ -174,6 +178,7 @@ function stopMovement(reason) {
 }
 isolateContacts.addEventListener('change', () => {
   steps.setFootstepsMuted(isolateContacts.checked);
+  updateTrafficAudibility();
   bodyStatus.textContent = isolateContacts.checked && bodyEarrings.checked
     ? 'Brincos silenciados durante o teste só de encontros.'
     : bodyEarrings.checked ? 'Brincos ligados; acompanham os passos.' : 'Brincos desligados.';
@@ -181,6 +186,13 @@ isolateContacts.addEventListener('change', () => {
     ? 'Passos silenciados para comparar os encontros.'
     : 'Passos sintéticos ligados. Use fones e volume confortável.';
 });
+function updateTrafficAudibility() {
+  steps.setTrafficEnabled(worldTraffic.checked && !isolateContacts.checked);
+  trafficStatus.textContent = isolateContacts.checked && worldTraffic.checked
+    ? 'Trânsito silenciado durante o teste só de encontros.'
+    : worldTraffic.checked ? 'Trânsito ligado; o próximo veículo passa ocasionalmente ao longe.' : 'Trânsito desligado.';
+}
+worldTraffic.addEventListener('change', updateTrafficAudibility);
 bodyEarrings.addEventListener('change', () => {
   steps.setBodyEnabled(bodyEarrings.checked);
   bodyStatus.textContent = bodyEarrings.checked
@@ -290,7 +302,10 @@ async function loadSurfaceScene() {
     if (version) url.searchParams.set('v', version);
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Cena não carregada (${response.status}).`);
-    interactionEngine = new InteractionEngine(await response.json());
+    const sceneConfig = await response.json();
+    interactionEngine = new InteractionEngine(sceneConfig);
+    if (!sceneConfig.world?.traffic) throw new Error('Configuração de trânsito ausente.');
+    steps.setTrafficConfig(sceneConfig.world?.traffic);
     interactionEngine.setEnabledKinds(selectedMaterials());
     steps.setInteractionPlan((step) => interactionEngine.eventsForStep(step, {
       speed: Number(movementSpeed.value),
@@ -299,6 +314,8 @@ async function loadSurfaceScene() {
     surfaceReady = true;
     interactionDensity.disabled = false;
     for (const choice of materialChoices) choice.disabled = false;
+    worldTraffic.disabled = false;
+    updateTrafficAudibility();
     updateEncounterRate();
     interactionStatus.textContent = 'Cena de asfalto pronta. Materiais e frequência mudam os próximos contatos.';
     renderMovement(movement.observe(movementTime()));
