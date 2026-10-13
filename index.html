@@ -663,8 +663,12 @@
       }
 
       .home-icon {
-        top: 0.8rem;
-        left: 3.8rem;
+        top: 3.8rem;
+        left: 0.8rem;
+      }
+
+      body:has(.menu-toggle[aria-expanded="true"]) .home-icon {
+        display: none;
       }
 
       .menu-lateral {
