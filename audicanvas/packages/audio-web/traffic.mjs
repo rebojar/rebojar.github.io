@@ -1,4 +1,4 @@
-import { TRAFFIC_PASS_V0 } from '../engine/world.mjs?v=c01ff44198d8';
+import { TRAFFIC_PASS_V0 } from '../engine/world.mjs?v=28727a895113';
 
 function trafficNoise(context, seed, duration) {
   const length = Math.ceil(context.sampleRate * duration);
@@ -6,11 +6,15 @@ function trafficNoise(context, seed, duration) {
   const samples = buffer.getChannelData(0);
   let state = (seed ^ 0x7f4a7c15) >>> 0;
   let low = 0;
+  let enginePhase = 0;
   for (let i = 0; i < length; i++) {
     state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
     const noise = state / 0x80000000 - 1;
     low += 0.12 * (noise - low);
-    samples[i] = low * 0.8 + noise * 0.2;
+    const seconds = i / context.sampleRate;
+    enginePhase += 2 * Math.PI * (72 + 4 * Math.sin(seconds * 1.7 + seed)) / context.sampleRate;
+    const engine = Math.sin(enginePhase) + 0.35 * Math.sin(enginePhase * 2 + 0.4);
+    samples[i] = low * 0.55 + noise * 0.12 + engine * 0.22;
   }
   return buffer;
 }

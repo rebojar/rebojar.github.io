@@ -1,10 +1,10 @@
-import { GaitClock } from '../engine/gait.mjs?v=c01ff44198d8';
-import { MicroInteractionAudio } from './interactions.mjs?v=c01ff44198d8';
-import { MICRO_KINDS } from '../engine/interaction.mjs?v=c01ff44198d8';
-import { earringEventForStep } from '../engine/body.mjs?v=c01ff44198d8';
-import { BodyEarringAudio } from './body.mjs?v=c01ff44198d8';
-import { TrafficPlanner } from '../engine/world.mjs?v=c01ff44198d8';
-import { DistantTrafficAudio } from './traffic.mjs?v=c01ff44198d8';
+import { GaitClock } from '../engine/gait.mjs?v=28727a895113';
+import { MicroInteractionAudio } from './interactions.mjs?v=28727a895113';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=28727a895113';
+import { earringEventForStep } from '../engine/body.mjs?v=28727a895113';
+import { BodyEarringAudio } from './body.mjs?v=28727a895113';
+import { TrafficPlanner } from '../engine/world.mjs?v=28727a895113';
+import { DistantTrafficAudio } from './traffic.mjs?v=28727a895113';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
