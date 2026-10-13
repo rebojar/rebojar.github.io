@@ -170,6 +170,9 @@
     .onda-link .onda-hit {
       cursor: pointer;
     }
+    .atalhos-arcos-mobile {
+      display: none;
+    }
     @keyframes onda-viva {
       to {
         stroke-dashoffset: -38px;
@@ -595,9 +598,46 @@
 
       .primeira-tela > header {
         min-height: 100svh;
-        padding: 5rem 1.25rem 3rem;
+        padding: 5rem 1.25rem 12rem;
         --centro-ondas-x: 3.25rem;
         --centro-ondas-y: calc(100% - 18rem);
+      }
+
+      .atalhos-arcos-mobile {
+        position: absolute;
+        z-index: 3;
+        right: 1rem;
+        bottom: 1rem;
+        left: 1rem;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.45rem;
+      }
+
+      .atalhos-arcos-mobile a {
+        display: grid;
+        min-height: 2.35rem;
+        place-items: center;
+        padding: 0.45rem 0.35rem;
+        border: 1px solid rgba(190, 224, 255, 0.3);
+        border-radius: 999px;
+        color: #f2f2f2;
+        background: rgba(0, 4, 40, 0.46);
+        font-size: 0.74rem;
+        line-height: 1.1;
+        text-align: center;
+        text-decoration: none;
+        backdrop-filter: blur(5px);
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+
+      .atalhos-arcos-mobile a:active,
+      .atalhos-arcos-mobile a:focus-visible {
+        border-color: #E8D73A;
+        background: rgba(0, 78, 146, 0.82);
+        outline: 2px solid #E8D73A;
+        outline-offset: 2px;
       }
 
       header h1 {
@@ -646,9 +686,9 @@
       }
 
       .apresentacao-projeto {
-        width: 100%;
-        max-width: 100%;
-        margin: 0 auto;
+        width: calc(100% - 5.75rem);
+        max-width: calc(100% - 5.75rem);
+        margin: 0 auto 0 0;
         padding: 1rem;
         border-radius: 10px;
         text-align: left;
@@ -710,6 +750,25 @@
       }
     }
 
+    @media (max-width: 42rem) and (max-height: 35rem) {
+      .primeira-tela > header {
+        padding-bottom: 4.5rem;
+      }
+
+      .atalhos-arcos-mobile {
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(7rem, 42vw);
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scrollbar-width: none;
+      }
+
+      .atalhos-arcos-mobile::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .menu-lateral,
       .menu-fundo,
@@ -718,8 +777,8 @@
       }
     }
   </style>
-  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261012e" defer></script>
-  <script src="assets/rebojar-som.min.js?v=widgets-20261012e" defer></script>
+  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261012f" defer></script>
+  <script src="assets/rebojar-som.min.js?v=widgets-20261012f" defer></script>
 </head>
 <body>
   <div class="scroll-indicador" aria-hidden="true"></div>
@@ -797,6 +856,17 @@
         <circle class="onda-brilho"></circle>
       </g>
     </svg>
+    <nav class="atalhos-arcos-mobile" aria-label="Atalhos dos arcos">
+      <a class="atalho-arco-mobile" data-anel="1" href="https://github.com/rebojar/rebojar.github.io">GitHub</a>
+      <a class="atalho-arco-mobile" data-anel="2" href="https://linktr.ee/rebojar">Links</a>
+      <a class="atalho-arco-mobile" data-anel="3" href="https://garatujas.tumblr.com/">Garatujas</a>
+      <a class="atalho-arco-mobile" data-anel="4" href="https://rebojar.github.io/demonstracao-labvisual/">LabVisual</a>
+      <a class="atalho-arco-mobile" data-anel="5" href="https://rebojar.netlify.app/">Caderno</a>
+      <a class="atalho-arco-mobile" data-anel="6" href="https://rebojar.github.io/audicanvas/">AudiCanvas</a>
+      <a class="atalho-arco-mobile" data-anel="7" href="https://rebojar.github.io/galeria/">Galeria</a>
+      <a class="atalho-arco-mobile" data-anel="8" href="https://rebojar.github.io/widget-bau/">Baú</a>
+      <a class="atalho-arco-mobile" data-anel="9" href="https://rebojar.github.io/widget-estante/">Estante</a>
+    </nav>
     <h1><a class="home-link" href="/" aria-label="Voltar à página inicial do Rebojar">Rebojar</a></h1>
     <p>Vibração orgânica. Arte, natureza e tato digital.</p>
     <p class="explanation">Espaço autoral para projetos independentes em pesquisa, arte e ferramentas abertas.</p>
