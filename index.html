@@ -413,7 +413,7 @@
       width: calc(var(--estante-desktop-base) + 120px);
       height: calc(var(--estante-desktop-base) + 25px);
       margin: 3rem auto 0;
-      transform: translateY(clamp(-104px, calc(720px - 100dvh), 5px));
+      transform: translateY(clamp(-160px, calc(720px - 100dvh), 5px));
     }
     .estante-portal rebojar-estante {
       width: 100%;
@@ -481,8 +481,27 @@
       height: 100%;
       margin: 0 !important;
     }
-    .plataforma-apoio-github iframe {
-      width: 100%;
+    a.plataforma-apoio-github {
+      gap: 0.45rem;
+      border: 1px solid #30363d;
+      background: #21262d;
+      color: #f0f6fc;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    a.plataforma-apoio-github:hover {
+      border-color: #8b949e;
+      color: #E8D73A;
+      background: #30363d;
+    }
+    a.plataforma-apoio-github:focus-visible {
+      outline: 3px solid #E8D73A;
+      outline-offset: 3px;
+    }
+    .github-sponsor-coracao {
+      color: #db61a2;
+      font-size: 1.15rem;
+      line-height: 1;
     }
     .plataforma-apoio-kofi a.kofi-button {
       display: flex !important;
@@ -1153,9 +1172,10 @@
   </main>
   <footer>
     <div class="footer-actions">
-      <span class="plataforma-apoio plataforma-apoio-github">
-        <iframe src="https://github.com/sponsors/rebojar/button" title="Apoiar Rebojar pelo GitHub Sponsors" height="35" width="116" loading="lazy"></iframe>
-      </span>
+      <a class="plataforma-apoio plataforma-apoio-github" href="https://github.com/sponsors/rebojar" aria-label="Apoiar Rebojar pelo GitHub Sponsors">
+        <span class="github-sponsor-coracao" aria-hidden="true">♡</span>
+        <span>Sponsor</span>
+      </a>
       <span class="plataforma-apoio plataforma-apoio-kofi">
         <script src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
         <script>kofiwidget2.init('Apoiar no Ko-fi', '#0d365e', 'D8P827NADN');kofiwidget2.draw();</script>
