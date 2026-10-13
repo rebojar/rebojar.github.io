@@ -461,8 +461,9 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-width: 114px;
-      height: 35px;
+      width: min(100%, 16rem);
+      height: 2.6rem;
+      box-sizing: border-box;
       border-radius: 6px;
       overflow: hidden;
     }
@@ -474,7 +475,20 @@
       overflow: visible;
     }
     .plataforma-apoio-kofi .btn-container {
+      width: 100% !important;
+      height: 100%;
       margin: 0 !important;
+    }
+    .plataforma-apoio-github iframe {
+      width: 100%;
+    }
+    .plataforma-apoio-kofi a.kofi-button {
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      width: 100% !important;
+      height: 100%;
+      box-sizing: border-box;
     }
     .plataforma-apoio iframe:focus-visible {
       outline: 3px solid #E8D73A;
@@ -924,12 +938,10 @@
       }
 
       .plataforma-apoio {
-        width: min(100%, 16rem);
         min-height: 2.6rem;
       }
 
       .plataforma-apoio-kofi .btn-container {
-        width: 100% !important;
         text-align: center !important;
       }
 
