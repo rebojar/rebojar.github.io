@@ -353,7 +353,9 @@
     }
     .apresentacao-projeto {
       display: none;
-      max-width: 52rem;
+      box-sizing: border-box;
+      width: min(calc(100% - 9rem), 44rem);
+      max-width: 44rem;
       margin: 3rem auto 0;
       padding: 1.5rem;
       border: 1px solid rgba(159, 189, 85, 0.28);
