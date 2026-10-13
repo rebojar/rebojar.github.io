@@ -487,10 +487,15 @@
         min-height: 24rem;
       }
       .estante-portal {
-        height: 267.75px;
+        --estante-mobile-altura: clamp(270px, 84vw, 330px);
+        width: min(92vw, 34rem);
+        height: var(--estante-mobile-altura);
       }
       .estante-portal rebojar-estante {
-        --estante-altura: 297.5px;
+        width: 100%;
+        margin-left: 0;
+        --estante-altura: var(--estante-mobile-altura);
+        transform: none;
       }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -719,6 +724,7 @@
 
       .ondas-interativas {
         pointer-events: auto;
+        transform: translate(-50%, -50%) rotate(90deg) scale(.82);
       }
 
       .onda-link {
@@ -850,8 +856,8 @@
       }
     }
   </style>
-  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261013f" defer></script>
-  <script src="assets/rebojar-som.min.js?v=widgets-20261013f" defer></script>
+  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261013g" defer></script>
+  <script src="assets/rebojar-som.min.js?v=widgets-20261013g" defer></script>
 </head>
 <body>
   <div class="scroll-indicador" aria-hidden="true"></div>
