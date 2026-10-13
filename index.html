@@ -409,15 +409,17 @@
       margin-bottom: 0;
     }
     .estante-portal {
-      width: min(75%, 45rem);
-      height: 347px;
+      --estante-desktop-lado: min(30rem, calc(100dvh - 12rem), calc(100vw - 12rem));
+      width: calc(var(--estante-desktop-lado) + 20px);
+      height: calc(var(--estante-desktop-lado) + 5px);
       margin: 3rem auto 0;
     }
     .estante-portal rebojar-estante {
-      width: 113.636364%;
-      margin-left: -6.818182%;
-      --estante-altura: 394px;
-      transform: translateY(-8px) scale(.88);
+      width: 150%;
+      height: 150%;
+      margin-left: -25%;
+      --estante-altura: 150%;
+      transform: translateY(-8px) scale(.666667);
       transform-origin: top center;
     }
     main:has(.apresentacao-projeto:target) .estante-portal,
@@ -574,6 +576,7 @@
       }
       .estante-portal rebojar-estante {
         width: 100%;
+        height: 100%;
         margin-left: 0;
         --estante-altura: var(--estante-mobile-altura);
         transform: none;
@@ -987,7 +990,7 @@
       }
     }
   </style>
-  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261013i" defer></script>
+  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261013j" defer></script>
   <script src="assets/rebojar-som.min.js?v=sound-mobile-left-stack-4" defer></script>
 </head>
 <body>
@@ -1077,7 +1080,7 @@
       <p>Um espaço onde os ciclos naturais se encontram com a exploração curiosa e artística num mesmo fluxo.</p>
     </section>
     <section class="estante-portal" aria-label="Estante de projetos Rebojar">
-      <rebojar-estante mostrar-album destino-caderno="https://rebojar.netlify.app/" destino-bau="https://rebojar.github.io/widget-bau/"></rebojar-estante>
+      <rebojar-estante mostrar-album proporcao-compacta destino-caderno="https://rebojar.netlify.app/" destino-bau="https://rebojar.github.io/widget-bau/"></rebojar-estante>
     </section>
     <section class="apresentacao-projeto" id="labvisual" aria-labelledby="labvisual-title">
       <h2 id="labvisual-title">LabVisual</h2>
