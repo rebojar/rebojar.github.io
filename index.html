@@ -409,18 +409,18 @@
       margin-bottom: 0;
     }
     .estante-portal {
-      --estante-desktop-base: min(76dvh, calc(100vw - 28px), 48rem);
-      width: calc(var(--estante-desktop-base) + 120px);
-      height: calc(var(--estante-desktop-base) + 25px);
+      width: min(100rem, calc(100vw - 28px), 158dvh);
+      height: auto;
+      aspect-ratio: 2.08 / 1;
       margin: 3rem auto 0;
       transform: translateY(clamp(-160px, calc(720px - 100dvh), 5px));
     }
-    .estante-portal rebojar-estante {
+    .estante-portal iframe {
+      display: block;
       width: 100%;
       height: 100%;
-      margin-left: 0;
-      --estante-altura: 100%;
-      transform: none;
+      border: 0;
+      background: transparent;
     }
     main:has(.apresentacao-projeto:target) .estante-portal,
     main:has(#privacidade-caderno-de-bordo:target) .estante-portal,
@@ -589,16 +589,8 @@
         min-height: 24rem;
       }
       .estante-portal {
-        --estante-mobile-altura: clamp(264px, 82vw, 323px);
         width: min(90vw, 33.25rem);
-        height: var(--estante-mobile-altura);
-        transform: none;
-      }
-      .estante-portal rebojar-estante {
-        width: 100%;
-        height: 100%;
-        margin-left: 0;
-        --estante-altura: var(--estante-mobile-altura);
+        height: auto;
         transform: none;
       }
     }
@@ -1010,7 +1002,6 @@
       }
     }
   </style>
-  <script src="assets/widget-estante/rebojar-estante.min.js?v=widgets-20261013r" defer></script>
   <script src="assets/rebojar-som.min.js?v=sound-bau-close-1" defer></script>
 </head>
 <body>
@@ -1100,7 +1091,7 @@
       <p>Um espaço onde os ciclos naturais se encontram com a exploração curiosa e artística num mesmo fluxo.</p>
     </section>
     <section class="estante-portal" aria-label="Estante de projetos Rebojar">
-      <rebojar-estante mostrar-album proporcao-compacta destino-caderno="https://rebojar.netlify.app/" destino-bau="https://rebojar.github.io/widget-bau/"></rebojar-estante>
+      <iframe src="widget-estante/index.html?embed=1&amp;v=20261013-18" title="Estante Rebojar" loading="eager"></iframe>
     </section>
     <section class="apresentacao-projeto" id="labvisual" aria-labelledby="labvisual-title">
       <h2 id="labvisual-title">LabVisual</h2>
