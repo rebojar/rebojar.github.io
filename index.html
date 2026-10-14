@@ -836,12 +836,13 @@
       body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main .introducao-portal {
         width: 100vw;
         position: relative;
+        left: 20rem;
         top: -16px;
       }
 
       body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main .estante-portal {
         margin-top: 1.5rem;
-        margin-right: 20rem;
+        margin-left: 20rem;
         position: relative;
         top: -39px;
       }
@@ -851,7 +852,7 @@
         z-index: 4;
         top: 10%;
         bottom: 7%;
-        left: calc(100vw + 1rem);
+        left: 1rem;
         display: block;
         width: 18rem;
       }
@@ -1375,10 +1376,10 @@
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
       </a>
-      <g class="onda-alvo" data-anel="11" style="--raio-hit: 52.75rem; --largura-hit: 6.5rem" aria-hidden="true">
+      <a class="onda-alvo onda-link" data-anel="11" style="--raio-hit: 52.75rem; --largura-hit: 6.5rem" href="widget-caderno/" aria-label="Abrir o widget do Caderno de Bordo">
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
-      </g>
+      </a>
     </svg>
     <h1><a class="home-link" href="/" aria-label="Voltar à página inicial do Rebojar">Rebojar</a></h1>
     <p>Vibração orgânica. Arte, natureza e tato digital.</p>
