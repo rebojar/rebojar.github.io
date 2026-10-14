@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#11273c">
+  <meta name="description" content="Placa de botões de apoio do Rebojar.">
+  <title>Placa · Rebojar</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icone-placa.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="pagina.css?v=20261014-15">
+  <script>document.documentElement.dataset.embed=new URLSearchParams(location.search).get("embed")==="1"?"1":"0"</script>
+  <script defer src="../assets/rebojar-som.min.js?v=20261014-4"></script>
+  <script defer src="placa.js?v=20261014-7"></script>
+</head>
+<body>
+  <header class="cabecalho" data-sem-som-hover>
+    <div class="produto-marca"><a class="marca-aplicacao" href="./">Placa</a><span aria-hidden="true"> | </span><a href="https://rebojar.github.io/">Rebojar ↗</a></div>
+    <button class="adicionar-botao" id="adicionarBotao" type="button" aria-expanded="false" aria-controls="menuAdicionar" aria-label="Escolher botões da placa" title="Escolher botões da placa">+</button>
+  </header>
+
+  <main class="palco" aria-label="Placa de apoio Rebojar">
+    <div class="corda corda-esquerda" aria-hidden="true"></div>
+    <div class="corda corda-direita" aria-hidden="true"></div>
+    <section class="placa-apoio">
+      <div class="placa-marca" aria-hidden="true"><em>rebojar</em><small>APOIOS</small></div>
+      <nav class="botoes-apoio" aria-label="Formas de apoiar o Rebojar">
+        <a class="botao-apoio botao-github" data-botao="github" href="https://github.com/sponsors/rebojar" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">♡</span> Sponsor</a>
+        <span class="botao-apoio botao-kofi" data-botao="kofi">
+          <script src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
+          <script>kofiwidget2.init('Apoiar no Ko-fi', '#0d365e', 'D8P827NADN');kofiwidget2.draw();</script>
+        </span>
+        <a class="botao-apoio botao-apoia" data-botao="apoia" href="https://apoia.se/rebojar">Abrir o Apoia.se ↗</a>
+        <a class="botao-apoio botao-personalizado" data-botao="personalizado" hidden></a>
+      </nav>
+    </section>
+  </main>
+
+  <p class="instrucao">Use o botão “+” para escolher os apoios da placa ou acrescentar seu próprio botão.</p>
+
+  <div class="menu-adicionar" id="menuAdicionar" hidden>
+    <button type="button" role="switch" aria-checked="true" data-alternar="github"><span>GitHub Sponsors</span><small>Exibido na placa</small></button>
+    <button type="button" role="switch" aria-checked="true" data-alternar="kofi"><span>Ko-fi</span><small>Exibido na placa</small></button>
+    <button type="button" role="switch" aria-checked="true" data-alternar="apoia"><span>Apoia.se</span><small>Exibido na placa</small></button>
+    <button type="button" id="botaoPersonalizado"><span>Seu próprio botão</span><small>Dar nome e colar o endereço</small></button>
+    <p>Os botões escolhidos ficam guardados neste navegador.</p>
+  </div>
+
+  <section class="janela-apoio" id="janelaApoio" hidden aria-label="Plataforma de apoio">
+    <button class="janela-apoio-fundo" id="fundoJanelaApoio" type="button" aria-label="Voltar à placa"></button>
+    <div class="janela-apoio-conteudo" role="dialog" aria-modal="true" aria-label="Plataforma de apoio">
+      <button class="voltar-placa" id="voltarPlaca" type="button">← Voltar</button>
+      <iframe id="quadroApoio" title="Plataforma de apoio" loading="lazy"></iframe>
+    </div>
+  </section>
+</body>
+</html>

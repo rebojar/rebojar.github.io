@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Porta · Rebojar</title>
+  <meta name="theme-color" content="#11273c">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icone-porta.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="pagina.css?v=20261014-8">
+  <script>document.documentElement.dataset.embed=new URLSearchParams(location.search).get("embed")==="1"?"1":"0"</script>
+  <script defer src="porta.js?v=20261014-10"></script>
+</head>
+<body>
+  <header class="cabecalho" data-sem-som-hover>
+    <div class="produto-marca">
+      <strong>Porta</strong><span aria-hidden="true"> | </span><a href="https://rebojar.github.io/">Rebojar ↗</a>
+    </div>
+    <div class="controles-som" aria-label="Controles de som">
+      <button class="controle-som" id="somPorta" type="button" role="switch" aria-checked="true" aria-label="Desativar sons da porta" title="Sons ligados"><span class="som-chave" aria-hidden="true"></span></button>
+      <a class="estudio-som" href="https://rebojar.github.io/audicanvas/" aria-label="Abrir o AudiCanvas" title="Abrir o AudiCanvas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 14a8 8 0 0 1 16 0"/><path d="M6 12H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h3v-8H6Z"/><path d="M18 12h1a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-3v-8h2Z"/></svg></a>
+    </div>
+  </header>
+  <main>
+    <section class="portal" aria-label="Uma porta que leva a uma sala com outras portas">
+      <div class="moldura">
+        <div class="sala">
+          <p data-texto-editavel="outros-caminhos">outros caminhos</p>
+          <div class="portas-internas">
+            <button class="porta-interna porta-verde" type="button" data-destino="https://garatujas.tumblr.com/" data-nome="Garatujas" aria-label="Entrar em Garatujas"><span data-texto-editavel="porta-garatujas">Garatujas</span></button>
+            <button class="porta-interna porta-azul" type="button" data-destino="https://rebojar.github.io/demonstracao-labvisual/" data-nome="Lab Visual" aria-label="Entrar no Lab Visual"><span data-texto-editavel="porta-lab-visual">Lab Visual</span></button>
+            <button class="porta-interna porta-rosa" type="button" data-destino="https://rebojar.github.io/audicanvas/" data-nome="Audio Canvas" aria-label="Entrar no Audio Canvas"><span data-texto-editavel="porta-audio-canvas">Audio Canvas</span></button>
+            <button class="porta-interna porta-amarela" type="button" data-destino="https://rebojar.github.io/galeria/" data-nome="Galeria" aria-label="Entrar na Galeria"><span data-texto-editavel="porta-galeria">Galeria</span></button>
+            <button class="porta-interna porta-laranja" type="button" data-destino="../widget-caderno/index.html" data-destino-arquivo="../caderno-local/Widget-caderno/index.html" data-nome="Caderno de Bordo" aria-label="Entrar no Caderno de Bordo"><span data-texto-editavel="porta-caderno">Caderno de Bordo</span></button>
+            <button class="porta-interna porta-violeta" type="button" aria-disabled="true" aria-label="Passagem futura"><span data-texto-editavel="porta-futura">Em breve</span></button>
+          </div>
+        </div>
+        <div class="folha-porta">
+          <span class="placa"><em data-texto-editavel="marca">rebojar</em><small data-texto-editavel="tipo">passagens</small></span>
+          <span class="relevo relevo-superior"></span>
+          <span class="relevo relevo-inferior"></span>
+          <button class="macaneta" type="button" aria-expanded="false" aria-label="Abrir a porta; dê dois cliques ou gire a maçaneta">
+            <span></span>
+          </button>
+        </div>
+        <div class="passagem-escolhida" aria-hidden="true">
+          <span></span>
+          <i></i>
+          <strong class="passagem-instrucao">Clique outra vez ou gire a maçaneta para entrar</strong>
+          <button class="passagem-macaneta" type="button" disabled aria-label="Abrir a passagem escolhida"></button>
+        </div>
+      </div>
+    </section>
+  </main>
+  <p class="instrucao" data-texto-editavel="instrucao">Dois cliques ou um giro na maçaneta.</p>
+</body>
+</html>

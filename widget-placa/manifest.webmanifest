@@ -1,0 +1,13 @@
+{
+  "name": "Placa · Rebojar",
+  "short_name": "Placa",
+  "id": "./",
+  "description": "Placa suspensa com botões escolhidos para apoiar o Rebojar.",
+  "lang": "pt-BR",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#d5d3c4",
+  "theme_color": "#11273c",
+  "icons": [{ "src": "icone-placa.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

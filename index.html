@@ -413,7 +413,7 @@
       height: auto;
       aspect-ratio: 2.08 / 1;
       margin: 3rem auto 0;
-      transform: translateY(clamp(-280px, calc(660px - 100dvh), 5px));
+      transform: none;
     }
     .estante-portal iframe {
       display: block;
@@ -421,6 +421,144 @@
       height: 100%;
       border: 0;
       background: transparent;
+    }
+    .porta-portal {
+      display: none;
+    }
+    .porta-portal iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: transparent;
+    }
+    .bau-portal-ampliado {
+      position: fixed;
+      z-index: 70;
+      inset: 0;
+      pointer-events: none;
+    }
+    .bau-portal-ampliado[hidden] {
+      display: none;
+    }
+    .bau-portal-ampliado iframe {
+      position: absolute;
+      left: 50%;
+      bottom: 18px;
+      width: min(96vw, 1800px);
+      height: min(96vh, 1040px);
+      border: 0;
+      background: transparent;
+      transform: translateX(-50%);
+      pointer-events: auto;
+    }
+    .caderno-portal-ampliado {
+      position: fixed;
+      z-index: 72;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: clamp(12px, 3vw, 42px);
+      background: #06131ec7;
+    }
+    .caderno-portal-ampliado[hidden] {
+      display: none;
+    }
+    .caderno-portal-ampliado iframe {
+      display: block;
+      width: min(96vw, 1680px);
+      height: min(87vh, 1010px);
+      border: 0;
+      border-radius: 18px;
+      background: transparent;
+      box-shadow: 0 24px 60px #02080dcc;
+      transform: translateY(18px);
+    }
+    .caderno-portal-fechar {
+      position: fixed;
+      z-index: 73;
+      top: max(6px, calc((100dvh - min(87dvh, 1010px)) / 2 - 40px));
+      right: clamp(18px, 2.5vw, 34px);
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 1px solid #f2992e;
+      border-radius: 50%;
+      color: #f4efdf;
+      background: #11273c;
+      font: 500 1.1rem/1 system-ui, sans-serif;
+      cursor: pointer;
+    }
+    .apoio-portal-ampliado {
+      position: fixed;
+      z-index: 74;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: max(12px, env(safe-area-inset-top)) clamp(12px, 3vw, 42px) max(12px, env(safe-area-inset-bottom));
+    }
+    .apoio-portal-ampliado[hidden] {
+      display: none;
+    }
+    .apoio-portal-janela {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 10px;
+      width: min(96vw, 1120px);
+      height: min(92dvh, 900px);
+      min-height: 0;
+    }
+    .apoio-portal-fundo {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      border: 0;
+      background: #06131edb;
+      cursor: default;
+    }
+    .apoio-portal-barra {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      color: #f4efdf;
+    }
+    .apoio-portal-voltar {
+      padding: .62rem .9rem;
+      border: 1px solid #f2992e;
+      border-radius: 999px;
+      color: #f4efdf;
+      background: #11273c;
+      font: 700 .88rem/1 system-ui, sans-serif;
+      cursor: pointer;
+    }
+    .apoio-portal-voltar:focus-visible {
+      outline: 3px solid #e8d73a;
+      outline-offset: 3px;
+    }
+    .apoio-portal-ampliado iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      border: 0;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 24px 60px #02080dcc;
+    }
+    .apoio-portal-ampliado[data-plataforma="kofi"] .apoio-portal-janela {
+      width: min(94vw, 760px);
+      height: min(88dvh, 770px);
+    }
+    .apoio-portal-ampliado[data-plataforma="github"] .apoio-portal-janela {
+      width: min(94vw, 640px);
+      height: min(62dvh, 330px);
     }
     main:has(.apresentacao-projeto:target) .estante-portal,
     main:has(#privacidade-caderno-de-bordo:target) .estante-portal,
@@ -458,6 +596,22 @@
     }
     .footer-actions p {
       margin: 0;
+    }
+    .placa-portal {
+      width: min(100%, 16rem);
+      height: 20rem;
+      margin: 0 0 1.25rem;
+      flex: none;
+    }
+    .placa-poste-mobile {
+      display: none;
+    }
+    .placa-portal iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: transparent;
     }
     .plataforma-apoio {
       display: inline-flex;
@@ -657,19 +811,35 @@
       }
 
       body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main {
+        position: relative;
+        width: calc(100vw + 20rem);
+        min-width: calc(100vw + 20rem);
+        flex-basis: calc(100vw + 20rem);
         padding-block: 1.5rem;
         overflow-y: hidden;
       }
 
       body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main .introducao-portal {
+        width: 100vw;
         position: relative;
         top: -16px;
       }
 
       body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main .estante-portal {
         margin-top: 1.5rem;
+        margin-right: 20rem;
         position: relative;
         top: -39px;
+      }
+
+      body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main .porta-portal {
+        position: absolute;
+        z-index: 4;
+        top: 10%;
+        bottom: 7%;
+        left: calc(100vw + 1rem);
+        display: block;
+        width: 18rem;
       }
 
       body > main::-webkit-scrollbar,
@@ -681,23 +851,37 @@
       body > footer {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         width: min(30rem, 100vw);
         min-width: min(30rem, 100vw);
         flex-basis: min(30rem, 100vw);
-        padding-inline: 2rem;
+        padding: 0 2rem 2rem 3rem;
       }
 
       body > footer .footer-actions {
         width: min(100%, 16rem);
-        margin-inline: auto;
+        margin-inline: 0;
         flex-direction: column;
         align-items: stretch;
         flex-wrap: nowrap;
       }
 
+      body > footer .placa-portal {
+        width: min(100%, 16rem);
+        height: 20rem;
+        margin-inline: 0;
+      }
+
       body > footer .plataforma-apoio {
         width: 100%;
+      }
+
+      body > footer .footer-meta {
+        width: min(100%, 16rem);
+      }
+
+      body > footer .footer-meta > p {
+        white-space: nowrap;
       }
 
       body:has(.apresentacao-projeto:target) .primeira-tela,
@@ -903,6 +1087,12 @@
         stroke-width: 1.4px;
       }
 
+      .agua-superficie::before,
+      .agua-superficie::after,
+      .onda-distante {
+        border-color: transparent;
+      }
+
       header h1 {
         font-size: clamp(2rem, 10vw, 2.6rem);
       }
@@ -930,6 +1120,14 @@
 
       body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) main {
         min-height: 100svh;
+      }
+
+      body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) main .porta-portal {
+        display: block;
+        width: min(18rem, calc(100vw - 2rem));
+        aspect-ratio: 9 / 16;
+        margin: 1.5rem auto 0;
+        overflow: hidden;
       }
 
       body:has(.apresentacao-projeto:target) main,
@@ -981,14 +1179,77 @@
       }
 
       footer {
+        position: relative;
+        isolation: isolate;
         width: 100%;
         padding: 1.5rem 1rem 2.5rem;
+        overflow: hidden;
         overflow-wrap: anywhere;
+      }
+
+      .placa-poste-mobile {
+        position: absolute;
+        z-index: 0;
+        top: calc(1.5rem + 1.65rem - 2px);
+        right: 0.65rem;
+        bottom: 0;
+        display: block;
+        width: 1.65rem;
+        border: 2px solid #061624;
+        border-top: 0;
+        background:
+          repeating-linear-gradient(91deg, transparent 0 13px, #75b9d017 14px, transparent 16px 29px),
+          linear-gradient(90deg, #071a28, #245674 38%, #153b54 68%, #071b2a);
+        box-shadow: inset 3px 0 #68a9c229, inset -5px 0 #020a10a8, 7px 8px 15px #02080d73;
+        pointer-events: none;
+      }
+
+      .placa-poste-mobile::before {
+        content: "";
+        position: absolute;
+        bottom: 100%;
+        right: -2px;
+        width: min(21rem, calc(100vw - 1.3rem));
+        height: 1.65rem;
+        border: 2px solid #061624;
+        border-radius: 1rem 1rem 0.3rem 0.3rem;
+        background:
+          repeating-linear-gradient(2deg, transparent 0 12px, #75b9d017 13px, transparent 15px 28px),
+          linear-gradient(#245674, #153b54 58%, #071b2a);
+        box-shadow: inset 0 3px #68a9c229, inset 0 -5px #020a10a8, 6px 7px 13px #02080d73;
+      }
+
+      .placa-poste-mobile::after {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        top: -1.03rem;
+        left: 50%;
+        width: 0.36rem;
+        height: 0.36rem;
+        border: 1px solid #07131d;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #f5c56f, #a95c16 72%);
+        box-shadow: 0 1px 2px #02080dcc;
+        transform: translateX(-50%);
+      }
+
+      .placa-portal,
+      .footer-meta {
+        position: relative;
+        z-index: 1;
       }
 
       .footer-actions {
         flex-direction: column;
         gap: 0.65rem;
+      }
+
+      .placa-portal {
+        width: min(22rem, calc(100% - 2.5rem));
+        height: 20rem;
+        margin-left: 0;
+        margin-right: auto;
       }
 
       .plataforma-apoio {
@@ -1026,7 +1287,7 @@
       }
     }
   </style>
-  <script src="assets/rebojar-som.min.js?v=sound-bau-close-1" defer></script>
+  <script src="assets/rebojar-som.min.js?v=sound-nested-widgets-4" defer></script>
 </head>
 <body>
   <div class="scroll-indicador" aria-hidden="true"></div>
@@ -1095,10 +1356,10 @@
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
       </a>
-      <g class="onda-alvo" data-anel="10" style="--raio-hit: 48.15rem; --largura-hit: 2.7rem" aria-hidden="true">
+      <a class="onda-alvo onda-link" data-anel="10" style="--raio-hit: 48.15rem; --largura-hit: 2.7rem" href="widget-porta/" aria-label="Abrir a Porta Rebojar">
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
-      </g>
+      </a>
       <g class="onda-alvo" data-anel="11" style="--raio-hit: 52.75rem; --largura-hit: 6.5rem" aria-hidden="true">
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
@@ -1115,7 +1376,10 @@
       <p>Um espaço onde os ciclos naturais se encontram com a exploração curiosa e artística num mesmo fluxo.</p>
     </section>
     <section class="estante-portal" aria-label="Estante de projetos Rebojar">
-      <iframe src="widget-estante/index.html?embed=1&amp;v=20261013-20" title="Estante Rebojar" loading="eager"></iframe>
+      <iframe src="widget-estante/index.html?embed=1&amp;v=20261014-16" title="Estante Rebojar" loading="eager"></iframe>
+    </section>
+    <section class="porta-portal" aria-label="Porta para futuros espaços do Rebojar">
+      <iframe src="widget-porta/index.html?embed=1&amp;v=20261014-13" title="Porta Rebojar" loading="eager"></iframe>
     </section>
     <section class="apresentacao-projeto" id="labvisual" aria-labelledby="labvisual-title">
       <h2 id="labvisual-title">LabVisual</h2>
@@ -1185,47 +1449,36 @@
       <p><a href="galeria/">Abrir a Galeria →</a></p>
     </section>
   </main>
-  <footer>
-    <div class="footer-actions">
-      <a class="plataforma-apoio plataforma-apoio-github" href="https://github.com/sponsors/rebojar" aria-label="Apoiar Rebojar pelo GitHub Sponsors">
-        <span class="github-sponsor-coracao" aria-hidden="true">♡</span>
-        <span>Sponsor</span>
-      </a>
-      <span class="plataforma-apoio plataforma-apoio-kofi">
-        <script src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
-        <script>kofiwidget2.init('Apoiar no Ko-fi', '#0d365e', 'D8P827NADN');kofiwidget2.draw();</script>
-      </span>
-      <a class="plataforma-apoio apoio-link" href="https://apoia.se/rebojar" aria-label="Apoiar Rebojar pelo APOIA.se">Abrir o Apoia.se ↗</a>
-    </div>
-    <details class="sponsor-card">
-      <summary>Conhecer formas de apoiar o Rebojar</summary>
-      <div class="apoio-painel">
-        <p class="apoio-introducao">O apoio ajuda a sustentar as ferramentas, os serviços e o tempo dedicado aos projetos do Rebojar. Escolha a forma que fizer mais sentido para você.</p>
-        <div class="apoio-opcoes">
-          <section class="apoio-opcao" aria-labelledby="apoio-github-title">
-            <h3 id="apoio-github-title">GitHub Sponsors</h3>
-            <p>Para apoiar pelo GitHub e acompanhar as opções oferecidas por lá.</p>
-            <iframe class="sponsor-card-frame" src="https://github.com/sponsors/rebojar/card" title="Cartão de apoio ao Rebojar no GitHub Sponsors" height="225" width="600" loading="lazy"></iframe>
-          </section>
-          <section class="apoio-opcao" aria-labelledby="apoio-kofi-title">
-            <h3 id="apoio-kofi-title">Ko-fi</h3>
-            <p>Para enviar um café, fazer uma contribuição direta ou escolher uma opção de apoio sem sair do Rebojar.</p>
-            <iframe id="kofiframe" class="kofi-panel-frame" src="https://ko-fi.com/rebojar/?hidefeed=true&amp;widget=true&amp;embed=true&amp;preview=true" title="Apoiar o Rebojar pelo Ko-fi" loading="lazy"></iframe>
-          </section>
-          <section class="apoio-opcao" aria-labelledby="apoio-apoia-title">
-            <h3 id="apoio-apoia-title">Apoia.se</h3>
-            <p>Para contribuir de forma recorrente, em reais, pela plataforma brasileira.</p>
-            <a class="apoio-link" href="https://apoia.se/rebojar">Abrir o Apoia.se ↗</a>
-          </section>
-        </div>
+  <div class="bau-portal-ampliado" id="bauPortalAmpliado" hidden>
+    <iframe id="bauPortalQuadro" src="widget-bau/index.html?embed=1&amp;portal=1&amp;v=20261014-2" title="Baú de memórias ampliado" loading="lazy"></iframe>
+  </div>
+  <div class="caderno-portal-ampliado" id="cadernoPortalAmpliado" hidden>
+    <button class="caderno-portal-fechar" id="fecharCadernoPortal" type="button" aria-label="Fechar o Caderno de Bordo">×</button>
+    <iframe id="cadernoPortalQuadro" src="widget-caderno/index.html?embed=1&amp;v=20261014-7" title="Caderno de Bordo" loading="lazy"></iframe>
+  </div>
+  <section class="apoio-portal-ampliado" id="apoioPortalAmpliado" hidden aria-label="Plataforma de apoio">
+    <button class="apoio-portal-fundo" id="fundoApoioPortal" type="button" aria-label="Voltar à placa"></button>
+    <div class="apoio-portal-janela" role="dialog" aria-modal="true" aria-labelledby="tituloApoioPortal">
+      <div class="apoio-portal-barra">
+        <button class="apoio-portal-voltar" id="voltarPlacaPortal" type="button">← Voltar</button>
+        <strong id="tituloApoioPortal">Plataforma de apoio</strong>
       </div>
-    </details>
+      <iframe id="apoioPortalQuadro" title="Plataforma de apoio" loading="lazy"></iframe>
+    </div>
+  </section>
+  <footer>
+    <span class="placa-poste-mobile" aria-hidden="true"></span>
+    <section class="placa-portal" aria-label="Placa de botões de apoio">
+      <iframe src="widget-placa/index.html?embed=1&amp;v=20261014-17" title="Placa de apoio Rebojar" loading="eager"></iframe>
+    </section>
+    <div class="footer-meta">
     <details>
       <summary>Outros trabalhos</summary>
       <p>Tatuagem — <a href="https://linktr.ee/rebojar">linktr.ee@rebojar ↗</a></p>
       <p><a href="https://github.com/rebojar/rebojar.github.io">Código desta página no GitHub ↗</a></p>
     </details>
     <p>&copy; 2025 Rebojar. Feito com carinho e café. 🌌</p>
+    </div>
   </footer>
 
   <script>
@@ -1351,7 +1604,157 @@
         link.addEventListener('click', () => definirMenu(false));
       });
 
+      const quadroEstante = document.querySelector('.estante-portal iframe');
+      const quadroPlaca = document.querySelector('.placa-portal iframe');
+      const bauPortal = document.querySelector('#bauPortalAmpliado');
+      const quadroBauPortal = document.querySelector('#bauPortalQuadro');
+      const cadernoPortal = document.querySelector('#cadernoPortalAmpliado');
+      const quadroCadernoPortal = document.querySelector('#cadernoPortalQuadro');
+      const fecharCadernoPortal = document.querySelector('#fecharCadernoPortal');
+      const apoioPortal = document.querySelector('#apoioPortalAmpliado');
+      const quadroApoioPortal = document.querySelector('#apoioPortalQuadro');
+      const tituloApoioPortal = document.querySelector('#tituloApoioPortal');
+      const voltarPlacaPortal = document.querySelector('#voltarPlacaPortal');
+      const fundoApoioPortal = document.querySelector('#fundoApoioPortal');
+      let bauOriginal;
+      let bauAmpliado;
+
+      const sincronizarSomCadernoPortal = () => {
+        const ativo = Boolean(window.RebojarSom?.ativo);
+        try { quadroCadernoPortal.contentWindow?.postMessage({ tipo: 'rebojar:som', ativo, desbloquear: ativo }, '*'); } catch {}
+      };
+      const abrirCadernoPortal = () => {
+        cadernoPortal.hidden = false;
+        requestAnimationFrame(sincronizarSomCadernoPortal);
+      };
+
+      const destinosApoio = {
+        github: { destino: 'https://github.com/sponsors/rebojar', titulo: 'GitHub Sponsors' },
+        apoia: { destino: 'https://apoia.se/rebojar', titulo: 'Apoia.se' },
+        kofi: { destino: 'https://ko-fi.com/rebojar/?hidefeed=true&widget=true&embed=true&preview=true', titulo: 'Ko-fi' }
+      };
+      const abrirApoioPortal = plataforma => {
+        const configuracao = destinosApoio[plataforma];
+        if (!configuracao) return;
+        if (plataforma === 'github') {
+          window.open(configuracao.destino, '_blank', 'noopener,noreferrer');
+          return;
+        }
+        quadroApoioPortal.src = configuracao.destino;
+        quadroApoioPortal.title = `Apoiar o Rebojar pelo ${configuracao.titulo}`;
+        tituloApoioPortal.textContent = configuracao.titulo;
+        apoioPortal.dataset.plataforma = plataforma;
+        apoioPortal.hidden = false;
+        voltarPlacaPortal.focus({ preventScroll: true });
+      };
+      const fecharApoioPortal = () => {
+        apoioPortal.hidden = true;
+        delete apoioPortal.dataset.plataforma;
+        quadroApoioPortal.removeAttribute('src');
+        quadroPlaca?.focus?.({ preventScroll: true });
+      };
+
+      const fecharBauAmpliado = () => {
+        bauPortal.hidden = true;
+        if (bauAmpliado) {
+          bauAmpliado.removeAttribute('explorando');
+          bauAmpliado.removeAttribute('aberto');
+          bauAmpliado.atualizar?.();
+        }
+        if (bauOriginal?.explorando) bauOriginal.sairDaVisao?.(null, 'externo');
+      };
+
+      const prepararBauAmpliado = async () => {
+        const janela = quadroBauPortal.contentWindow;
+        const documento = quadroBauPortal.contentDocument;
+        if (!janela || !documento) return;
+        await janela.customElements.whenDefined('rebojar-bau');
+        bauAmpliado = documento.querySelector('rebojar-bau');
+        if (!bauAmpliado || bauAmpliado.dataset.portalConectado === '1') return;
+        bauAmpliado.dataset.portalConectado = '1';
+        bauAmpliado.addEventListener('rebojar-bau-exploracao', evento => {
+          if (!evento.detail?.explorando) fecharBauAmpliado();
+        });
+      };
+
+      const abrirBauAmpliado = async () => {
+        bauPortal.hidden = false;
+        try { quadroBauPortal.contentWindow?.postMessage({ tipo: 'rebojar:bau-portal-abrir' }, '*'); } catch {}
+        await prepararBauAmpliado();
+      };
+
+      const conectarBauDaEstante = async () => {
+        const janelaEstante = quadroEstante.contentWindow;
+        const documentoEstante = quadroEstante.contentDocument;
+        if (!janelaEstante || !documentoEstante) return;
+        await janelaEstante.customElements.whenDefined('rebojar-estante');
+        const estante = documentoEstante.querySelector('rebojar-estante');
+        if (estante && estante.dataset.portalCadernoConectado !== '1') {
+          estante.dataset.portalCadernoConectado = '1';
+          estante.addEventListener('rebojar-estante:abrir', evento => {
+            if (evento.detail?.projeto !== 'caderno-de-bordo') return;
+            evento.preventDefault();
+            abrirCadernoPortal();
+          });
+          const cadernoNaEstante = estante.shadowRoot?.querySelector('.caderno');
+          cadernoNaEstante?.addEventListener('click', evento => {
+            evento.preventDefault();
+            abrirCadernoPortal();
+          }, true);
+        }
+        const quadroBau = estante?.shadowRoot?.querySelector('.bau-widget');
+        if (!quadroBau) return;
+        const conectarQuadroBau = async () => {
+          const janelaBau = quadroBau.contentWindow;
+          const documentoBau = quadroBau.contentDocument;
+          if (!janelaBau || !documentoBau) return;
+          await janelaBau.customElements.whenDefined('rebojar-bau');
+          bauOriginal = documentoBau.querySelector('rebojar-bau');
+          if (!bauOriginal || bauOriginal.dataset.portalConectado === '1') return;
+          bauOriginal.dataset.portalConectado = '1';
+          bauOriginal.addEventListener('rebojar-bau-exploracao', evento => {
+            if (evento.detail?.explorando) abrirBauAmpliado();
+          });
+        };
+        quadroBau.addEventListener('load', conectarQuadroBau);
+        conectarQuadroBau();
+      };
+
+      quadroEstante.addEventListener('load', conectarBauDaEstante);
+      quadroBauPortal.addEventListener('load', prepararBauAmpliado);
+      window.addEventListener('message', event => {
+        if (event.source === quadroBauPortal.contentWindow && event.data?.tipo === 'rebojar:bau-portal-fechar') fecharBauAmpliado();
+        if (event.source === quadroEstante.contentWindow && event.data?.tipo === 'rebojar:estante-abrir' && event.data?.detalhe?.projeto === 'caderno-de-bordo') {
+          abrirCadernoPortal();
+        }
+        if (event.source === quadroPlaca?.contentWindow && event.data?.tipo === 'rebojar:placa-abrir') abrirApoioPortal(event.data.plataforma);
+      });
+      conectarBauDaEstante();
+      quadroCadernoPortal.addEventListener('load', sincronizarSomCadernoPortal);
+      window.addEventListener('rebojar-som-alterado', sincronizarSomCadernoPortal);
+      fecharCadernoPortal.addEventListener('click', () => { cadernoPortal.hidden = true; });
+      cadernoPortal.addEventListener('click', event => {
+        if (event.target === cadernoPortal) cadernoPortal.hidden = true;
+      });
+      voltarPlacaPortal.addEventListener('click', fecharApoioPortal);
+      fundoApoioPortal.addEventListener('click', fecharApoioPortal);
+      apoioPortal.addEventListener('click', event => {
+        if (event.target === apoioPortal) fecharApoioPortal();
+      });
+
       document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !apoioPortal.hidden) {
+          fecharApoioPortal();
+          return;
+        }
+        if (event.key === 'Escape' && !cadernoPortal.hidden) {
+          cadernoPortal.hidden = true;
+          return;
+        }
+        if (event.key === 'Escape' && !bauPortal.hidden) {
+          fecharBauAmpliado();
+          return;
+        }
         if (event.key === 'Escape' && botao.getAttribute('aria-expanded') === 'true') {
           definirMenu(false);
           botao.focus();
