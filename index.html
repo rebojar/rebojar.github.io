@@ -422,6 +422,9 @@
       border: 0;
       background: transparent;
     }
+    .estante-portal > rebojar-estante {
+      display: none;
+    }
     .porta-portal {
       display: none;
     }
@@ -747,6 +750,17 @@
         height: clamp(270px, 72vw, 330px);
         aspect-ratio: auto;
         transform: none;
+      }
+      .estante-portal iframe {
+        display: none;
+      }
+      .estante-portal > rebojar-estante {
+        --estante-altura: 100%;
+        display: block;
+        width: 100%;
+        height: 100%;
+        contain: none;
+        content-visibility: visible;
       }
     }
     @media (prefers-reduced-motion: reduce) {
@@ -1288,6 +1302,7 @@
     }
   </style>
   <script src="assets/rebojar-som.min.js?v=sound-nested-widgets-4" defer></script>
+  <script src="assets/widget-estante/rebojar-estante.min.js?v=20261014-14" defer></script>
 </head>
 <body>
   <div class="scroll-indicador" aria-hidden="true"></div>
@@ -1376,7 +1391,8 @@
       <p>Um espaço onde os ciclos naturais se encontram com a exploração curiosa e artística num mesmo fluxo.</p>
     </section>
     <section class="estante-portal" aria-label="Estante de projetos Rebojar">
-      <iframe src="widget-estante/index.html?embed=1&amp;v=20261014-16" title="Estante Rebojar" loading="eager"></iframe>
+      <iframe src="widget-estante/index.html?embed=1&amp;v=20261014-17" title="Estante Rebojar" loading="eager"></iframe>
+      <rebojar-estante class="estante-portal-mobile" destino-caderno="widget-caderno/index.html?embed=1&amp;v=20261014-7" destino-bau="widget-bau/index.html?v=20261014-2" mostrar-album mostrar-estojo mostrar-bau proporcao-compacta aria-label="Estante Rebojar"></rebojar-estante>
     </section>
     <section class="porta-portal" aria-label="Porta para futuros espaços do Rebojar">
       <iframe src="widget-porta/index.html?embed=1&amp;v=20261014-13" title="Porta Rebojar" loading="eager"></iframe>
@@ -1605,6 +1621,7 @@
       });
 
       const quadroEstante = document.querySelector('.estante-portal iframe');
+      const estanteMobile = document.querySelector('.estante-portal-mobile');
       const quadroPlaca = document.querySelector('.placa-portal iframe');
       const bauPortal = document.querySelector('#bauPortalAmpliado');
       const quadroBauPortal = document.querySelector('#bauPortalQuadro');
@@ -1683,13 +1700,9 @@
         await prepararBauAmpliado();
       };
 
-      const conectarBauDaEstante = async () => {
-        const janelaEstante = quadroEstante.contentWindow;
-        const documentoEstante = quadroEstante.contentDocument;
-        if (!janelaEstante || !documentoEstante) return;
-        await janelaEstante.customElements.whenDefined('rebojar-estante');
-        const estante = documentoEstante.querySelector('rebojar-estante');
-        if (estante && estante.dataset.portalCadernoConectado !== '1') {
+      const conectarInstanciaEstante = async estante => {
+        if (!estante) return;
+        if (estante.dataset.portalCadernoConectado !== '1') {
           estante.dataset.portalCadernoConectado = '1';
           estante.addEventListener('rebojar-estante:abrir', evento => {
             if (evento.detail?.projeto !== 'caderno-de-bordo') return;
@@ -1702,22 +1715,37 @@
             abrirCadernoPortal();
           }, true);
         }
-        const quadroBau = estante?.shadowRoot?.querySelector('.bau-widget');
+        const quadroBau = estante.shadowRoot?.querySelector('.bau-widget');
         if (!quadroBau) return;
         const conectarQuadroBau = async () => {
           const janelaBau = quadroBau.contentWindow;
           const documentoBau = quadroBau.contentDocument;
           if (!janelaBau || !documentoBau) return;
           await janelaBau.customElements.whenDefined('rebojar-bau');
-          bauOriginal = documentoBau.querySelector('rebojar-bau');
-          if (!bauOriginal || bauOriginal.dataset.portalConectado === '1') return;
-          bauOriginal.dataset.portalConectado = '1';
-          bauOriginal.addEventListener('rebojar-bau-exploracao', evento => {
-            if (evento.detail?.explorando) abrirBauAmpliado();
+          const bauDaInstancia = documentoBau.querySelector('rebojar-bau');
+          if (!bauDaInstancia || bauDaInstancia.dataset.portalConectado === '1') return;
+          bauDaInstancia.dataset.portalConectado = '1';
+          bauDaInstancia.addEventListener('rebojar-bau-exploracao', evento => {
+            if (!evento.detail?.explorando) return;
+            bauOriginal = bauDaInstancia;
+            abrirBauAmpliado();
           });
         };
         quadroBau.addEventListener('load', conectarQuadroBau);
         conectarQuadroBau();
+      };
+
+      const conectarBauDaEstante = async () => {
+        const janelaEstante = quadroEstante.contentWindow;
+        const documentoEstante = quadroEstante.contentDocument;
+        if (!janelaEstante || !documentoEstante) return;
+        await janelaEstante.customElements.whenDefined('rebojar-estante');
+        conectarInstanciaEstante(documentoEstante.querySelector('rebojar-estante'));
+      };
+
+      const conectarEstanteMobile = async () => {
+        await customElements.whenDefined('rebojar-estante');
+        conectarInstanciaEstante(estanteMobile);
       };
 
       quadroEstante.addEventListener('load', conectarBauDaEstante);
@@ -1730,6 +1758,7 @@
         if (event.source === quadroPlaca?.contentWindow && event.data?.tipo === 'rebojar:placa-abrir') abrirApoioPortal(event.data.plataforma);
       });
       conectarBauDaEstante();
+      conectarEstanteMobile();
       quadroCadernoPortal.addEventListener('load', sincronizarSomCadernoPortal);
       window.addEventListener('rebojar-som-alterado', sincronizarSomCadernoPortal);
       fecharCadernoPortal.addEventListener('click', () => { cadernoPortal.hidden = true; });
