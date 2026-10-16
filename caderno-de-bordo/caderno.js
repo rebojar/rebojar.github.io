@@ -44,10 +44,17 @@ function validate(value){
  if(Number(value.layoutVersion)!==2||!ehGuarda(pages[0])||!ehGuarda(pages[1]))pages=[paginaGuarda(),paginaGuarda(),...pages.filter(page=>!ehGuarda(page))];
  pages[0]=guardaFixa(pages[0]);
  const loosePhotos=value.loosePhotos?cleanPage({...pagina(),photos:value.loosePhotos}).photos:[];
- return {version:1,layoutVersion:2,recentColors:cleanRecentColors(value.recentColors),colorHistory:{text:cleanRecentColors(value.colorHistory?.text),mark:cleanRecentColors(value.colorHistory?.mark)},name:value.name.slice(0,100),showToolsInPublication:value.showToolsInPublication!==false,showChestInPublication:value.showChestInPublication!==false,showShelfInPublication:value.showShelfInPublication!==false,pencilCase:{title:String(value.pencilCase?.title??'rebojar').slice(0,80),subtitle:String(value.pencilCase?.subtitle??'ferramentas do caderno').slice(0,120)},guard:guardaFixa(value.guard),loosePhotos,cover:{eyebrow:String(value.cover?.eyebrow??defaultCover.eyebrow).slice(0,200),subtitle:String(value.cover?.subtitle??defaultCover.subtitle).slice(0,500)},pages};
+ const publicationView=value.publicationView&&typeof value.publicationView==='object'?{
+  pageId:String(value.publicationView.pageId||'').slice(0,100),
+  closed:value.publicationView.closed===true,
+  soundEnabled:value.publicationView.soundEnabled!==false,
+  statusText:String(value.publicationView.statusText||'Caderno local · pronto para editar').slice(0,160)
+ }:undefined;
+ return {version:1,layoutVersion:2,recentColors:cleanRecentColors(value.recentColors),colorHistory:{text:cleanRecentColors(value.colorHistory?.text),mark:cleanRecentColors(value.colorHistory?.mark)},name:value.name.slice(0,100),showToolsInPublication:value.showToolsInPublication!==false,showChestInPublication:value.showChestInPublication!==false,showShelfInPublication:value.showShelfInPublication!==false,pencilCase:{title:String(value.pencilCase?.title??'rebojar').slice(0,80),subtitle:String(value.pencilCase?.subtitle??'ferramentas do caderno').slice(0,120)},guard:guardaFixa(value.guard),loosePhotos,cover:{eyebrow:String(value.cover?.eyebrow??defaultCover.eyebrow).slice(0,200),subtitle:String(value.cover?.subtitle??defaultCover.subtitle).slice(0,500)},publicationView,pages};
 }
+function statusDaCopia(){return state.publicationView?.statusText||'Caderno local · pronto para editar';}
 function persist(){
- if(publicDemo){dirty=false;avisar('Demonstração pública · alterações somem ao recarregar');return;}
+ if(publicDemo){dirty=false;avisar(statusDaCopia());return;}
  dirty=true;avisar('Alterações por guardar…');clearTimeout(saveTimer);
  saveTimer=setTimeout(()=>{
   const snapshot=JSON.stringify(state);
@@ -274,7 +281,8 @@ function primeiraAberturaComConteudo(){
  return Math.min(target%2===0?target:target+1,Math.max(0,state.pages.length-1));
 }
 function paginaInicialPelaURL(){
- const fallback=primeiraAberturaComConteudo();
+ const savedId=String(state.publicationView?.pageId||''),savedIndex=savedId?state.pages.findIndex(page=>page?.id===savedId):-1;
+ const fallback=savedIndex>=0?Math.min(savedIndex%2===0?savedIndex:savedIndex+1,state.pages.length-1):primeiraAberturaComConteudo();
  if(typeof location==='undefined')return fallback;
  const raw=new URLSearchParams(location.search).get('pagina');
  if(!raw)return fallback;
@@ -411,7 +419,7 @@ bindNavigationHold($('anterior'),-1);bindNavigationHold($('proxima'),1);$('fecha
 for(const dialog of document.querySelectorAll('dialog'))dialog.addEventListener('click',event=>{if(event.target!==dialog)return;const box=dialog.getBoundingClientRect();if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)dialog.close();});
 function recursoDoAplicativo(){
  if(!publicDemo)return false;
- const message='Guardar, abrir cópias e exportar são recursos do aplicativo Caderno de Bordo.';
+ const message='Guardar e abrir cópias são recursos do aplicativo Caderno de Bordo.';
  avisar('Recurso disponível no aplicativo Caderno de Bordo');alert(message);return true;
 }
 const alfabetoApoio='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -589,9 +597,9 @@ async function abrirCheckout(plan){
  finally{$('comprarAvulsa').disabled=false;$('assinarMensal').disabled=false;}
 }
 if(!publicDemo){
- $('backup').onclick=()=>download('caderno-copia-'+hoje()+'.json',JSON.stringify(state,null,2),'application/json');
+ $('backup').onclick=()=>{const snapshot=JSON.parse(JSON.stringify(state));snapshot.publicationView={pageId:String(atual()?.id||''),closed,soundEnabled:somAtivo,statusText:$('status').textContent||'Caderno local · pronto para editar'};download('caderno-copia-'+hoje()+'.json',JSON.stringify(snapshot,null,2),'application/json');};
  $('restaurar').onclick=()=>$('arquivoBackup').click();
- $('arquivoBackup').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>150*1024*1024)throw Error('Esta cópia é grande demais para abrir aqui (limite de 150 MB).');const restored=validate(JSON.parse(await file.text()));if(confirm('Abrir esta cópia substitui o caderno atual neste navegador. Você já guardou uma cópia do atual?')){state=restored;current=primeiraAberturaComConteudo();render();persist();}}catch(error){alert('Não foi possível abrir: '+error.message);}finally{e.target.value='';}};
+ $('arquivoBackup').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>150*1024*1024)throw Error('Esta cópia é grande demais para abrir aqui (limite de 150 MB).');const restored=validate(JSON.parse(await file.text()));if(confirm('Abrir esta cópia substitui o caderno atual neste navegador. Você já guardou uma cópia do atual?')){state=restored;const savedId=String(state.publicationView?.pageId||''),savedIndex=savedId?state.pages.findIndex(page=>page?.id===savedId):-1;current=savedIndex>=0?Math.min(savedIndex%2===0?savedIndex:savedIndex+1,state.pages.length-1):primeiraAberturaComConteudo();closed=state.publicationView?.closed===true;if(typeof state.publicationView?.soundEnabled==='boolean')somAtivo=state.publicationView.soundEnabled;atualizarBotaoSom();render();persist();}}catch(error){alert('Não foi possível abrir: '+error.message);}finally{e.target.value='';}};
  let photoTarget=null;
  $('foto').onclick=()=>{if(ehGuarda(atual()))return;photoTarget=atual();$('arquivoFoto').click();};
  async function readPhoto(file){
@@ -710,12 +718,12 @@ function setupAutoHideHeader(){
 async function init(){
  current=primeiraAberturaComConteudo();atualizarBotaoSom();render();document.querySelectorAll('button,input,textarea').forEach(el=>el.disabled=true);
  if(publicDemo){
-   try{state=validate(appConfig.initialState||defaultState);current=paginaInicialPelaURL();}
+   try{state=validate(appConfig.initialState||defaultState);current=paginaInicialPelaURL();closed=state.publicationView?.closed===true;if(typeof state.publicationView?.soundEnabled==='boolean')somAtivo=state.publicationView.soundEnabled;atualizarBotaoSom();}
   catch(error){console.error(error);state=validate(defaultState);}
   document.querySelectorAll('button,input,textarea').forEach(el=>el.disabled=false);
-   for(const name of ['backup','restaurar']){$(name).disabled=true;$(name).setAttribute('aria-disabled','true');$(name).title='Disponível no aplicativo Caderno de Bordo';}
+   for(const name of ['backup','restaurar']){$(name).setAttribute('aria-disabled','true');$(name).title='Disponível no aplicativo Caderno de Bordo';$(name).onclick=recursoDoAplicativo;}
    $('exportar').removeAttribute('aria-disabled');$('exportar').title='Apoie o projeto para fazer uma exportação desta visita';
-   render();await iniciarIdentidade();avisar('Demonstração pública · alterações somem ao recarregar');requestAnimationFrame(paginateSavedTitles);return;
+   render();await iniciarIdentidade();avisar(statusDaCopia());requestAnimationFrame(paginateSavedTitles);return;
  }
  try{db=await new Promise((resolve,reject)=>{const req=indexedDB.open('rebojar-caderno-local',1);req.onupgradeneeded=()=>req.result.createObjectStore('caderno');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);req.onblocked=()=>reject(Error('Armazenamento ocupado'));});const saved=await new Promise((resolve,reject)=>{const req=db.transaction('caderno').objectStore('caderno').get('principal');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});if(saved){const parsed=JSON.parse(saved),migrated=Number(parsed.layoutVersion)!==2||parsed.pages?.[0]?.kind!=='endpaper'||parsed.pages?.[1]?.kind!=='endpaper';state=validate(parsed);current=primeiraAberturaComConteudo();render();if(migrated)persist();}avisar('Caderno local · pronto para editar');}catch{db=null;avisar('Use Guardar cópia para preservar suas alterações');}
  finally{document.querySelectorAll('button,input,textarea').forEach(el=>el.disabled=false);render();requestAnimationFrame(paginateSavedTitles);}
