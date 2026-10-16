@@ -434,7 +434,8 @@ function obterCodigoApoio(){
  return codigoApoio;
 }
 function mostrarEstadoApoio(message,kind=''){$('estadoApoio').textContent=message;$('estadoApoio').dataset.estado=kind;}
-let contaUsuario=null,identidadeEmRecuperacao=false;
+ let contaUsuario=null,identidadeEmRecuperacao=false,ponteContaDisponivel=false,janelaConta=null,estadoPonteConta='',sessaoConta=null;
+ const chaveSessaoConta='rebojar-conta-sessao-v1',chaveEstadoConta='rebojar-conta-estado-v1';
 const identidade={
  disponivel:typeof identityGetUser==='function'&&typeof identityOnAuthChange==='function'&&typeof identityHandleAuthCallback==='function',
  getUser:typeof identityGetUser==='function'?identityGetUser:async()=>null,
@@ -446,6 +447,15 @@ const identidade={
  updateUser:typeof identityUpdateUser==='function'?identityUpdateUser:async()=>{throw Error('A conta está disponível somente na versão conectada do Caderno.');},
  logout:typeof identityLogout==='function'?identityLogout:async()=>{}
 };
+ function endpointPagamento(){return String(appConfig.paymentEndpoint||'').replace(/\/$/,'');}
+ function origemPagamento(){try{return new URL(endpointPagamento()).origin;}catch{return '';}}
+ function sessaoContaValida(value){return Boolean(value&&/^[A-Za-z0-9_-]{32,160}$/.test(value.accessToken||'')&&Date.parse(value.expiresAt||'')>Date.now()+30000);}
+ function carregarSessaoConta(){try{const value=JSON.parse(sessionStorage.getItem(chaveSessaoConta)||'null');sessaoConta=sessaoContaValida(value)?value:null;}catch{sessaoConta=null;}return sessaoConta;}
+ function guardarSessaoConta(value){sessaoConta=sessaoContaValida(value)?value:null;try{if(sessaoConta)sessionStorage.setItem(chaveSessaoConta,JSON.stringify(sessaoConta));else sessionStorage.removeItem(chaveSessaoConta);}catch{}return sessaoConta;}
+ function limparSessaoConta(){guardarSessaoConta(null);contaUsuario=null;}
+ function cabecalhosPagamento(headers={}){const result={...headers};if(sessaoContaValida(sessaoConta))result.authorization='Bearer '+sessaoConta.accessToken;return result;}
+ function fetchPagamento(path,options={}){const endpoint=endpointPagamento();return fetch(endpoint+path,{...options,credentials:'same-origin',headers:cabecalhosPagamento(options.headers)});}
+ function criarEstadoConta(){const bytes=new Uint8Array(24);crypto.getRandomValues(bytes);return Array.from(bytes,value=>value.toString(16).padStart(2,'0')).join('');}
 function mensagemDeConta(error){return String(error?.message||'Não foi possível concluir esta ação.').replace(/^AuthError:\s*/,'');}
 function mostrarMensagemConta(message,kind=''){$('mensagemConta').textContent=message;$('mensagemConta').dataset.estado=kind;}
 function atualizarInterfaceConta(){
@@ -453,27 +463,75 @@ function atualizarInterfaceConta(){
  $('conta').textContent=connected?'Conta':'Entrar';
  $('conta').title=connected?('Conta conectada: '+(contaUsuario.email||'')):'Entrar ou criar conta';
  $('estadoConta').textContent=connected?('Conectada como '+(contaUsuario.email||'conta do caderno')+'.'):'A conta é usada somente para a assinatura mensal e sua recuperação.';
- $('formulariosConta').hidden=connected||identidadeEmRecuperacao;
+  $('formulariosConta').hidden=connected||identidadeEmRecuperacao||ponteContaDisponivel;
  $('gerenciarAssinatura').hidden=!connected||identidadeEmRecuperacao;
  $('sairConta').hidden=!connected||identidadeEmRecuperacao;
  $('redefinirSenha').hidden=!identidadeEmRecuperacao;
  $('estadoContaPagamento').textContent=connected?'A assinatura mensal será associada a '+(contaUsuario.email||'esta conta')+'. A compra avulsa continua sem conta.':'A exportação avulsa não exige conta. Entre somente para assinar ou recuperar uma assinatura.';
  $('abrirContaPagamento').textContent=connected?'Ver conta':'Entrar ou criar conta';
 }
+ async function trocarCodigoConta(code,state){
+  let expected=estadoPonteConta;try{expected=expected||localStorage.getItem(chaveEstadoConta)||'';}catch{}
+  if(!ponteContaDisponivel||state!==expected||!/^[A-Za-z0-9_-]{32,160}$/.test(code||''))throw Error('A conexão da conta não pôde ser confirmada. Abra a conta novamente.');
+  const response=await fetch(endpointPagamento()+'/bridge/exchange',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({code,state})});
+  const result=await response.json().catch(()=>({}));
+  if(!response.ok||!result.accessToken)throw Error(result.message||'Não foi possível conectar a conta.');
+  guardarSessaoConta({accessToken:result.accessToken,expiresAt:result.expiresAt,email:result.user?.email||''});
+  contaUsuario={id:'conta-remota',email:result.user?.email||''};estadoPonteConta='';
+  try{localStorage.removeItem(chaveEstadoConta);}catch{}
+  atualizarInterfaceConta();mostrarMensagemConta('Conta conectada.','sucesso');mostrarEstadoApoio('Conta conectada. Agora você pode assinar ou usar sua assinatura mensal.','sucesso');
+  return contaUsuario;
+ }
+ function limparRetornoConta(){
+  const url=new URL(location.href);if(!url.searchParams.has('conta_codigo')&&!url.searchParams.has('conta_estado'))return;
+  url.searchParams.delete('conta_codigo');url.searchParams.delete('conta_estado');history.replaceState(null,'',url.href);
+ }
+ async function receberRetornoConta(){
+  const params=new URLSearchParams(location.search),code=params.get('conta_codigo')||'',state=params.get('conta_estado')||'';
+  if(!code&&!state)return false;
+  try{await trocarCodigoConta(code,state);return true;}finally{limparRetornoConta();}
+ }
+ function abrirJanelaConta(message='',action='conectar'){
+  const endpoint=endpointPagamento();if(!endpoint||!ponteContaDisponivel)return;
+  estadoPonteConta=criarEstadoConta();try{localStorage.setItem(chaveEstadoConta,estadoPonteConta);}catch{}
+  const returnUrl=new URL(location.href);returnUrl.searchParams.delete('conta_codigo');returnUrl.searchParams.delete('conta_estado');
+  const url=new URL(endpoint+'/conta/');url.searchParams.set('origem',location.origin);url.searchParams.set('estado',estadoPonteConta);url.searchParams.set('retorno',returnUrl.href);url.searchParams.set('acao',action);
+  if(message){mostrarMensagemConta(message,'espera');mostrarEstadoApoio(message,'espera');}
+  janelaConta=window.open(url.href,'rebojar-conta','popup=yes,width=500,height=760,resizable=yes,scrollbars=yes');
+  if(!janelaConta)location.assign(url.href);
+ }
 function abrirConta(message=''){
- if(!identidade.disponivel)return;
+  if(ponteContaDisponivel&&!contaUsuario){abrirJanelaConta(message);return;}
+  if(!identidade.disponivel&&!contaUsuario)return;
  if(message)mostrarMensagemConta(message,'espera');
  atualizarInterfaceConta();
  if(!$('contaUsuario').open)$('contaUsuario').showModal();
 }
 async function carregarConta(){
- if(!identidade.disponivel){contaUsuario=null;return null;}
+  if(ponteContaDisponivel){
+   if(!sessaoContaValida(carregarSessaoConta())){limparSessaoConta();atualizarInterfaceConta();return null;}
+   try{
+    const response=await fetchPagamento('/bridge/account',{method:'POST',headers:{'content-type':'application/json'},body:'{}'}),result=await response.json().catch(()=>({}));
+    if(!response.ok||!result.user)throw Error(result.message||'Sessão expirada.');
+    contaUsuario={id:'conta-remota',email:result.user.email||sessaoConta.email||''};
+   }catch{limparSessaoConta();}
+   atualizarInterfaceConta();return contaUsuario;
+  }
+  if(!identidade.disponivel){contaUsuario=null;return null;}
  try{contaUsuario=await identidade.getUser();}
  catch{contaUsuario=null;}
  atualizarInterfaceConta();
  return contaUsuario;
 }
 async function iniciarIdentidade(){
+  if(!identidade.disponivel&&publicDemo&&endpointPagamento()&&origemPagamento()!==location.origin){
+   ponteContaDisponivel=appConfig.accountBridge===true&&location.origin==='https://rebojar.github.io';
+   if(ponteContaDisponivel){
+    $('conta').hidden=false;$('abrirContaPagamento').hidden=false;$('assinarMensal').hidden=false;
+    try{await receberRetornoConta();}catch(error){mostrarEstadoApoio(mensagemDeConta(error),'erro');}
+    await carregarConta();return;
+   }
+  }
  if(!identidade.disponivel){
   $('conta').hidden=true;$('abrirContaPagamento').hidden=true;$('assinarMensal').hidden=true;
   $('estadoContaPagamento').textContent='A exportação avulsa continua disponível sem conta.';
@@ -488,6 +546,14 @@ async function iniciarIdentidade(){
  await carregarConta();
  if(identidadeEmRecuperacao)abrirConta();
 }
+ window.addEventListener('message',async event=>{
+  if(!ponteContaDisponivel||event.origin!==origemPagamento())return;
+  if(janelaConta&&event.source!==janelaConta)return;
+  if(event.data?.tipo==='rebojar:conta-desconectada'){limparSessaoConta();atualizarInterfaceConta();mostrarMensagemConta('Você saiu da conta.','sucesso');return;}
+  if(event.data?.tipo!=='rebojar:conta-conectada')return;
+  try{await trocarCodigoConta(String(event.data.codigo||''),String(event.data.estado||''));}
+  catch(error){mostrarEstadoApoio(mensagemDeConta(error),'erro');}
+ });
 $('conta').onclick=()=>abrirConta();
 $('fecharConta').onclick=()=>$('contaUsuario').close();
 $('contaUsuario').addEventListener('click',event=>{if(event.target===$('contaUsuario'))$('contaUsuario').close();});
@@ -514,45 +580,45 @@ $('redefinirSenha').addEventListener('submit',async event=>{
  catch(error){mostrarMensagemConta(mensagemDeConta(error),'erro');}
 });
 $('gerenciarAssinatura').onclick=async()=>{
- const endpoint=String(appConfig.paymentEndpoint||'').replace(/\/$/,'');
+  const endpoint=endpointPagamento();
  if(!endpoint){mostrarMensagemConta('O gerenciamento da assinatura ainda não está disponível.','erro');return;}
  mostrarMensagemConta('Abrindo o gerenciamento seguro da Stripe…','espera');
  try{
-  const response=await fetch(endpoint+'/manage-subscription',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:'{}'});
+   const response=await fetchPagamento('/manage-subscription',{method:'POST',headers:{'content-type':'application/json'},body:'{}'});
   const result=await response.json().catch(()=>({}));
-  if(response.status===401){contaUsuario=null;atualizarInterfaceConta();throw Error(result.message||'Entre novamente para gerenciar a assinatura.');}
+   if(response.status===401){if(ponteContaDisponivel)limparSessaoConta();else contaUsuario=null;atualizarInterfaceConta();throw Error(result.message||'Entre novamente para gerenciar a assinatura.');}
   if(!response.ok||!result.url)throw Error(result.message||'Não foi possível abrir o gerenciamento da assinatura.');
   window.location.assign(result.url);
  }catch(error){mostrarMensagemConta(mensagemDeConta(error),'erro');}
 };
 $('sairConta').onclick=async()=>{
  mostrarMensagemConta('Saindo…','espera');
- try{await identidade.logout();contaUsuario=null;atualizarInterfaceConta();mostrarMensagemConta('Você saiu da conta.','sucesso');}
+  try{if(ponteContaDisponivel){const revogar=fetchPagamento('/bridge/logout',{method:'POST',headers:{'content-type':'application/json'},body:'{}',keepalive:true}).catch(()=>null);limparSessaoConta();atualizarInterfaceConta();abrirJanelaConta('Saindo da conta…','sair');await revogar;}else await identidade.logout();limparSessaoConta();atualizarInterfaceConta();mostrarMensagemConta('Você saiu da conta.','sucesso');}
  catch(error){mostrarMensagemConta(mensagemDeConta(error),'erro');}
 };
 $('abrirContaPagamento').onclick=()=>abrirConta();
 async function conferirApoio({silencioso=false}={}){
- const endpoint=String(appConfig.paymentEndpoint||'').replace(/\/$/,'');
+ const endpoint=endpointPagamento();
  if(!endpoint){if(!silencioso)mostrarEstadoApoio('A confirmação automática ainda está sendo preparada. Nenhuma cobrança foi liberada.','erro');return false;}
  if(!paginasSelecionadas().length){if(!silencioso)mostrarEstadoApoio('Marque uma abertura para exportar antes de apoiar.','erro');return false;}
  if(!silencioso)mostrarEstadoApoio('Conferindo o pagamento…','espera');
  try{
-  const response=await fetch(endpoint+'/redeem',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({claim:obterCodigoApoio()})});
+  const response=await fetchPagamento('/redeem',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({claim:obterCodigoApoio()})});
   const result=await response.json().catch(()=>({}));
   if(response.ok&&result.ok){clearTimeout(consultaApoio);consultaApoio=null;mostrarEstadoApoio(result.plan==='monthly'?'Assinatura confirmada nesta conta. As exportações estão liberadas.':'Pagamento confirmado. Preparando sua exportação…','sucesso');$('pedagioExportacao').close();const exported=exportReader();if(exported){codigoApoio='';try{sessionStorage.removeItem('rebojar-codigo-apoio');}catch{}}return exported;}
-  if(response.status===401){contaUsuario=null;atualizarInterfaceConta();abrirConta(result.message||'Entre novamente para confirmar a assinatura.');return false;}
+  if(response.status===401){if(ponteContaDisponivel)limparSessaoConta();else contaUsuario=null;atualizarInterfaceConta();abrirConta(result.message||'Entre novamente para confirmar a assinatura.');return false;}
   if(response.status===409){mostrarEstadoApoio(result.message||'Esta compra já foi utilizada.','erro');return false;}
   if(!silencioso)mostrarEstadoApoio(result.message||'O pagamento ainda não apareceu. Aguarde alguns segundos e confira novamente.','espera');
  }catch{if(!silencioso)mostrarEstadoApoio('Não foi possível consultar agora. Verifique a conexão e tente novamente.','erro');}
  return false;
 }
 async function conferirAssinatura(){
- const endpoint=String(appConfig.paymentEndpoint||'').replace(/\/$/,'');
+ const endpoint=endpointPagamento();
  if(!endpoint||!contaUsuario)return false;
  try{
-  const response=await fetch(endpoint+'/status',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:'{}'});
+  const response=await fetchPagamento('/status',{method:'POST',headers:{'content-type':'application/json'},body:'{}'});
   const result=await response.json().catch(()=>({}));
-  if(response.status===401){contaUsuario=null;atualizarInterfaceConta();return false;}
+  if(response.status===401){if(ponteContaDisponivel)limparSessaoConta();else contaUsuario=null;atualizarInterfaceConta();return false;}
   return Boolean(response.ok&&result.active);
  }catch{return false;}
 }
@@ -577,15 +643,16 @@ async function acompanharApoio(){
  await check();
 }
 async function abrirCheckout(plan){
- const endpoint=String(appConfig.paymentEndpoint||'').replace(/\/$/,'');
+ const endpoint=endpointPagamento();
+ if(plan==='monthly'&&!contaUsuario&&ponteContaDisponivel){abrirConta('Entre ou crie uma conta antes de iniciar a assinatura.');return;}
  if(plan==='monthly'&&!contaUsuario&&!(await carregarConta())){abrirConta('Entre ou crie uma conta antes de iniciar a assinatura.');return;}
  if(!endpoint){mostrarEstadoApoio('Os pagamentos ainda estão sendo preparados. Nenhuma cobrança foi iniciada.','erro');return;}
  mostrarEstadoApoio('Preparando o pagamento seguro…','espera');$('comprarAvulsa').disabled=true;$('assinarMensal').disabled=true;
  try{
   const [StripeClass,publicResponse,sessionResponse]=await Promise.all([
    carregarStripe(),
-   fetch(endpoint+'/public-config',{credentials:'same-origin'}),
-   fetch(endpoint+'/create-checkout-session',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({plan,claim:obterCodigoApoio()})})
+   fetchPagamento('/public-config'),
+   fetchPagamento('/create-checkout-session',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({plan,claim:obterCodigoApoio()})})
   ]);
   const publicConfig=await publicResponse.json().catch(()=>({})),session=await sessionResponse.json().catch(()=>({}));
   if(!publicResponse.ok||!sessionResponse.ok||!publicConfig.publishableKey||!session.clientSecret)throw Error(session.message||publicConfig.message||'Não foi possível iniciar o pagamento.');
