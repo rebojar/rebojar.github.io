@@ -104,10 +104,13 @@
       .controle-traducao-site[aria-expanded="true"],.controle-traducao-site.traducao-ativa{color:#f2992e;background:#0b2133;border-color:#f2992e88;box-shadow:inset 0 4px 8px #0008,0 1px 2px #11273c38;opacity:1;transform:translateY(2px)}
       .controle-traducao-site:focus-visible,.painel-traducao-site select:focus-visible{outline:3px solid #e8d73a;outline-offset:3px}
       .traducao-icone{font:700 .72rem/1 Georgia,"Times New Roman",serif;letter-spacing:-.1em;transform:translateX(-.04em)}
-      .painel-traducao-site{position:absolute;top:calc(100% + .6rem);right:0;width:min(18rem,calc(100vw - 1.5rem));padding:.85rem;border:1px solid #315265;border-radius:12px;color:#f4efdf;background:#0d2638f2;box-shadow:0 14px 34px #02080d9c,inset 0 1px #ffffff17;backdrop-filter:blur(10px)}
+      .painel-traducao-site{position:absolute;top:calc(100% + .6rem);right:0;width:min(18rem,calc(100vw - 1.5rem));max-height:calc(100dvh - 5rem);padding:.85rem;overflow:auto;border:1px solid #315265;border-radius:12px;color:#f4efdf;background:#0d2638f2;box-shadow:0 14px 34px #02080d9c,inset 0 1px #ffffff17;backdrop-filter:blur(10px);scrollbar-width:thin;scrollbar-color:#f2992e transparent}
+      .painel-traducao-site::-webkit-scrollbar,.painel-traducao-site select::-webkit-scrollbar{width:2px;height:2px;background:transparent}
+      .painel-traducao-site::-webkit-scrollbar-track,.painel-traducao-site select::-webkit-scrollbar-track{background:transparent}
+      .painel-traducao-site::-webkit-scrollbar-thumb,.painel-traducao-site select::-webkit-scrollbar-thumb{border:0;border-radius:999px;background:#f2992e}
       .painel-traducao-site[hidden]{display:none}
       .painel-traducao-site label{display:block;margin:0 0 .45rem;font:700 .78rem/1.2 "Segoe UI",system-ui,sans-serif}
-      .painel-traducao-site select{display:block;width:100%;min-height:2.45rem;padding:.45rem .65rem;border:1px solid #52758c;border-radius:8px;color:#f4efdf;background:#112f44;font:600 .88rem/1.2 "Segoe UI",system-ui,sans-serif;cursor:pointer}
+      .painel-traducao-site select{display:block;width:100%;min-height:2.45rem;padding:.45rem .65rem;border:1px solid #52758c;border-radius:8px;color:#f4efdf;background:#112f44;font:600 .88rem/1.2 "Segoe UI",system-ui,sans-serif;cursor:pointer;scrollbar-width:thin;scrollbar-color:#f2992e transparent}
       .estado-traducao-site{min-height:2.5em;margin:.55rem 0 0;color:#c2cfdf;font:500 .7rem/1.35 "Segoe UI",system-ui,sans-serif}
       @media(max-width:560px){.controle-traducao-site{width:38px;height:38px}.traducao-icone{font-size:.8rem}.painel-traducao-site{top:0;right:auto;left:calc(100% + .55rem);width:min(17rem,calc(100vw - 5.5rem))}}
     `;
@@ -134,8 +137,8 @@
       <p class="estado-traducao-site" aria-live="polite">A tradução acontece no próprio navegador quando ele oferece esse recurso.</p>
     `;
 
-    const linkAudio = grupoSom.querySelector(".estudio-som-site");
-    grupoSom.insertBefore(botao, linkAudio || null);
+    const botaoSom = grupoSom.querySelector(".controle-som-site");
+    grupoSom.insertBefore(botao, botaoSom || grupoSom.firstChild);
     grupoSom.append(painel);
     const seletor = painel.querySelector("select");
     const estado = painel.querySelector(".estado-traducao-site");

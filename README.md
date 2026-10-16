@@ -14,7 +14,7 @@ Ele não funciona como feed, rede social ou diário de desenvolvimento. Também 
 
 - [Bancada visual · Qwen3.5-9B](https://rebojar.github.io/demonstracao-labvisual/) — demonstração estática e interativa de uma execução sintética pré-calculada. O código instalável da bancada está no repositório [LabVisual](https://github.com/rebojar/LabVisual).
 - [Garatujas](https://garatujas.tumblr.com/) — desenhos reunidos em um blog no Tumblr.
-- [Caderno de Bordo](https://resplendent-zuccutto-647137.netlify.app/) — demonstração pública do caderno em modo de leitura.
+- [Caderno de Bordo](https://rebojar.github.io/caderno-de-bordo/) — edição pública do caderno com as páginas escolhidas para publicação.
 - [Baú de Memórias](https://rebojar.github.io/widget-bau/) — widget local para guardar fotografias, textos e pequenos fragmentos no navegador.
 
 ## O que há neste repositório
@@ -37,6 +37,6 @@ Imagens, desenhos, textos e demais criações artísticas presentes na página n
 
 ## Caderno de Bordo
 
-O quinto arco abre `caderno-de-bordo/`, uma edição pública navegável do caderno em modo de leitura. O arquivo publicado contém somente o conteúdo escolhido e um visualizador reduzido; o editor, o armazenamento local, os pagamentos e o código do aplicativo permanecem no repositório privado.
+O quinto arco abre `caderno-de-bordo/`, uma edição pública navegável gerada a partir das páginas marcadas no Caderno pessoal. O conteúdo guardado no navegador e as páginas não selecionadas não entram no repositório público. Autenticação e pagamentos continuam em serviços separados; a leitura publicada e o RSS são servidos pelo GitHub Pages.
 
 A apresentação do Caderno contém a declaração específica em `#privacidade-caderno-de-bordo`. Ela informa que a página pública não recebe conteúdo de cadernos pessoais e encaminha para a declaração do GitHub, responsável pela hospedagem e por eventuais dados técnicos da visita.

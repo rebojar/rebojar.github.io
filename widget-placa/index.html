@@ -8,10 +8,10 @@
   <title>Placa · Rebojar</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icone-placa.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="pagina.css?v=20261014-15">
+  <link rel="stylesheet" href="pagina.css?v=20261015-1">
   <script>document.documentElement.dataset.embed=new URLSearchParams(location.search).get("embed")==="1"?"1":"0"</script>
   <script defer src="../assets/rebojar-som.min.js?v=20261014-4"></script>
-  <script defer src="placa.js?v=20261014-7"></script>
+  <script defer src="placa.js?v=20261015-1"></script>
 </head>
 <body>
   <header class="cabecalho" data-sem-som-hover>
@@ -26,10 +26,14 @@
       <div class="placa-marca" aria-hidden="true"><em>rebojar</em><small>APOIOS</small></div>
       <nav class="botoes-apoio" aria-label="Formas de apoiar o Rebojar">
         <a class="botao-apoio botao-github" data-botao="github" href="https://github.com/sponsors/rebojar" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">♡</span> Sponsor</a>
-        <span class="botao-apoio botao-kofi" data-botao="kofi">
-          <script src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
-          <script>kofiwidget2.init('Apoiar no Ko-fi', '#0d365e', 'D8P827NADN');kofiwidget2.draw();</script>
-        </span>
+        <button class="botao-apoio botao-kofi" data-botao="kofi" type="button">
+          <svg class="icone-kofi" viewBox="0 0 40 30" aria-hidden="true">
+            <path class="xicara-kofi" d="M3 5.5h26v11.2c0 5.2-4.2 9.3-9.3 9.3h-7.4C7.1 26 3 21.9 3 16.7V5.5Z"/>
+            <path class="alca-kofi" d="M28.3 8h3.8a5.3 5.3 0 0 1 0 10.6h-3.8"/>
+            <path class="coracao-kofi" d="M16 18.4c-4.8-2.7-6.7-4.7-6.7-7.1 0-2 1.5-3.5 3.5-3.5 1.3 0 2.5.7 3.2 1.7.7-1 1.9-1.7 3.2-1.7 2 0 3.5 1.5 3.5 3.5 0 2.4-1.9 4.4-6.7 7.1Z"/>
+          </svg>
+          <span>Apoiar no Ko-fi</span>
+        </button>
         <a class="botao-apoio botao-apoia" data-botao="apoia" href="https://apoia.se/rebojar">Abrir o Apoia.se ↗</a>
         <a class="botao-apoio botao-personalizado" data-botao="personalizado" hidden></a>
       </nav>

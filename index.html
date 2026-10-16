@@ -29,6 +29,23 @@
       width: 0;
       height: 0;
     }
+    :where(*):not(html):not(body) {
+      scrollbar-width: thin;
+      scrollbar-color: #f2992e transparent;
+    }
+    :where(*):not(html):not(body)::-webkit-scrollbar {
+      width: 2px;
+      height: 2px;
+      background: transparent;
+    }
+    :where(*):not(html):not(body)::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    :where(*):not(html):not(body)::-webkit-scrollbar-thumb {
+      border: 0;
+      border-radius: 999px;
+      background: #f2992e;
+    }
     .scroll-indicador {
       position: fixed;
       z-index: 100;
@@ -1307,7 +1324,7 @@
     }
   </style>
   <script src="assets/rebojar-som.min.js?v=sound-nested-widgets-4" defer></script>
-  <script src="assets/rebojar-traducao.js?v=translation-local-2" defer></script>
+  <script src="assets/rebojar-traducao.js?v=translation-local-3" defer></script>
   <script src="assets/widget-estante/rebojar-estante.min.js?v=20261014-14" defer></script>
 </head>
 <body>
@@ -1357,7 +1374,7 @@
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
       </a>
-      <a class="onda-alvo onda-link" data-anel="5" style="--raio-hit: 18.5rem; --largura-hit: 3rem" href="https://rebojar.netlify.app/" aria-label="Abrir o Caderno de Bordo">
+      <a class="onda-alvo onda-link" data-anel="5" style="--raio-hit: 18.5rem; --largura-hit: 3rem" href="caderno-de-bordo/" aria-label="Abrir o Caderno de Bordo publicado">
         <circle class="onda-hit"></circle>
         <circle class="onda-brilho"></circle>
       </a>
@@ -1398,7 +1415,7 @@
     </section>
     <section class="estante-portal" aria-label="Estante de projetos Rebojar">
       <iframe src="widget-estante/index.html?embed=1&amp;v=20261014-17" title="Estante Rebojar" loading="eager"></iframe>
-      <rebojar-estante class="estante-portal-mobile" destino-caderno="widget-caderno/index.html?embed=1&amp;v=20261014-7" destino-bau="widget-bau/index.html?v=20261014-2" mostrar-album mostrar-estojo mostrar-bau proporcao-compacta aria-label="Estante Rebojar"></rebojar-estante>
+      <rebojar-estante class="estante-portal-mobile" destino-caderno="caderno-de-bordo/index.html" destino-bau="widget-bau/index.html?v=20261014-2" mostrar-album mostrar-estojo mostrar-bau proporcao-compacta aria-label="Estante Rebojar"></rebojar-estante>
     </section>
     <section class="porta-portal" aria-label="Porta para futuros espaços do Rebojar">
       <iframe src="widget-porta/index.html?embed=1&amp;v=20261014-13" title="Porta Rebojar" loading="eager"></iframe>
@@ -1422,14 +1439,14 @@
       <p>Um diário visual que trata fotografias e palavras como objetos sobre o papel: elas podem ser escritas, movidas, giradas e levadas de uma página para outra.</p>
       <p>O aplicativo está em desenvolvimento privado. A demonstração pública permite editar textos e fotografias temporariamente no navegador, mantendo o código-fonte completo, o armazenamento pessoal e as ferramentas internas no repositório privado.</p>
       <p>As alterações da demonstração permanecem somente durante a visita e desaparecem ao recarregar a página. A exportação de leitura é um produto digital separado.</p>
-      <p><a href="https://rebojar.netlify.app/">Abrir o caderno público →</a></p>
+      <p><a href="caderno-de-bordo/">Abrir o caderno público →</a></p>
       <p><a href="#privacidade-caderno-de-bordo">Privacidade</a> · <a href="#termos-de-servico">Termos de Serviço</a></p>
       <section class="privacidade-caderno" id="privacidade-caderno-de-bordo" aria-labelledby="privacidade-caderno-title">
         <h3 id="privacidade-caderno-title">Privacidade no Caderno de Bordo</h3>
         <p><strong>O conteúdo colocado na demonstração fica temporariamente no navegador.</strong> Textos, fotografias e posições editadas não são enviados ao Rebojar e desaparecem quando a página é recarregada. A pessoa visitante deve preservar fora da demonstração qualquer conteúdo que queira conservar.</p>
         <p>A compra avulsa não exige conta. Para assinar ou recuperar uma assinatura, o Netlify Identity trata o endereço de e-mail e os dados necessários de autenticação. O serviço de pagamentos do Rebojar associa à conta apenas os identificadores e estados necessários para reconhecer a assinatura.</p>
         <p>Os pagamentos são processados pela Stripe. O Rebojar pode receber confirmação do pagamento, produto ou preço escolhido, identificadores de cliente e assinatura e o e-mail associado quando necessário, mas não recebe os dados completos do cartão nem as credenciais bancárias usadas no Pix.</p>
-        <p>A demonstração é hospedada pela Netlify; este portal e o RSS são hospedados pelo GitHub Pages. Esses serviços podem tratar dados técnicos da conexão e da visita, como endereço IP, dispositivo, horário, páginas vistas e links acessados. Consulte as políticas de privacidade da <a href="https://stripe.com/br/privacy">Stripe ↗</a>, da <a href="https://www.netlify.com/privacy/">Netlify ↗</a> e do <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub ↗</a>.</p>
+        <p>A demonstração, o portal e o RSS são hospedados pelo GitHub Pages. Autenticação e pagamentos, quando usados, continuam a cargo do Netlify Identity e da Stripe. Esses serviços podem tratar dados técnicos da conexão e da visita, como endereço IP, dispositivo, horário, páginas vistas e links acessados. Consulte as políticas de privacidade da <a href="https://stripe.com/br/privacy">Stripe ↗</a>, da <a href="https://www.netlify.com/privacy/">Netlify ↗</a> e do <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub ↗</a>.</p>
         <p>Pedidos relacionados a dados pessoais podem ser apresentados pelos canais públicos indicados no portal <a href="https://linktr.ee/rebojar">Rebojar ↗</a>.</p>
       </section>
       <section class="privacidade-caderno" id="termos-de-servico" aria-labelledby="termos-de-servico-title">
@@ -1476,7 +1493,7 @@
   </div>
   <div class="caderno-portal-ampliado" id="cadernoPortalAmpliado" hidden>
     <button class="caderno-portal-fechar" id="fecharCadernoPortal" type="button" aria-label="Fechar o Caderno de Bordo">×</button>
-    <iframe id="cadernoPortalQuadro" src="widget-caderno/index.html?embed=1&amp;v=20261014-7" title="Caderno de Bordo" loading="lazy"></iframe>
+    <iframe id="cadernoPortalQuadro" src="caderno-de-bordo/index.html?widget=1&amp;puro=1&amp;v=20261015-1" title="Publicação do Caderno de Bordo" loading="lazy"></iframe>
   </div>
   <section class="apoio-portal-ampliado" id="apoioPortalAmpliado" hidden aria-label="Plataforma de apoio">
     <button class="apoio-portal-fundo" id="fundoApoioPortal" type="button" aria-label="Voltar à placa"></button>
@@ -1491,7 +1508,7 @@
   <footer>
     <span class="placa-poste-mobile" aria-hidden="true"></span>
     <section class="placa-portal" aria-label="Placa de botões de apoio">
-      <iframe src="widget-placa/index.html?embed=1&amp;v=20261014-17" title="Placa de apoio Rebojar" loading="eager"></iframe>
+      <iframe src="widget-placa/index.html?embed=1&amp;v=20261015-1" title="Placa de apoio Rebojar" loading="eager"></iframe>
     </section>
     <div class="footer-meta">
     <details>

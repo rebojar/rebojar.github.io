@@ -99,11 +99,9 @@
     abrirApoio('apoia', 'https://apoia.se/rebojar', 'Apoiar o Rebojar pelo Apoia.se');
   });
   botaoKofi.addEventListener('click', evento => {
-    if (!evento.target.closest('a.kofi-button')) return;
     evento.preventDefault();
-    evento.stopImmediatePropagation();
     abrirApoio('kofi', 'https://ko-fi.com/rebojar/?hidefeed=true&widget=true&embed=true&preview=true', 'Apoiar o Rebojar pelo Ko-fi');
-  }, true);
+  });
   voltarPlaca.addEventListener('click', fecharApoio);
   fundoJanelaApoio.addEventListener('click', fecharApoio);
   janelaApoio.addEventListener('click', evento => {
