@@ -825,6 +825,9 @@
       }
 
       body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main {
+        /* Centraliza a estante no mesmo viewport de 100vw usado pelo texto.
+           A porta recebe o mesmo deslocamento para preservar a distância entre as duas peças. */
+        --ajuste-centro-estante: calc(50vw - min(50rem, calc(50vw - 14px), 79dvh));
         position: relative;
         width: calc(100vw + 26rem);
         min-width: calc(100vw + 26rem);
@@ -843,7 +846,7 @@
 
       body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main .estante-portal {
         margin-top: 1.5rem;
-        margin-left: 26rem;
+        margin-left: calc(26rem + var(--ajuste-centro-estante));
         position: relative;
         top: -39px;
       }
@@ -853,7 +856,7 @@
         z-index: 4;
         top: 10%;
         bottom: 7%;
-        left: 4rem;
+        left: calc(4rem + var(--ajuste-centro-estante));
         display: block;
         width: 18rem;
       }
@@ -1304,6 +1307,7 @@
     }
   </style>
   <script src="assets/rebojar-som.min.js?v=sound-nested-widgets-4" defer></script>
+  <script src="assets/rebojar-traducao.js?v=translation-local-2" defer></script>
   <script src="assets/widget-estante/rebojar-estante.min.js?v=20261014-14" defer></script>
 </head>
 <body>
