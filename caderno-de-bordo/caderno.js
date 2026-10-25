@@ -10,6 +10,70 @@ const ehGuarda = page => page?.kind==='endpaper';
 const guardaFixa = page => ({...paginaGuarda(),id:String(page?.id||id()).slice(0,100)});
 const appConfig=typeof window==='undefined'?{}:(window.CADERNO_CONFIG||{});
 const publicDemo=appConfig.mode==='publico';
+/* REBOJAR: INÍCIO — CHAVE E BLOQUEIO DO MODO COMERCIAL EM MANUTENÇÃO
+   true  = mostra a proposta, mas bloqueia conta, assinatura, Stripe e exportação paga.
+   false = devolve o controle aos fluxos comerciais existentes.
+   Antes de mudar para false, valide preços, textos legais, autenticação, checkout e reembolso. */
+const MODO_COMERCIAL_EM_MANUTENCAO=true;
+const MENSAGEM_COMERCIAL_EM_MANUTENCAO='Conta, assinatura e exportação paga são propostas futuras e ainda não estão disponíveis. Nenhuma cobrança foi iniciada.';
+
+function aplicarModoComercialEmManutencao(){
+ if(!publicDemo||!MODO_COMERCIAL_EM_MANUTENCAO)return;
+ document.documentElement.classList.add('comercial-em-manutencao');
+ document.documentElement.dataset.comercial='manutencao';
+ const desativados=['comprarAvulsa','assinarMensal','abrirContaPagamento','gerenciarAssinatura','sairConta','esqueciSenha'];
+ for(const nome of desativados){
+  const controle=$(nome);
+  if(!controle)continue;
+  controle.disabled=true;
+  controle.setAttribute('aria-disabled','true');
+ }
+ for(const controle of document.querySelectorAll('#formulariosConta input,#formulariosConta button,#redefinirSenha input,#redefinirSenha button')){
+  controle.disabled=true;
+  controle.setAttribute('aria-disabled','true');
+ }
+ const formularios=$('formulariosConta');
+ if(formularios){formularios.hidden=true;formularios.inert=true;}
+ const redefinir=$('redefinirSenha');
+ if(redefinir){redefinir.hidden=true;redefinir.inert=true;}
+ if($('gerenciarAssinatura'))$('gerenciarAssinatura').hidden=true;
+ if($('sairConta'))$('sairConta').hidden=true;
+ if($('stripeCheckout')){$('stripeCheckout').hidden=true;$('stripeCheckout').replaceChildren();}
+ if($('opcoesPagamento'))$('opcoesPagamento').hidden=false;
+ if($('voltarPlanos'))$('voltarPlanos').hidden=true;
+ if($('pedagioTitulo'))$('pedagioTitulo').textContent='Exportação em preparação';
+ if($('contaTitulo'))$('contaTitulo').textContent='Conta mensal em preparação';
+ if($('estadoContaPagamento'))$('estadoContaPagamento').textContent='Conta e assinatura mensal também estão em preparação.';
+ if($('estadoConta'))$('estadoConta').textContent='A área comercial está em modo de manutenção.';
+ if($('estadoApoio'))mostrarEstadoApoio(MENSAGEM_COMERCIAL_EM_MANUTENCAO,'espera');
+ if($('mensagemConta'))mostrarMensagemConta(MENSAGEM_COMERCIAL_EM_MANUTENCAO,'espera');
+ if($('conta')){$('conta').textContent='Conta futura';$('conta').title='Conta mensal em preparação';}
+ if($('exportar'))$('exportar').title='Prévia da proposta de exportação';
+}
+
+function abrirAvisoComercial(destino='exportacao'){
+ aplicarModoComercialEmManutencao();
+ const dialogo=destino==='conta'?$('contaUsuario'):$('pedagioExportacao');
+ if(dialogo&&!dialogo.open)dialogo.showModal();
+}
+
+document.addEventListener('click',event=>{
+ if(!publicDemo||!MODO_COMERCIAL_EM_MANUTENCAO||!(event.target instanceof Element))return;
+ const acao=event.target.closest('#exportar,#conta,#comprarAvulsa,#assinarMensal,#abrirContaPagamento,#gerenciarAssinatura,#sairConta');
+ if(!acao)return;
+ event.preventDefault();
+ event.stopImmediatePropagation();
+ abrirAvisoComercial(acao.id==='conta'||acao.id==='abrirContaPagamento'?'conta':'exportacao');
+},true);
+
+document.addEventListener('submit',event=>{
+ if(!publicDemo||!MODO_COMERCIAL_EM_MANUTENCAO||!(event.target instanceof Element))return;
+ if(!event.target.matches('#entrarConta,#criarConta,#redefinirSenha'))return;
+ event.preventDefault();
+ event.stopImmediatePropagation();
+ abrirAvisoComercial('conta');
+},true);
+/* REBOJAR: FIM — CHAVE E BLOQUEIO DO MODO COMERCIAL EM MANUTENÇÃO */
 if(typeof document!=='undefined'&&document.documentElement)document.documentElement.dataset.modo=publicDemo?'publico':'pessoal';
 const defaultState={version:1,layoutVersion:2,name:'Caderno de bordo',showToolsInPublication:true,showChestInPublication:true,showShelfInPublication:true,pencilCase:{title:'rebojar',subtitle:'ferramentas do caderno'},pages:[paginaGuarda(),paginaGuarda(),{...pagina(),title:'As coisas que ficam',text:'Um lugar para guardar o que chamou sua atenção.\n\nComece pelas palavras, por uma fotografia ou por um detalhe que você não quer esquecer.',publish:false}]};
 const MARCA_RODAPE='Caderno de bordo ・Rebojar ©';
@@ -454,7 +518,12 @@ const identidade={
  function guardarSessaoConta(value){sessaoConta=sessaoContaValida(value)?value:null;try{if(sessaoConta)sessionStorage.setItem(chaveSessaoConta,JSON.stringify(sessaoConta));else sessionStorage.removeItem(chaveSessaoConta);}catch{}return sessaoConta;}
  function limparSessaoConta(){guardarSessaoConta(null);contaUsuario=null;}
  function cabecalhosPagamento(headers={}){const result={...headers};if(sessaoContaValida(sessaoConta))result.authorization='Bearer '+sessaoConta.accessToken;return result;}
- function fetchPagamento(path,options={}){const endpoint=endpointPagamento();return fetch(endpoint+path,{...options,credentials:'same-origin',headers:cabecalhosPagamento(options.headers)});}
+ function fetchPagamento(path,options={}){
+  /* REBOJAR: INÍCIO — BARREIRA DE REDE COMERCIAL */
+  if(publicDemo&&MODO_COMERCIAL_EM_MANUTENCAO)return Promise.reject(Error(MENSAGEM_COMERCIAL_EM_MANUTENCAO));
+  /* REBOJAR: FIM — BARREIRA DE REDE COMERCIAL */
+  const endpoint=endpointPagamento();return fetch(endpoint+path,{...options,credentials:'same-origin',headers:cabecalhosPagamento(options.headers)});
+ }
  function criarEstadoConta(){const bytes=new Uint8Array(24);crypto.getRandomValues(bytes);return Array.from(bytes,value=>value.toString(16).padStart(2,'0')).join('');}
 function mensagemDeConta(error){return String(error?.message||'Não foi possível concluir esta ação.').replace(/^AuthError:\s*/,'');}
 function mostrarMensagemConta(message,kind=''){$('mensagemConta').textContent=message;$('mensagemConta').dataset.estado=kind;}
@@ -524,6 +593,11 @@ async function carregarConta(){
  return contaUsuario;
 }
 async function iniciarIdentidade(){
+  /* REBOJAR: INÍCIO — IDENTIDADE DESLIGADA DURANTE A MANUTENÇÃO COMERCIAL */
+  if(publicDemo&&MODO_COMERCIAL_EM_MANUTENCAO){
+   contaUsuario=null;ponteContaDisponivel=false;aplicarModoComercialEmManutencao();return;
+  }
+  /* REBOJAR: FIM — IDENTIDADE DESLIGADA DURANTE A MANUTENÇÃO COMERCIAL */
   if(!identidade.disponivel&&publicDemo&&endpointPagamento()&&origemPagamento()!==location.origin){
    ponteContaDisponivel=appConfig.accountBridge===true&&location.origin==='https://rebojar.github.io';
    if(ponteContaDisponivel){
@@ -623,6 +697,9 @@ async function conferirAssinatura(){
  }catch{return false;}
 }
 function carregarStripe(){
+ /* REBOJAR: INÍCIO — STRIPE DESLIGADA DURANTE A MANUTENÇÃO COMERCIAL */
+ if(publicDemo&&MODO_COMERCIAL_EM_MANUTENCAO)return Promise.reject(Error(MENSAGEM_COMERCIAL_EM_MANUTENCAO));
+ /* REBOJAR: FIM — STRIPE DESLIGADA DURANTE A MANUTENÇÃO COMERCIAL */
  if(window.Stripe)return Promise.resolve(window.Stripe);
  if(stripePromise)return stripePromise;
  stripePromise=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='https://js.stripe.com/v3/';script.async=true;script.onload=()=>window.Stripe?resolve(window.Stripe):reject(Error('Stripe indisponível'));script.onerror=()=>reject(Error('Stripe indisponível'));document.head.append(script);});
@@ -643,6 +720,9 @@ async function acompanharApoio(){
  await check();
 }
 async function abrirCheckout(plan){
+ /* REBOJAR: INÍCIO — CHECKOUT DESLIGADO DURANTE A MANUTENÇÃO COMERCIAL */
+ if(publicDemo&&MODO_COMERCIAL_EM_MANUTENCAO){aplicarModoComercialEmManutencao();mostrarEstadoApoio(MENSAGEM_COMERCIAL_EM_MANUTENCAO,'espera');return;}
+ /* REBOJAR: FIM — CHECKOUT DESLIGADO DURANTE A MANUTENÇÃO COMERCIAL */
  const endpoint=endpointPagamento();
  if(plan==='monthly'&&!contaUsuario&&ponteContaDisponivel){abrirConta('Entre ou crie uma conta antes de iniciar a assinatura.');return;}
  if(plan==='monthly'&&!contaUsuario&&!(await carregarConta())){abrirConta('Entre ou crie uma conta antes de iniciar a assinatura.');return;}
@@ -677,7 +757,7 @@ if(!publicDemo){
  $('arquivoFoto').onchange=async e=>{const target=photoTarget||atual();$('foto').disabled=true;try{for(const file of e.target.files){if(target.photos.length>=30)throw Error('Limite de 30 fotografias por página. Crie outra página para continuar.');const src=await readPhoto(file);const i=target.photos.length,width=larguraDaFoto({width:$('mural').getBoundingClientRect().width*.47});target.photos.push({id:id(),src,caption:'',x:i%2?50:0,y:Math.floor(i/2)*290,width,angle:i%2?3:-3});persist();}render();}catch(error){render();alert(error.message);}finally{$('foto').disabled=false;e.target.value='';}};
  window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue='';}});
 }
-$('exportar').onclick=async()=>{if(publicDemo){if(!paginasSelecionadas().length){alert('Marque pelo menos uma abertura para incluir na exportação de leitura.');return;}avisar('Conferindo acesso à exportação…');if(contaUsuario&&await conferirAssinatura()){exportReader();return;}await limparCheckout();mostrarEstadoApoio(appConfig.paymentEndpoint?'Escolha uma opção para continuar. A exportação avulsa não exige conta.':'Os pagamentos ainda estão sendo preparados. Nenhuma cobrança foi liberada.',appConfig.paymentEndpoint?'':'erro');$('pedagioExportacao').showModal();return;}exportReader();};
+$('exportar').onclick=async()=>{if(publicDemo&&MODO_COMERCIAL_EM_MANUTENCAO){abrirAvisoComercial('exportacao');return;}if(publicDemo){if(!paginasSelecionadas().length){alert('Marque pelo menos uma abertura para incluir na exportação de leitura.');return;}avisar('Conferindo acesso à exportação…');if(contaUsuario&&await conferirAssinatura()){exportReader();return;}await limparCheckout();mostrarEstadoApoio(appConfig.paymentEndpoint?'Escolha uma opção para continuar. A exportação avulsa não exige conta.':'Os pagamentos ainda estão sendo preparados. Nenhuma cobrança foi liberada.',appConfig.paymentEndpoint?'':'erro');$('pedagioExportacao').showModal();return;}exportReader();};
 $('comprarAvulsa').onclick=()=>abrirCheckout('single');
 $('assinarMensal').onclick=()=>abrirCheckout('monthly');
 function setupPencilCase(){
@@ -790,7 +870,7 @@ async function init(){
   document.querySelectorAll('button,input,textarea').forEach(el=>el.disabled=false);
    for(const name of ['backup','restaurar']){$(name).setAttribute('aria-disabled','true');$(name).title='Disponível no aplicativo Caderno de Bordo';$(name).onclick=recursoDoAplicativo;}
    $('exportar').removeAttribute('aria-disabled');$('exportar').title='Apoie o projeto para fazer uma exportação desta visita';
-   render();await iniciarIdentidade();avisar(statusDaCopia());requestAnimationFrame(paginateSavedTitles);return;
+   render();await iniciarIdentidade();aplicarModoComercialEmManutencao();avisar(statusDaCopia());requestAnimationFrame(paginateSavedTitles);return;
  }
  try{db=await new Promise((resolve,reject)=>{const req=indexedDB.open('rebojar-caderno-local',1);req.onupgradeneeded=()=>req.result.createObjectStore('caderno');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);req.onblocked=()=>reject(Error('Armazenamento ocupado'));});const saved=await new Promise((resolve,reject)=>{const req=db.transaction('caderno').objectStore('caderno').get('principal');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);});if(saved){const parsed=JSON.parse(saved),migrated=Number(parsed.layoutVersion)!==2||parsed.pages?.[0]?.kind!=='endpaper'||parsed.pages?.[1]?.kind!=='endpaper';state=validate(parsed);current=primeiraAberturaComConteudo();render();if(migrated)persist();}avisar('Caderno local · pronto para editar');}catch{db=null;avisar('Use Guardar cópia para preservar suas alterações');}
  finally{document.querySelectorAll('button,input,textarea').forEach(el=>el.disabled=false);render();requestAnimationFrame(paginateSavedTitles);}
