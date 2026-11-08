@@ -1,5 +1,5 @@
-const VERSAO = "widget-caderno-rebojar-v5";
-const ARQUIVOS = ["./", "./index.html", "./pagina.min.css", "./manifest.webmanifest", "./icone-caderno.svg"];
+const VERSAO = "widget-caderno-rebojar-v6";
+const ARQUIVOS = ["./", "./index.html", "./pagina.min.css", "./manifest.webmanifest", "./widget-caderno-v01.ico", "./icone-caderno.svg"];
 
 self.addEventListener("install", (evento) => {
   evento.waitUntil(caches.open(VERSAO).then((cache) => cache.addAll(ARQUIVOS)));
