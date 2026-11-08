@@ -908,6 +908,10 @@
         padding: 0 2rem 2rem 3rem;
       }
 
+      body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > footer {
+        margin-left: max(-25rem, calc(-25vw + 7px), -39.5dvh);
+      }
+
       body > footer .footer-actions {
         width: min(100%, 16rem);
         margin-inline: 0;
