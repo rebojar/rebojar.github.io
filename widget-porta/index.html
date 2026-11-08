@@ -6,7 +6,8 @@
   <title>Porta · Rebojar</title>
   <meta name="theme-color" content="#11273c">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icone-porta.svg" type="image/svg+xml">
+  <link rel="icon" href="widget-porta-v01.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" href="widget-porta-v01-180.png">
   <link rel="stylesheet" href="pagina.css?v=20261014-8">
   <script>document.documentElement.dataset.embed=new URLSearchParams(location.search).get("embed")==="1"?"1":"0"</script>
   <script defer src="porta.js?v=20261014-10"></script>
@@ -53,5 +54,6 @@
     </section>
   </main>
   <p class="instrucao" data-texto-editavel="instrucao">Dois cliques ou um giro na maçaneta.</p>
+  <script>if("serviceWorker" in navigator && location.protocol.startsWith("http")){addEventListener("load",()=>navigator.serviceWorker.register("./sw.js"));}</script>
 </body>
 </html>
