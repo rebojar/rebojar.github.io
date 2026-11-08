@@ -3,6 +3,10 @@
 
   const CHAVE_IDIOMA = "rebojar-idioma-v1";
   const IDIOMA_ORIGINAL = "pt";
+  /* O fallback online só recebe textos públicos já filtrados por elementoIgnorado.
+     Valores de campos e conteúdo editável nunca são enviados para tradução. */
+  const SERVICO_TRADUCAO = "https://translate.googleapis.com/translate_a/single";
+  const codigosServico = { zh: "zh-CN", "zh-Hant": "zh-TW" };
   const idiomas = [
     ["pt", "Português"],
     ["en", "English"],
@@ -28,6 +32,7 @@
 
   const originais = new WeakMap();
   const textosConhecidos = new Set();
+  const traducoesOnline = new Map();
   let idiomaAtivo = IDIOMA_ORIGINAL;
   let revisao = 0;
   let tradutorAtual;
@@ -93,6 +98,92 @@
     return `${inicio}${traduzido.trim()}${fim}`;
   }
 
+  function dividirTexto(texto, limite = 1200) {
+    const partes = [];
+    let restante = texto;
+    while (restante.length > limite) {
+      let corte = restante.lastIndexOf(" ", limite);
+      if (corte < limite * .55) corte = limite;
+      partes.push(restante.slice(0, corte));
+      restante = restante.slice(corte).trimStart();
+    }
+    if (restante) partes.push(restante);
+    return partes;
+  }
+
+  async function traduzirTrechoOnline(texto, destino) {
+    const idiomaDestino = codigosServico[destino] || destino;
+    const chave = `${idiomaDestino}\u0000${texto}`;
+    if (traducoesOnline.has(chave)) return traducoesOnline.get(chave);
+
+    const url = new URL(SERVICO_TRADUCAO);
+    url.searchParams.set("client", "gtx");
+    url.searchParams.set("sl", IDIOMA_ORIGINAL);
+    url.searchParams.set("tl", idiomaDestino);
+    url.searchParams.set("dt", "t");
+    url.searchParams.set("q", texto);
+    const resposta = await fetch(url, {
+      credentials: "omit",
+      mode: "cors",
+      referrerPolicy: "no-referrer"
+    });
+    if (!resposta.ok) throw new Error(`traducao-online-${resposta.status}`);
+    const dados = await resposta.json();
+    const traducao = Array.isArray(dados?.[0])
+      ? dados[0].map(segmento => segmento?.[0] || "").join("")
+      : "";
+    if (!traducao.trim()) throw new Error("traducao-online-vazia");
+    traducoesOnline.set(chave, traducao);
+    return traducao;
+  }
+
+  async function traduzirOnline(texto, destino) {
+    const partes = dividirTexto(texto);
+    const traduzidas = [];
+    for (const parte of partes) traduzidas.push(await traduzirTrechoOnline(parte, destino));
+    return traduzidas.join(" ");
+  }
+
+  function agruparTextos(textos, limite = 1800) {
+    const grupos = [];
+    let grupo = [];
+    let tamanho = 0;
+    textos.forEach((texto, indice) => {
+      const adicional = texto.length + 28;
+      if (grupo.length && tamanho + adicional > limite) {
+        grupos.push(grupo);
+        grupo = [];
+        tamanho = 0;
+      }
+      grupo.push({ texto, indice });
+      tamanho += adicional;
+    });
+    if (grupo.length) grupos.push(grupo);
+    return grupos;
+  }
+
+  async function traduzirLoteOnline(textos, destino, progresso) {
+    const resultado = new Array(textos.length);
+    const grupos = agruparTextos(textos);
+    let concluidos = 0;
+
+    for (const grupo of grupos) {
+      const corpo = grupo.map((item, indice) => indice
+        ? `[[[REBOJAR_${indice - 1}]]]\n${item.texto}`
+        : item.texto).join("\n");
+      const traducaoAgrupada = await traduzirTrechoOnline(corpo, destino);
+      let partes = traducaoAgrupada.split(/\s*\[\[\[REBOJAR_\d+\]\]\]\s*/u);
+      if (partes.length !== grupo.length) {
+        partes = [];
+        for (const item of grupo) partes.push(await traduzirOnline(item.texto, destino));
+      }
+      grupo.forEach((item, indice) => { resultado[item.indice] = partes[indice]; });
+      concluidos += grupo.length;
+      progresso?.(concluidos, textos.length);
+    }
+    return resultado;
+  }
+
   function montarControles() {
     const grupoSom = document.querySelector(".controles-som-site");
     if (!grupoSom || grupoSom.querySelector(".controle-traducao-site")) return false;
@@ -134,7 +225,7 @@
     painel.innerHTML = `
       <label for="idioma-rebojar">Idioma do portal</label>
       <select id="idioma-rebojar">${idiomas.map(([codigo, nome]) => `<option value="${codigo}">${nome}</option>`).join("")}</select>
-      <p class="estado-traducao-site" aria-live="polite">A tradução acontece no próprio navegador quando ele oferece esse recurso.</p>
+      <p class="estado-traducao-site" aria-live="polite">A tradução usa o recurso local do navegador quando disponível e um serviço online nos demais.</p>
     `;
 
     const botaoSom = grupoSom.querySelector(".controle-som-site");
@@ -164,49 +255,76 @@
         return;
       }
 
-      if (!("Translator" in window)) {
-        estado.textContent = "Este navegador ainda não oferece tradução local. No momento, ela funciona no Chrome para computador.";
-        seletor.value = idiomaAtivo;
-        seletor.disabled = false;
-        atualizarBotao();
-        return;
-      }
-
       try {
-        const disponibilidade = await Translator.availability({ sourceLanguage: IDIOMA_ORIGINAL, targetLanguage: destino });
-        if (disponibilidade === "unavailable") throw new Error("par-indisponivel");
-        estado.textContent = disponibilidade === "available" ? "Traduzindo…" : "Preparando o idioma no navegador…";
         tradutorAtual?.destroy?.();
-        tradutorAtual = await Translator.create({
-          sourceLanguage: IDIOMA_ORIGINAL,
-          targetLanguage: destino,
-          monitor(monitor) {
-            monitor.addEventListener("downloadprogress", evento => {
-              if (minhaRevisao === revisao) estado.textContent = `Preparando o idioma… ${Math.round(evento.loaded * 100)}%`;
-            });
+        tradutorAtual = undefined;
+        let modo = "online";
+
+        if ("Translator" in window) {
+          try {
+            const disponibilidade = await window.Translator.availability({ sourceLanguage: IDIOMA_ORIGINAL, targetLanguage: destino });
+            if (disponibilidade !== "unavailable") {
+              estado.textContent = disponibilidade === "available" ? "Traduzindo…" : "Preparando o idioma no navegador…";
+              tradutorAtual = await window.Translator.create({
+                sourceLanguage: IDIOMA_ORIGINAL,
+                targetLanguage: destino,
+                monitor(monitor) {
+                  monitor.addEventListener("downloadprogress", evento => {
+                    if (minhaRevisao === revisao) estado.textContent = `Preparando o idioma… ${Math.round(evento.loaded * 100)}%`;
+                  });
+                }
+              });
+              modo = "local";
+            }
+          } catch {
+            tradutorAtual?.destroy?.();
+            tradutorAtual = undefined;
           }
-        });
+        }
+
+        if (!tradutorAtual) {
+          estado.textContent = "Traduzindo online…";
+          tradutorAtual = {
+            translate: texto => traduzirOnline(texto, destino),
+            translateBatch: (textos, progresso) => traduzirLoteOnline(textos, destino, progresso),
+            destroy() {}
+          };
+        }
 
         const textos = coletarTextos(document);
         const total = textos.length;
-        for (let indice = 0; indice < total; indice += 1) {
+        if (tradutorAtual.translateBatch) {
+          const entradas = textos.map(no => (originais.get(no) || "").trim());
+          const traducoes = await tradutorAtual.translateBatch(entradas, (concluidos, quantidade) => {
+            if (minhaRevisao === revisao) estado.textContent = `Traduzindo online… ${Math.round(concluidos / quantidade * 100)}%`;
+          });
           if (minhaRevisao !== revisao) return;
-          const no = textos[indice];
-          const original = originais.get(no);
-          if (!no.isConnected || !original) continue;
-          const traducao = await tradutorAtual.translate(original.trim());
-          if (minhaRevisao !== revisao) return;
-          no.nodeValue = preservarEspacos(original, traducao);
-          if (indice % 8 === 0) estado.textContent = `Traduzindo… ${Math.min(100, Math.round((indice + 1) / total * 100))}%`;
+          textos.forEach((no, indice) => {
+            const original = originais.get(no);
+            if (no.isConnected && original && traducoes[indice]) no.nodeValue = preservarEspacos(original, traducoes[indice]);
+          });
+        } else {
+          for (let indice = 0; indice < total; indice += 1) {
+            if (minhaRevisao !== revisao) return;
+            const no = textos[indice];
+            const original = originais.get(no);
+            if (!no.isConnected || !original) continue;
+            const traducao = await tradutorAtual.translate(original.trim());
+            if (minhaRevisao !== revisao) return;
+            no.nodeValue = preservarEspacos(original, traducao);
+            if (indice % 8 === 0) estado.textContent = `Traduzindo… ${Math.min(100, Math.round((indice + 1) / total * 100))}%`;
+          }
         }
 
         idiomaAtivo = destino;
         document.documentElement.lang = destino;
         sessionStorage.setItem(CHAVE_IDIOMA, destino);
-        estado.textContent = "Tradução aplicada localmente. Textos editáveis foram preservados.";
+        estado.textContent = modo === "local"
+          ? "Tradução aplicada localmente. Textos editáveis foram preservados."
+          : "Tradução online aplicada. Textos editáveis foram preservados.";
       } catch {
         restaurarPortugues();
-        estado.textContent = "Este idioma não pôde ser preparado neste navegador.";
+        estado.textContent = "Não foi possível traduzir agora. Confira a conexão e tente novamente.";
         seletor.value = idiomaAtivo;
       } finally {
         seletor.disabled = false;
