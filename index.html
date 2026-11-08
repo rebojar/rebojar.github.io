@@ -810,6 +810,15 @@
 
       .estante-portal {
         width: min(50rem, calc(50vw - 14px), 79dvh);
+        overflow: hidden;
+      }
+
+      .estante-portal iframe {
+        width: 200%;
+        height: 200%;
+        max-width: none;
+        transform: scale(0.5);
+        transform-origin: top left;
       }
 
       body {
@@ -846,13 +855,14 @@
       }
 
       body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main {
-        /* Centraliza a estante no mesmo viewport de 100vw usado pelo texto.
-           A porta recebe o mesmo deslocamento para preservar a distância entre as duas peças. */
+        /* Centraliza a estante reduzida sob o texto. A margem negativa
+           compensa a metade retirada e mantém toda a sequência compacta. */
         --ajuste-centro-estante: calc(50vw - min(25rem, calc(25vw - 7px), 39.5dvh));
         position: relative;
         width: calc(100vw + 26rem);
         min-width: calc(100vw + 26rem);
         flex-basis: calc(100vw + 26rem);
+        margin-left: max(-25rem, calc(-25vw + 7px), -39.5dvh);
         padding-inline: 0;
         padding-block: 1.5rem;
         overflow-y: hidden;
