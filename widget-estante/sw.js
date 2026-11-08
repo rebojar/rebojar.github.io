@@ -1,4 +1,4 @@
-const VERSAO = "estante-rebojar-v47";
+const VERSAO = "estante-rebojar-v48";
 const ARQUIVOS = [
   "./",
   "./index.html",
@@ -7,10 +7,9 @@ const ARQUIVOS = [
   "../assets/rebojar-som.min.js",
   "./manifest.webmanifest",
   "./widget-estante-v01.ico",
-  "./icone-estante.svg",
-  "./icone-estante-192.png",
-  "./icone-estante-512.png",
-  "./icone-estante-180.png"
+  "./widget-estante-v01-180.png",
+  "./widget-estante-v01-192.png",
+  "./widget-estante-v01-512.png"
 ];
 
 self.addEventListener("install", (evento) => {
