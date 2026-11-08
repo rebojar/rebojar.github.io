@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Porta · Rebojar</title>
   <meta name="theme-color" content="#11273c">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="widget-porta-v01.ico" type="image/x-icon">
-  <link rel="apple-touch-icon" href="widget-porta-v01-180.png">
+  <link rel="manifest" href="manifest.webmanifest?v=20261108-1">
+  <link rel="icon" href="widget-porta-v01.ico?v=20261108-1" type="image/x-icon">
+  <link rel="apple-touch-icon" href="widget-porta-v01-180.png?v=20261108-1">
   <link rel="stylesheet" href="pagina.css?v=20261014-8">
   <script>document.documentElement.dataset.embed=new URLSearchParams(location.search).get("embed")==="1"?"1":"0"</script>
   <script defer src="porta.js?v=20261014-10"></script>
@@ -32,7 +32,7 @@
             <button class="porta-interna porta-azul" type="button" data-destino="https://rebojar.github.io/demonstracao-labvisual/" data-nome="Lab Visual" aria-label="Entrar no Lab Visual"><span data-texto-editavel="porta-lab-visual">Lab Visual</span></button>
             <button class="porta-interna porta-rosa" type="button" data-destino="https://rebojar.github.io/audicanvas/" data-nome="Audio Canvas" aria-label="Entrar no Audio Canvas"><span data-texto-editavel="porta-audio-canvas">Audio Canvas</span></button>
             <button class="porta-interna porta-amarela" type="button" data-destino="https://rebojar.github.io/galeria/" data-nome="Galeria" aria-label="Entrar na Galeria"><span data-texto-editavel="porta-galeria">Galeria</span></button>
-            <button class="porta-interna porta-laranja" type="button" data-destino="../widget-caderno/index.html" data-destino-arquivo="../caderno-local/Widget-caderno/index.html" data-nome="Caderno de Bordo" aria-label="Entrar no Caderno de Bordo"><span data-texto-editavel="porta-caderno">Caderno de Bordo</span></button>
+            <button class="porta-interna porta-laranja" type="button" data-destino="../caderno-de-bordo/" data-destino-arquivo="../caderno-de-bordo/index.html" data-nome="Caderno de Bordo" aria-label="Entrar no Caderno de Bordo"><span data-texto-editavel="porta-caderno">Caderno de Bordo</span></button>
             <button class="porta-interna porta-violeta" type="button" aria-disabled="true" aria-label="Passagem futura"><span data-texto-editavel="porta-futura">Em breve</span></button>
           </div>
         </div>
@@ -54,6 +54,6 @@
     </section>
   </main>
   <p class="instrucao" data-texto-editavel="instrucao">Dois cliques ou um giro na maçaneta.</p>
-  <script>if("serviceWorker" in navigator && location.protocol.startsWith("http")){addEventListener("load",()=>navigator.serviceWorker.register("./sw.js"));}</script>
+  <script>if("serviceWorker" in navigator && location.protocol.startsWith("http")){addEventListener("load",()=>navigator.serviceWorker.register("./sw.js?v=20261108-1"));}</script>
 </body>
 </html>

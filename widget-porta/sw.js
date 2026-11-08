@@ -1,4 +1,4 @@
-const VERSAO="porta-rebojar-v13";
+const VERSAO="porta-rebojar-v14";
 const ARQUIVOS=["./","./index.html","./pagina.css?v=20261014-8","./porta.js?v=20261014-10","./manifest.webmanifest","./widget-porta-v01.ico","./widget-porta-v01-180.png","./widget-porta-v01-192.png","./widget-porta-v01-512.png"];
 self.addEventListener("install",evento=>{evento.waitUntil(caches.open(VERSAO).then(cache=>cache.addAll(ARQUIVOS)));self.skipWaiting()});
 self.addEventListener("activate",evento=>{evento.waitUntil(caches.keys().then(chaves=>Promise.all(chaves.filter(chave=>chave!==VERSAO).map(chave=>caches.delete(chave)))));self.clients.claim()});
