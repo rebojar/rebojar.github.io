@@ -780,7 +780,7 @@ function setupPencilCase(){
 function setupWidgetEstojo(){
  const quadro=document.querySelector('.widget-estojo-caderno iframe');if(!quadro)return;
  const origemLocal=location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname);
- quadro.src=origemLocal?(quadro.dataset.localSrc||'../widget-estojo/index.html?embed=1&v=20261109-6'):'https://rebojar.github.io/widget-estojo/?embed=1&v=20261109-6';
+ quadro.src=origemLocal?(quadro.dataset.localSrc||'../widget-estojo/index.html?embed=1&v=20261109-7'):'https://rebojar.github.io/widget-estojo/?embed=1&v=20261109-7';
  const origemEsperada=origemLocal?'null':new URL(quadro.src,location.href).origin;
  const sincronizarSom=()=>quadro.contentWindow?.postMessage({tipo:'rebojar:som',ativo:somAtivo},origemLocal?'*':'https://rebojar.github.io');
  quadro.addEventListener('load',sincronizarSom);window.addEventListener('rebojar-caderno-som-alterado',sincronizarSom);
@@ -792,7 +792,7 @@ function setupWidgetEstojo(){
  };
  window.addEventListener('message',event=>{
   if(event.source!==quadro.contentWindow||event.origin!==origemEsperada||event.data?.tipo!=='rebojar-estojo:ferramentas')return;
-  const detail=event.data.detalhe||{},formatos=new Set(Array.isArray(detail.formatos)?detail.formatos:[]);sincronizarPonte(detail);
+  const detail=event.data.detalhe||{},formatos=new Set(Array.isArray(detail.formatos)?detail.formatos:[]);if(detail.acao==='borracha'){formatText('erase');return;}sincronizarPonte(detail);
   if(detail.corTexto!==estado.corTexto||detail.opacidadeTexto!==estado.opacidadeTexto)formatText('foreColor',rgba(detail.corTexto,detail.opacidadeTexto));
   if(detail.tamanho!==estado.tamanho)formatText('size',Math.max(6,Math.min(96,Number(detail.tamanho)||12)));
   if(detail.corGrifo!==estado.corGrifo||detail.opacidadeGrifo!==estado.opacidadeGrifo)formatText('hiliteColor',rgba(detail.corGrifo,detail.opacidadeGrifo));

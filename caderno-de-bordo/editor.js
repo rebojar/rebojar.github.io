@@ -104,6 +104,26 @@ document.addEventListener('paste',event=>{if(!spreadSelection.length||event.targ
 document.addEventListener('beforeinput',event=>{if(!spreadSelection.length||event.target.closest('.editor-texto'))return;if(event.inputType.startsWith('delete')||event.inputType==='insertText'||event.inputType==='insertParagraph'){event.preventDefault();replaceSpread(event.inputType.startsWith('delete')?'':event.data||'\n');}},true);
 document.addEventListener('selectionchange',()=>{const s=window.getSelection();if(!s.rangeCount)return;const n=s.anchorNode?.nodeType===1?s.anchorNode:s.anchorNode?.parentElement;const el=n?.closest('[contenteditable="true"]');if(el?._page&&el.contains(s.focusNode)){editorTarget=el;editorRange=s.getRangeAt(0).cloneRange();}});
 function formatText(command,value){
+ if(command==='erase'){
+  const semFundo=value=>{const cor=String(value||'').replace(/\s+/g,'').toLowerCase();return !cor||cor==='transparent'||cor==='rgba(0,0,0,0)';};
+  if(spreadSelection.length){
+   const selected=spreadSelection.filter(el=>el.isConnected);
+   const temGrifo=selected.some(el=>cleanRuns(el._page.rich?.[el._field],el._page[el._field]).some(run=>!semFundo(run.style?.backgroundColor)));
+   if(temGrifo){
+    for(const el of selected){const page=el._page;page.rich??={};page.rich[el._field]=cleanRuns(page.rich[el._field],page[el._field]).map(run=>{const style={...(run.style||{})};delete style.backgroundColor;return {...run,style};});recordTextChange(page,el._field);}
+    render();persist();selectSpread();
+   }else replaceSpread('');
+   document.getElementById('editorHint').textContent=temGrifo?'Grifo removido da seleção.':'Texto selecionado apagado.';
+   return;
+  }
+  if(!editorTarget?.isConnected||!editorRange||editorRange.collapsed){document.getElementById('editorHint').textContent='Selecione um trecho no papel primeiro.';return;}
+  const range=editorRange.cloneRange(),walker=document.createTreeWalker(editorTarget,NodeFilter.SHOW_TEXT);let temGrifo=false;
+  while(walker.nextNode()&&!temGrifo){const node=walker.currentNode;let cruza=false;try{cruza=range.intersectsNode(node);}catch{}if(!cruza)continue;for(let el=node.parentElement;el&&el!==editorTarget;el=el.parentElement){if(!semFundo(el.style?.backgroundColor)){temGrifo=true;break;}}}
+  const s=window.getSelection();s.removeAllRanges();s.addRange(range);editorTarget.focus({preventScroll:true});richFormatting=true;document.execCommand('styleWithCSS',false,true);
+  if(temGrifo)document.execCommand('hiliteColor',false,'transparent');else document.execCommand('delete',false,null);
+  richFormatting=false;flowInput(editorTarget._page,editorTarget,{},editorTarget._field);document.getElementById('editorHint').textContent=temGrifo?'Grifo removido da seleção.':'Texto selecionado apagado.';
+  return;
+ }
  if(spreadSelection.length){
   const properties={bold:['fontWeight','bold','normal'],italic:['fontStyle','italic','normal'],underline:['textDecoration','underline','none'],strikeThrough:['textDecoration','line-through','none'],foreColor:['color',value],hiliteColor:['backgroundColor',value],size:['fontSize',value+'px'],justifyLeft:['textAlign','left'],justifyCenter:['textAlign','center'],justifyRight:['textAlign','right'],justifyFull:['textAlign','justify']};
   const setting=properties[command];if(!setting)return;const [key,on,off]=setting;
