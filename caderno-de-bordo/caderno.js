@@ -780,11 +780,23 @@ function setupPencilCase(){
 function setupWidgetEstojo(){
  const quadro=document.querySelector('.widget-estojo-caderno iframe');if(!quadro)return;
  const origemLocal=location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname);
- quadro.src=origemLocal?(quadro.dataset.localSrc||'../widget-estojo/index.html?embed=1&v=20261109-8'):'https://rebojar.github.io/widget-estojo/?embed=1&v=20261109-8';
- const origemEsperada=origemLocal?'null':new URL(quadro.src,location.href).origin;
- const sincronizarSom=()=>quadro.contentWindow?.postMessage({tipo:'rebojar:som',ativo:somAtivo},origemLocal?'*':'https://rebojar.github.io');
+ quadro.src=origemLocal?(quadro.dataset.localSrc||'../widget-estojo/index.html?embed=1&v=20261109-9'):'https://rebojar.github.io/widget-estojo/?embed=1&v=20261109-9';
+ const origemEsperada=location.protocol==='file:'?'null':new URL(quadro.src,location.href).origin,destinoMensagem=location.protocol==='file:'?'*':origemEsperada;
+ const sincronizarSom=()=>quadro.contentWindow?.postMessage({tipo:'rebojar:som',ativo:somAtivo},destinoMensagem);
  quadro.addEventListener('load',sincronizarSom);window.addEventListener('rebojar-caderno-som-alterado',sincronizarSom);
  const estado={corTexto:'#243b44',tamanho:12,opacidadeTexto:100,corGrifo:'#e8d73a',opacidadeGrifo:100,formatos:new Set(['justifyLeft'])};
+ let borrachaCursorAtiva=false;
+ const definirBorrachaCursor=(ativa,aviso=true)=>{
+  borrachaCursorAtiva=Boolean(ativa);document.documentElement.classList.toggle('borracha-cursor-ativa',borrachaCursorAtiva);
+  if(aviso)quadro.contentWindow?.postMessage({tipo:'rebojar-estojo:borracha-cursor',ativa:borrachaCursorAtiva},destinoMensagem);
+  if(!borrachaCursorAtiva)$('editorHint').textContent='Borracha devolvida ao estojo.';
+ };
+ document.addEventListener('click',evento=>{
+  const alvo=evento.target.closest?.('[contenteditable="true"]');if(!borrachaCursorAtiva||!alvo?._page)return;
+  evento.preventDefault();evento.stopImmediatePropagation();
+  if(selecionarPalavraNoPonto(evento.clientX,evento.clientY))formatText('erase');
+ },true);
+ document.addEventListener('keydown',evento=>{if(borrachaCursorAtiva&&evento.key==='Escape')definirBorrachaCursor(false);},true);
  const rgba=(hex,alpha)=>`rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},${Math.max(0,Math.min(100,alpha))/100})`;
  const sincronizarPonte=detail=>{
   $('textColor').value=detail.corTexto;$('fontSize').value=String(detail.tamanho);$('textAlpha').value=String(detail.opacidadeTexto);$('textAlphaValue').textContent=`${detail.opacidadeTexto}%`;
@@ -792,7 +804,14 @@ function setupWidgetEstojo(){
  };
  window.addEventListener('message',event=>{
   if(event.source!==quadro.contentWindow||event.origin!==origemEsperada||event.data?.tipo!=='rebojar-estojo:ferramentas')return;
-  const detail=event.data.detalhe||{},formatos=new Set(Array.isArray(detail.formatos)?detail.formatos:[]);if(detail.acao==='borracha'){formatText('erase');return;}sincronizarPonte(detail);
+  const detail=event.data.detalhe||{},formatos=new Set(Array.isArray(detail.formatos)?detail.formatos:[]);
+  if(detail.acao==='borracha'){formatText('erase');return;}
+  if(detail.acao==='borracha-cursor-ativar'){
+   if(hasFormattingSelection()){formatText('erase');definirBorrachaCursor(false);return;}
+   definirBorrachaCursor(true,false);$('editorHint').textContent='Borracha no cursor: clique numa palavra para apagar o grifo ou o texto.';return;
+  }
+  if(detail.acao==='borracha-cursor-desativar'){definirBorrachaCursor(false,false);$('editorHint').textContent='Borracha devolvida ao estojo.';return;}
+  sincronizarPonte(detail);
   if(detail.corTexto!==estado.corTexto||detail.opacidadeTexto!==estado.opacidadeTexto)formatText('foreColor',rgba(detail.corTexto,detail.opacidadeTexto));
   if(detail.tamanho!==estado.tamanho)formatText('size',Math.max(6,Math.min(96,Number(detail.tamanho)||12)));
   if(detail.corGrifo!==estado.corGrifo||detail.opacidadeGrifo!==estado.opacidadeGrifo)formatText('hiliteColor',rgba(detail.corGrifo,detail.opacidadeGrifo));

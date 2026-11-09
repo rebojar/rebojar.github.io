@@ -103,6 +103,21 @@ document.addEventListener('cut',event=>{if(!spreadSelection.length)return;event.
 document.addEventListener('paste',event=>{if(!spreadSelection.length||event.target.closest('.editor-texto'))return;event.preventDefault();event.stopImmediatePropagation();replaceSpread(event.clipboardData.getData('text/plain'));},true);
 document.addEventListener('beforeinput',event=>{if(!spreadSelection.length||event.target.closest('.editor-texto'))return;if(event.inputType.startsWith('delete')||event.inputType==='insertText'||event.inputType==='insertParagraph'){event.preventDefault();replaceSpread(event.inputType.startsWith('delete')?'':event.data||'\n');}},true);
 document.addEventListener('selectionchange',()=>{const s=window.getSelection();if(!s.rangeCount)return;const n=s.anchorNode?.nodeType===1?s.anchorNode:s.anchorNode?.parentElement;const el=n?.closest('[contenteditable="true"]');if(el?._page&&el.contains(s.focusNode)){editorTarget=el;editorRange=s.getRangeAt(0).cloneRange();}});
+function selecionarPalavraNoPonto(x,y){
+ const alvo=document.elementFromPoint?.(x,y)?.closest?.('[contenteditable="true"]');if(!alvo?._page)return false;
+ let no=null,deslocamento=0;
+ if(document.caretPositionFromPoint){const pos=document.caretPositionFromPoint(x,y);no=pos?.offsetNode;deslocamento=pos?.offset??0;}
+ else if(document.caretRangeFromPoint){const pos=document.caretRangeFromPoint(x,y);no=pos?.startContainer;deslocamento=pos?.startOffset??0;}
+ if(!no||!alvo.contains(no))return false;
+ if(no.nodeType!==Node.TEXT_NODE){const textos=document.createTreeWalker(no,NodeFilter.SHOW_TEXT);no=textos.nextNode();deslocamento=0;}
+ if(!no||no.nodeType!==Node.TEXT_NODE||!no.data)return false;
+ const texto=no.data,caracterePalavra=caractere=>/[\p{L}\p{N}_'’\-]/u.test(caractere||'');
+ let ponto=Math.min(Math.max(0,deslocamento),texto.length-1);if(!caracterePalavra(texto[ponto])&&ponto>0&&caracterePalavra(texto[ponto-1]))ponto--;
+ if(!caracterePalavra(texto[ponto]))return false;
+ let inicio=ponto,fim=ponto+1;while(inicio>0&&caracterePalavra(texto[inicio-1]))inicio--;while(fim<texto.length&&caracterePalavra(texto[fim]))fim++;
+ const range=document.createRange();range.setStart(no,inicio);range.setEnd(no,fim);clearSpreadSelection();editorTarget=alvo;editorRange=range.cloneRange();
+ const selecao=window.getSelection();selecao.removeAllRanges();selecao.addRange(range);return true;
+}
 function formatText(command,value){
  if(command==='erase'){
   const semFundo=value=>{const cor=String(value||'').replace(/\s+/g,'').toLowerCase();return !cor||cor==='transparent'||cor==='rgba(0,0,0,0)';};

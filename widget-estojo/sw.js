@@ -1,12 +1,13 @@
-const VERSAO = "estojo-rebojar-v11";
+const VERSAO = "estojo-rebojar-v12";
 const ARQUIVOS = [
   "./",
   "./index.html",
-  "./pagina.min.css?v=20261109-8",
-  "./rebojar-estojo.min.js?v=20261109-8",
+  "./pagina.min.css?v=20261109-9",
+  "./rebojar-estojo.min.js?v=20261109-9",
   "../assets/rebojar-som.min.js",
   "./manifest.webmanifest",
-  "./icone-estojo.svg"
+  "./widget-estojo-v02.ico?v=20261109-9",
+  "./icone-estojo.svg?v=20261109-9"
 ];
 
 self.addEventListener("install", (evento) => {
