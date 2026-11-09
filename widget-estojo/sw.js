@@ -1,9 +1,9 @@
-const VERSAO = "estojo-rebojar-v5";
+const VERSAO = "estojo-rebojar-v6";
 const ARQUIVOS = [
   "./",
   "./index.html",
-  "./pagina.min.css?v=20261108-2",
-  "./rebojar-estojo.min.js?v=20261108-2",
+  "./pagina.min.css?v=20261108-3",
+  "./rebojar-estojo.min.js?v=20261108-3",
   "../assets/rebojar-som.min.js",
   "./manifest.webmanifest",
   "./icone-estojo.svg"
