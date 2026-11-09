@@ -780,7 +780,7 @@ function setupPencilCase(){
 function setupWidgetEstojo(){
  const quadro=document.querySelector('.widget-estojo-caderno iframe');if(!quadro)return;
  const origemLocal=location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname);
- quadro.src=origemLocal?(quadro.dataset.localSrc||'../widget-estojo/index.html?embed=1&v=20261108-4'):'https://rebojar.github.io/widget-estojo/?embed=1&v=20261108-4';
+ quadro.src=origemLocal?(quadro.dataset.localSrc||'../widget-estojo/index.html?embed=1&v=20261109-6'):'https://rebojar.github.io/widget-estojo/?embed=1&v=20261109-6';
  const origemEsperada=origemLocal?'null':new URL(quadro.src,location.href).origin;
  const sincronizarSom=()=>quadro.contentWindow?.postMessage({tipo:'rebojar:som',ativo:somAtivo},origemLocal?'*':'https://rebojar.github.io');
  quadro.addEventListener('load',sincronizarSom);window.addEventListener('rebojar-caderno-som-alterado',sincronizarSom);
