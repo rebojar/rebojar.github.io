@@ -6,7 +6,7 @@
   <meta name="description" content="AUDICANVAS: componha uma cena sonora e acompanhe o movimento na cabine de escuta.">
   <title>AUDICANVAS · Cabine de escuta</title>
   <link rel="icon" href="./toca-discos-v01.ico" type="image/x-icon">
-  <link rel="stylesheet" href="./style.css?v=de682c034fa9">
+  <link rel="stylesheet" href="./style.css?v=9cd857aebddd">
 </head>
 <body>
   <a class="skip-link" href="#escuta">Ir para a tela de escuta</a>
@@ -30,8 +30,6 @@
               <p>Escolha ficar parada ou caminhar; o trânsito pode continuar ao longe.</p>
               <label for="output-mode">Saída de áudio</label>
               <select id="output-mode"><option value="speakers">Alto-falantes</option><option value="headphones">Fones estéreo</option></select>
-              <label class="range-label" for="master-volume">Volume geral da cena <output id="master-volume-value" for="master-volume">100%</output></label>
-              <input id="master-volume" type="range" min="0" max="3" step="0.1" value="1">
               <label for="movement-mode">Sua posição</label>
               <select id="movement-mode"><option value="walking">Andando</option><option value="stationary">Parada</option></select>
               <label for="movement-speed">Velocidade ao caminhar <output id="movement-speed-value" for="movement-speed">1,0 m/s</output></label>
@@ -122,8 +120,7 @@
 
         <section id="escuta" class="central-screen" aria-labelledby="screen-title">
           <div class="screen-heading">
-            <div class="screen-heading-top"><span class="section-index">CABINE / ESCUTA</span><label class="motion-choice" for="animate-scene"><input id="animate-scene" type="checkbox" checked><span>Animar cenário</span></label></div>
-            <h1 id="screen-title">AUDICANVAS</h1>
+            <div class="screen-heading-top"><h1 id="screen-title">AUDICANVAS</h1><label class="motion-choice" for="animate-scene"><input id="animate-scene" type="checkbox" checked><span>Animar cenário</span></label></div>
             <p>Monte o som nas laterais. Acompanhe aqui o movimento que ele sugere.</p>
           </div>
           <div id="scene-transport" class="scene-transport"><button id="movement-start" aria-describedby="step-status" disabled>▶ Reproduzir cena</button><button id="movement-stop" class="button-secondary" disabled>■ Parar</button><p id="audio-error" role="alert" hidden></p></div>
@@ -160,9 +157,17 @@
                 </div>
               </div>
             </div>
-            <div class="stage-metrics" aria-label="Tempo e distância da cena">
-              <p><span>Tempo</span><strong id="movement-elapsed">0:00</strong></p>
-              <p><span>Distância</span><strong><output id="movement-distance">0,00 m</output></strong></p>
+            <div class="radio-console">
+              <div class="speaker-grille" aria-hidden="true"></div>
+              <div class="volume-console">
+                <label for="master-volume">Volume geral <output id="master-volume-value" for="master-volume">100%</output></label>
+                <div id="master-volume-control" class="rotary-control" style="--knob-angle: -45deg">
+                  <span class="rotary-face" aria-hidden="true"></span>
+                  <input id="master-volume" type="range" min="0" max="3" step="0.1" value="1" aria-label="Volume geral da cena" aria-describedby="rotary-help">
+                </div>
+                <div class="volume-endpoints" aria-hidden="true"><span>MÍN</span><span>MÁX</span></div>
+                <span id="rotary-help" class="visually-hidden">Gire arrastando o controle, ou use as setas do teclado.</span>
+              </div>
             </div>
           </div>
           <p id="screen-footnote" class="screen-footnote">Passos também tocam nos alto-falantes; fones estéreo melhoram a direção.</p>
@@ -205,6 +210,10 @@
           <div class="buttons"><button id="media-audio-test" type="button">Testar navegador</button><button id="engine-audio-test" type="button">Testar motor</button><button id="steps-channel-test" type="button">Testar canal dos passos</button></div>
           <p id="audio-test-status" role="status">Nenhum teste iniciado.</p>
         </details>
+        <div class="stage-metrics" aria-label="Tempo e distância da cena">
+          <p><span>Tempo</span><strong id="movement-elapsed">0:00</strong></p>
+          <p><span>Distância</span><strong><output id="movement-distance">0,00 m</output></strong></p>
+        </div>
         <p>Os números representam eventos programados; não provam o que chegou aos seus ouvidos.</p>
         <p>Passos calculados: <output id="step-count">0</output> · Tilintares: <output id="body-count">0</output> · Veículos: <output id="traffic-count">0</output></p>
         <p>Contatos programados: flores <output id="flower-count">0</output> · folhas <output id="leaf-count">0</output> · pedras <output id="pebble-count">0</output></p>
@@ -213,6 +222,6 @@
     </details>
   </main>
   <footer class="site-footer"><span>AUDICANVAS · laboratório sonoro do Rebojar</span><a href="https://rebojar.github.io/">Voltar ao Rebojar ↗</a></footer>
-  <script type="module" src="./main.mjs?v=de682c034fa9"></script>
+  <script type="module" src="./main.mjs?v=9cd857aebddd"></script>
 </body>
 </html>

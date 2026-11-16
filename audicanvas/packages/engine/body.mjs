@@ -1,4 +1,4 @@
-import { GAIT_STEP_V0 } from './gait.mjs?v=de682c034fa9';
+import { GAIT_STEP_V0 } from './gait.mjs?v=9cd857aebddd';
 
 export const BODY_EARRING_V0 = 'body.earring.v0';
 

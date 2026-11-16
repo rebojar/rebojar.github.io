@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=de682c034fa9';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=de682c034fa9';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=de682c034fa9';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=de682c034fa9';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=de682c034fa9';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=9cd857aebddd';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=9cd857aebddd';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=9cd857aebddd';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=9cd857aebddd';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=9cd857aebddd';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -20,6 +20,7 @@ const steps = new FootstepAudio();
 const outputMode = document.querySelector('#output-mode');
 const masterVolume = document.querySelector('#master-volume');
 const masterVolumeValue = document.querySelector('#master-volume-value');
+const masterVolumeControl = document.querySelector('#master-volume-control');
 const movementMode = document.querySelector('#movement-mode');
 const movementSpeed = document.querySelector('#movement-speed');
 const movementSpeedValue = document.querySelector('#movement-speed-value');
@@ -85,6 +86,7 @@ const audioTestStatus = document.querySelector('#audio-test-status');
 const mediaOutputCheck = new Audio(new URL('./audio-output-check.wav', document.baseURI).href);
 steps.setOutputMode(outputMode.value);
 steps.setMasterVolume(Number(masterVolume.value));
+syncMasterVolume();
 steps.setEnvironmentMode(environmentType.value);
 for (const [kind, input] of ambientVolumes) steps.setChannelVolume(kind, Number(input.value));
 let interactionEngine = null;
@@ -435,12 +437,37 @@ outputMode.addEventListener('change', () => {
   steps.setOutputMode(outputMode.value);
   masterVolume.max = outputMode.value === 'speakers' ? '3' : '1';
   if (Number(masterVolume.value) > Number(masterVolume.max)) masterVolume.value = masterVolume.max;
-  steps.setMasterVolume(Number(masterVolume.value));
-  masterVolumeValue.textContent = volumePercent(masterVolume.value);
+  syncMasterVolume();
 });
-masterVolume.addEventListener('input', () => {
+function syncMasterVolume() {
   steps.setMasterVolume(Number(masterVolume.value));
-  masterVolumeValue.textContent = volumePercent(masterVolume.value);
+  const percent = `${Math.round(Number(masterVolume.value) * 100)}%`;
+  masterVolumeValue.textContent = percent;
+  masterVolume.setAttribute('aria-valuetext', percent);
+  masterVolumeControl.style.setProperty('--knob-angle', `${(-135 + 270 * Number(masterVolume.value) / Number(masterVolume.max)).toFixed(1)}deg`);
+}
+masterVolume.addEventListener('input', syncMasterVolume);
+function turnVolumeFromPointer(event) {
+  event.preventDefault();
+  const box = masterVolumeControl.getBoundingClientRect();
+  const dx = event.clientX - box.left - box.width / 2;
+  const dy = event.clientY - box.top - box.height / 2;
+  if (Math.hypot(dx, dy) < 4) return;
+  let angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+  if (angle > 180) angle -= 360;
+  if (angle < -135 || angle > 135) angle = dx < 0 ? -135 : 135;
+  const fraction = Math.min(1, Math.max(0, (angle + 135) / 270));
+  const step = Number(masterVolume.step);
+  masterVolume.value = String(Math.round(fraction * Number(masterVolume.max) / step) * step);
+  masterVolume.dispatchEvent(new Event('input', { bubbles: true }));
+}
+masterVolume.addEventListener('pointerdown', (event) => {
+  masterVolume.focus({ preventScroll: true });
+  masterVolume.setPointerCapture(event.pointerId);
+  turnVolumeFromPointer(event);
+});
+masterVolume.addEventListener('pointermove', (event) => {
+  if (masterVolume.hasPointerCapture(event.pointerId)) turnVolumeFromPointer(event);
 });
 movementSpeed.addEventListener('input', () => {
   const time = movementTime();

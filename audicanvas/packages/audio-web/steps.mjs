@@ -1,11 +1,11 @@
-import { GaitClock } from '../engine/gait.mjs?v=de682c034fa9';
-import { MicroInteractionAudio } from './interactions.mjs?v=de682c034fa9';
-import { MICRO_KINDS } from '../engine/interaction.mjs?v=de682c034fa9';
-import { earringEventForStep } from '../engine/body.mjs?v=de682c034fa9';
-import { BodyEarringAudio } from './body.mjs?v=de682c034fa9';
-import { TrafficPlanner } from '../engine/world.mjs?v=de682c034fa9';
-import { DistantTrafficAudio } from './traffic.mjs?v=de682c034fa9';
-import { AMBIENT_KINDS, AmbientBeds, EnvironmentAcoustics } from './ambience.mjs?v=de682c034fa9';
+import { GaitClock } from '../engine/gait.mjs?v=9cd857aebddd';
+import { MicroInteractionAudio } from './interactions.mjs?v=9cd857aebddd';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=9cd857aebddd';
+import { earringEventForStep } from '../engine/body.mjs?v=9cd857aebddd';
+import { BodyEarringAudio } from './body.mjs?v=9cd857aebddd';
+import { TrafficPlanner } from '../engine/world.mjs?v=9cd857aebddd';
+import { DistantTrafficAudio } from './traffic.mjs?v=9cd857aebddd';
+import { AMBIENT_KINDS, AmbientBeds, EnvironmentAcoustics } from './ambience.mjs?v=9cd857aebddd';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
