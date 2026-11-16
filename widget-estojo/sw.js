@@ -1,13 +1,13 @@
-const VERSAO = "estojo-rebojar-v13-botoes-visiveis";
+const VERSAO = "estojo-rebojar-v14-controles-direita";
 const ARQUIVOS = [
   "./",
   "./index.html",
-  "./pagina.min.css?v=20261109-9",
-  "./rebojar-estojo.min.js?v=20261109-9",
+  "./pagina.min.css?v=20261116-11",
+  "./rebojar-estojo.min.js?v=20261116-11",
   "../assets/rebojar-som.min.js",
   "./manifest.webmanifest",
-  "./widget-estojo-v02.ico?v=20261109-9",
-  "./icone-estojo.svg?v=20261109-9"
+  "./widget-estojo-v02.ico?v=20261116-11",
+  "./icone-estojo.svg?v=20261116-11"
 ];
 
 self.addEventListener("install", (evento) => {
