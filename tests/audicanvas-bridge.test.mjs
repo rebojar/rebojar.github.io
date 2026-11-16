@@ -26,6 +26,7 @@ function setup() {
   };
   function dispatch(type, event) { for (const listener of listeners.get(type) ?? []) listener(event); }
   const window = { name: '', RebojarSom: { definirAtivo(value) { button.checked = String(value); } } };
+  window.top = window;
   runInNewContext(script, { document, window, BroadcastChannel: class { constructor() { return channel; } }, queueMicrotask });
   return { button, link, window, channel, messages, dispatch };
 }
@@ -35,6 +36,14 @@ test('fone conserva o portal e reutiliza uma guia de áudio', () => {
   app.dispatch('click', { target: { closest: (selector) => selector === 'a[href]' ? app.link : null } });
   assert.equal(app.window.name, 'rebojar-portal');
   assert.equal(app.link.target, 'rebojar-audicanvas');
+});
+
+test('fone dentro do caderno preserva a guia principal do portal', () => {
+  const app = setup();
+  app.window.top = { name: '' };
+  app.dispatch('click', { target: { closest: (selector) => selector === 'a[href]' ? app.link : null } });
+  assert.equal(app.window.top.name, 'rebojar-portal');
+  assert.equal(app.window.name, '');
 });
 
 test('controle da página silencia a cena e a resposta sincroniza o estado', async () => {

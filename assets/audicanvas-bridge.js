@@ -10,7 +10,8 @@
   document.addEventListener('click', (event) => {
     const link = event.target.closest('a[href]');
     if (!link || link.href !== playerUrl) return;
-    window.name = 'rebojar-portal';
+    try { window.top.name = 'rebojar-portal'; }
+    catch { window.name = 'rebojar-portal'; }
     link.target = 'rebojar-audicanvas';
     link.title = 'Abrir o AUDICANVAS em outra guia e manter o som ao navegar';
   }, true);
