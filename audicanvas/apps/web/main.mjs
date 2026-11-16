@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=d4434213fac6';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=d4434213fac6';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=d4434213fac6';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=d4434213fac6';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=d4434213fac6';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=2a4391d833b8';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=2a4391d833b8';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=2a4391d833b8';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=2a4391d833b8';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=2a4391d833b8';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -17,7 +17,6 @@ const track = document.querySelector('.track');
 const hideTrack = document.querySelector('#hide-track');
 const movement = new MovementSimulator();
 const steps = new FootstepAudio();
-const outputMode = document.querySelector('#output-mode');
 const masterVolume = document.querySelector('#master-volume');
 const masterVolumeValue = document.querySelector('#master-volume-value');
 const masterVolumeControl = document.querySelector('#master-volume-control');
@@ -82,9 +81,7 @@ const engineAudioTest = document.querySelector('#engine-audio-test');
 const stepsChannelTest = document.querySelector('#steps-channel-test');
 const audioTestStatus = document.querySelector('#audio-test-status');
 const mediaOutputCheck = new Audio(new URL('./audio-output-check.wav', document.baseURI).href);
-steps.setOutputMode(outputMode.value);
-steps.setMasterVolume(Number(masterVolume.value));
-syncMasterVolume();
+syncOutputProfile();
 steps.setEnvironmentMode(environmentType.value);
 for (const [kind, input] of ambientVolumes) steps.setChannelVolume(kind, Number(input.value));
 let interactionEngine = null;
@@ -242,7 +239,7 @@ stepsVolume.addEventListener('input', () => {
   stepsVolumeValue.textContent = volumePercent(stepsVolume.value);
   if (steps.active && !isolateContacts.checked) stepStatus.textContent = Number(stepsVolume.value) === 0
     ? 'Passos em volume zero; as outras camadas selecionadas continuam.'
-    : 'Passos sintéticos ligados. Use fones e volume confortável.';
+    : 'Passos sintéticos ligados. Ajuste um volume confortável.';
 });
 for (const [kind, input] of layerVolumes) input.addEventListener('input', () => {
   steps.setChannelVolume(kind, Number(input.value));
@@ -324,7 +321,7 @@ isolateContacts.addEventListener('change', () => {
     ? stationaryAudioNote()
     : isolateContacts.checked
     ? 'Passos silenciados para comparar os encontros.'
-    : 'Passos sintéticos ligados. Use fones e volume confortável.';
+    : 'Passos sintéticos ligados. Ajuste um volume confortável.';
 });
 function updateTrafficAudibility() {
   steps.setTrafficEnabled(worldTraffic.checked && !isolateContacts.checked);
@@ -340,9 +337,10 @@ function updateTrafficAudibility() {
 worldTraffic.addEventListener('change', updateTrafficAudibility);
 environmentType.addEventListener('change', () => {
   steps.setEnvironmentMode(environmentType.value);
+  syncOutputProfile();
   environmentNote.textContent = environmentType.value === 'indoor'
-    ? 'No quarto: sons ambientais mais abafados e com reflexões curtas.'
-    : 'Ao ar livre: sons ambientais mais abertos, sem reflexões de sala.';
+    ? 'No quarto: sons mais abafados e com reflexões curtas. Perfil de mixagem para fones estéreo.'
+    : 'Ao ar livre: sons mais abertos, sem reflexões de sala. Perfil de mixagem para alto-falantes.';
   updateVisualScene();
   renderMovement(movement.observe(movementTime()));
 });
@@ -411,7 +409,7 @@ movementStart.addEventListener('click', async () => {
       : isolateContacts.checked
       ? 'Passos silenciados para comparar os encontros.'
       : Number(stepsVolume.value) === 0 ? 'Passos em volume zero; as outras camadas selecionadas continuam.'
-        : 'Passos sintéticos ligados. Use fones e volume confortável.';
+        : 'Passos sintéticos ligados. Ajuste um volume confortável.';
   } catch (error) {
     steps.stop(movementTime());
     if (request !== movementStartRequest || document.hidden) return;
@@ -448,12 +446,13 @@ movementMode.addEventListener('change', () => {
     : stationaryAudioNote();
   updateVisualScene();
 });
-outputMode.addEventListener('change', () => {
-  steps.setOutputMode(outputMode.value);
-  masterVolume.max = outputMode.value === 'speakers' ? '3' : '1';
+function syncOutputProfile() {
+  const mode = environmentType.value === 'indoor' ? 'headphones' : 'speakers';
+  steps.setOutputMode(mode);
+  masterVolume.max = mode === 'speakers' ? '3' : '1';
   if (Number(masterVolume.value) > Number(masterVolume.max)) masterVolume.value = masterVolume.max;
   syncMasterVolume();
-});
+}
 function syncMasterVolume() {
   steps.setMasterVolume(Number(masterVolume.value));
   const percent = `${Math.round(Number(masterVolume.value) * 100)}%`;

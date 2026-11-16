@@ -6,7 +6,7 @@
   <meta name="description" content="AUDICANVAS: componha uma cena sonora e acompanhe o movimento na cabine de escuta.">
   <title>AUDICANVAS · Cabine de escuta</title>
   <link rel="icon" href="./toca-discos-v01.ico" type="image/x-icon">
-  <link rel="stylesheet" href="./style.css?v=d4434213fac6">
+  <link rel="stylesheet" href="./style.css?v=2a4391d833b8">
 </head>
 <body>
   <a class="skip-link" href="#escuta">Ir para a tela de escuta</a>
@@ -20,16 +20,14 @@
   <main>
     <div class="studio-room">
       <div class="studio-layout">
-        <aside id="painel-estudio" class="control-rail rail-left" aria-label="Painel do estúdio: movimento, chão, corpo e ambiente">
-          <p class="rail-heading">PAINEL DO ESTÚDIO <span>01–04</span></p>
+        <aside id="painel-estudio" class="control-rail rail-left" aria-label="Painel do estúdio: movimento, chão, corpo, ambiente e fontes de som em movimento">
+          <p class="rail-heading">PAINEL DO ESTÚDIO <span>01–05</span></p>
           <details id="drawer-movement" class="control-drawer" name="studio-controls">
             <summary><span class="drawer-number">01</span><span class="drawer-name">Movimento</span><span class="drawer-symbol" aria-hidden="true">+</span></summary>
             <div class="drawer-content play-controls">
-              <p class="control-kicker">MOVIMENTO PLANO</p>
+              <p class="control-kicker">MOVIMENTO</p>
               <h2>Encontre o seu ritmo</h2>
               <p>Escolha ficar parada ou caminhar; o trânsito pode continuar ao longe.</p>
-              <label for="output-mode">Saída de áudio</label>
-              <select id="output-mode"><option value="speakers">Alto-falantes</option><option value="headphones">Fones estéreo</option></select>
               <label for="movement-mode">Sua posição</label>
               <select id="movement-mode"><option value="walking">Andando</option><option value="stationary">Parada</option></select>
               <label for="movement-speed">Velocidade ao caminhar <output id="movement-speed-value" for="movement-speed">1,0 m/s</output></label>
@@ -91,12 +89,10 @@
               <p class="card-index">AMBIENTE / 03</p>
               <h2 id="world-title">Onde a cena acontece</h2>
               <label for="environment-type">Tipo de espaço</label>
-              <select id="environment-type"><option value="outdoor">Externo · ar livre</option><option value="indoor">Interno · sala fechada</option></select>
-              <p id="environment-note" class="note">Ao ar livre: sons ambientais mais abertos, sem reflexões de sala.</p>
+              <select id="environment-type"><option value="outdoor">Externo · alto-falantes</option><option value="indoor">Interno · fones estéreo</option></select>
+              <p id="environment-note" class="note">Ao ar livre: sons mais abertos, sem reflexões de sala. Perfil de mixagem para alto-falantes.</p>
+              <p class="note">O perfil ajusta o som; a saída física continua sendo a que está conectada ao navegador.</p>
               <p class="note">Combine as camadas. Cada uma tem volume próprio.</p>
-              <label class="choice choice-feature" for="world-traffic"><input id="world-traffic" type="checkbox" checked disabled><span>Trânsito distante</span></label>
-              <label class="range-label" for="traffic-volume">Volume do trânsito <output id="traffic-volume-value" for="traffic-volume">100%</output></label>
-              <input id="traffic-volume" type="range" min="0" max="1" step="0.05" value="1" disabled>
               <label class="choice choice-feature" for="world-breeze"><input id="world-breeze" type="checkbox" data-ambient-kind="breeze" disabled><span>Brisa calma <small>com pássaros</small></span></label>
               <label class="range-label" for="breeze-volume">Volume da brisa <output id="breeze-volume-value" for="breeze-volume">45%</output></label>
               <input id="breeze-volume" type="range" min="0" max="1" step="0.05" value="0.45" data-ambient-volume="breeze" disabled>
@@ -109,8 +105,19 @@
               <label class="choice choice-feature" for="world-fireplace"><input id="world-fireplace" type="checkbox" data-ambient-kind="fireplace" disabled><span>Lareira</span></label>
               <label class="range-label" for="fireplace-volume">Volume da lareira <output id="fireplace-volume-value" for="fireplace-volume">70%</output></label>
               <input id="fireplace-volume" type="range" min="0" max="1" step="0.05" value="0.7" data-ambient-volume="fireplace" disabled>
-              <p id="traffic-status" class="note" role="status">Preparando a cena de ambiente…</p>
               <p id="ambience-status" class="note" role="status">As novas gravações são amostras em revisão de escuta.</p>
+            </section>
+          </details>
+          <details id="drawer-moving-sources" class="control-drawer" name="studio-controls">
+            <summary><span class="drawer-number">05</span><span class="drawer-name">Fontes de som em movimento</span><span class="drawer-symbol" aria-hidden="true">+</span></summary>
+            <section class="drawer-content composition-card world-card" aria-labelledby="moving-sources-title">
+              <p class="card-index">FONTES MÓVEIS / 04</p>
+              <h2 id="moving-sources-title">Sons que passam</h2>
+              <p>Escolha as fontes que atravessam a cena, mesmo quando você está parada.</p>
+              <label class="choice choice-feature" for="world-traffic"><input id="world-traffic" type="checkbox" checked disabled><span>Trânsito distante</span></label>
+              <label class="range-label" for="traffic-volume">Volume do trânsito <output id="traffic-volume-value" for="traffic-volume">100%</output></label>
+              <input id="traffic-volume" type="range" min="0" max="1" step="0.05" value="1" disabled>
+              <p id="traffic-status" class="note" role="status">Preparando a cena de trânsito…</p>
             </section>
           </details>
         </aside>
@@ -173,9 +180,9 @@
         </section>
 
         <aside class="control-rail rail-right" aria-label="Painel do estúdio: ensaios espaciais">
-          <p class="rail-heading">ENSAIOS <span>05</span></p>
+          <p class="rail-heading">ENSAIOS <span>06</span></p>
           <details id="drawer-trajectory" class="control-drawer lab-panel" name="studio-controls">
-            <summary><span class="drawer-number">05</span><span class="drawer-name">Comparar trajetórias espaciais</span><span class="drawer-symbol" aria-hidden="true">+</span></summary>
+            <summary><span class="drawer-number">06</span><span class="drawer-name">Comparar trajetórias espaciais</span><span class="drawer-symbol" aria-hidden="true">+</span></summary>
             <div class="drawer-content lab-content">
               <label for="scene">Trajetória de teste</label>
               <select id="scene">
@@ -221,6 +228,6 @@
     </details>
   </main>
   <footer class="site-footer"><span>AUDICANVAS · laboratório sonoro do Rebojar</span><a href="https://rebojar.github.io/">Voltar ao Rebojar ↗</a></footer>
-  <script type="module" src="./main.mjs?v=d4434213fac6"></script>
+  <script type="module" src="./main.mjs?v=2a4391d833b8"></script>
 </body>
 </html>
