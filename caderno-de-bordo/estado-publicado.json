@@ -3,7 +3,7 @@
     "layoutVersion":  2,
     "name":  "Caderno de bordo",
     "showToolsInPublication":  true,
-    "showChestInPublication":  true,
+    "showChestInPublication":  false,
     "showShelfInPublication":  true,
     "cover":  {
                   "eyebrow":  "REBOJAR",
@@ -14,13 +14,13 @@
                        "subtitle":  "ferramentas do caderno"
                    },
     "publicationView":  {
-                            "pageId":  "3b509f7f-9156-49f7-871d-550874f30eab",
+                            "pageId":  "f5a1f213-0189-4b15-9d56-d6dcffb0c18d",
                             "closed":  false,
                             "soundEnabled":  true,
-                            "statusText":  "Guardado neste navegador"
+                            "statusText":  "Caderno local · pronto para editar"
                         },
     "guard":  {
-                  "id":  "guarda-447561b90cfe42c7b78cbd3d03ae7a8f",
+                  "id":  "guarda-efdd25ae9bae448f8d9837d05a8ab3b9",
                   "kind":  "endpaper",
                   "title":  "",
                   "date":  "",

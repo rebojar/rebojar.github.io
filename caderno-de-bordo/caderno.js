@@ -325,7 +325,7 @@ if(typeof window!=='undefined')window.RebojarSom={...(window.RebojarSom||{}),zip
 const quadroBau=document.querySelector('.seletor-bau-caderno iframe');
 if(quadroBau){
  const origemLocal=location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname);
- quadroBau.src=origemLocal?(quadroBau.dataset.localSrc||'widgets/bau/index.html?embed=1'):'https://rebojar.github.io/widget-bau/?embed=1';
+ quadroBau.src=origemLocal?(quadroBau.dataset.localSrc||'../widget-bau/index.html?embed=1'):'https://rebojar.github.io/widget-bau/?embed=1';
  const sincronizarSomBau=()=>quadroBau.contentWindow?.postMessage({tipo:'rebojar:som',ativo:somAtivo},origemLocal?'*':'https://rebojar.github.io');
  quadroBau.addEventListener('load',sincronizarSomBau);
  window.addEventListener('rebojar-caderno-som-alterado',sincronizarSomBau);
@@ -370,7 +370,7 @@ if(estanteDialog&&quadrosEstante.length){
  const origemLocal=location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname);
  const sincronizarSomEstante=()=>quadrosEstante.forEach(quadro=>quadro.contentWindow?.postMessage({tipo:'rebojar:som',ativo:somAtivo},origemLocal?'*':'https://rebojar.github.io'));
  quadrosEstante.forEach(quadro=>{
-  quadro.src=origemLocal?(quadro.dataset.localSrc||'widgets/estante/index.html?embed=1'):'https://rebojar.github.io/widget-estante/?embed=1';
+  quadro.src=origemLocal?(quadro.dataset.localSrc||'../widget-estante/index.html?embed=1'):'https://rebojar.github.io/widget-estante/?embed=1';
   quadro.addEventListener('load',sincronizarSomEstante);
  });
  window.addEventListener('rebojar-caderno-som-alterado',sincronizarSomEstante);
@@ -700,8 +700,8 @@ function setupPencilCase(){
 function setupWidgetEstojo(){
  const quadro=document.querySelector('.widget-estojo-caderno iframe');if(!quadro)return;
  const origemLocal=location.protocol==='file:'||['localhost','127.0.0.1','::1'].includes(location.hostname);
- const enderecoLocal=(quadro.dataset.localSrc||'../../13%20Widgets/Widget-Estojo/index.html?embed=1').replace(/([?&])v=[^&]*/,'$1v=20261116-11');
- quadro.src=origemLocal?enderecoLocal:'https://rebojar.github.io/widget-estojo/?embed=1&v=20261116-11';
+ const enderecoLocal=(quadro.dataset.localSrc||'../widget-estojo/index.html?embed=1').replace(/([?&])v=[^&]*/,'$1v=20261116-12');
+ quadro.src=origemLocal?enderecoLocal:'https://rebojar.github.io/widget-estojo/?embed=1&v=20261116-12';
  const origemEsperada=location.protocol==='file:'?'null':new URL(quadro.src,location.href).origin,destinoMensagem=location.protocol==='file:'?'*':origemEsperada;
  const sincronizarSom=()=>quadro.contentWindow?.postMessage({tipo:'rebojar:som',ativo:somAtivo},destinoMensagem);
  quadro.addEventListener('load',sincronizarSom);window.addEventListener('rebojar-caderno-som-alterado',sincronizarSom);
@@ -748,7 +748,7 @@ function setupParedeEstante(){
  const plano=document.createElement('div');plano.id='cadernoPlano';plano.className='caderno-plano';
  header.before(plano);plano.append(principal);if(fotos)plano.append(fotos);
  const parede=document.createElement('section');parede.id='paredeEstante';parede.className='parede-estante';parede.setAttribute('aria-label','Estante na parede acima do caderno');
- parede.innerHTML='<div class="parede-estante-moldura"><iframe data-local-src="widgets/estante/index.html?embed=1&v=20261013-17" title="Estante Rebojar na parede" loading="eager"></iframe></div>';
+ parede.innerHTML='<div class="parede-estante-moldura"><iframe data-local-src="../widget-estante/index.html?embed=1&v=20261013-17" title="Estante Rebojar na parede" loading="eager"></iframe></div>';
  plano.before(parede);parede.append(header);
  const retorno=document.createElement('button');retorno.className='parede-retorno-faixa';retorno.type='button';retorno.setAttribute('aria-label','Voltar à mesa do caderno');retorno.title='Clique duas vezes para voltar à mesa';document.body.append(retorno);
  const puxador=document.createElement('button');puxador.id='paredePuxador';puxador.className='parede-puxador';puxador.type='button';puxador.setAttribute('aria-expanded','false');puxador.setAttribute('aria-controls','paredeEstante');puxador.setAttribute('aria-label','Puxar o caderno para baixo e olhar a estante na parede');puxador.title='Puxe para baixo para olhar a estante';header.append(puxador);
@@ -784,11 +784,12 @@ function setupParedeEstante(){
  retorno.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();encaixar(false);}});
  addEventListener('resize',()=>aplicar(progresso));
  addEventListener('keydown',e=>{if(e.key==='Escape'&&progresso>0)encaixar(false);});
- let rolagemCamera=0,ultimoTempoRolagem=0,ultimoSentidoRolagem=0;
- addEventListener('wheel',event=>{
+  let rolagemCamera=0,ultimoTempoRolagem=0,ultimoSentidoRolagem=0;
+  const tratarRolagemCamera=(event,dentroDeWidget=false)=>{
   if(event.ctrlKey||event.metaKey||event.defaultPrevented)return;
   const alvo=event.target;
-  if(alvo instanceof Element&&alvo.closest('.mesa,dialog,input,textarea,select,[contenteditable="true"],.editor-texto'))return;
+   const areaIgnorada=dentroDeWidget?'input,textarea,select,[contenteditable="true"]':'.mesa,dialog,input,textarea,select,[contenteditable="true"]';
+   if(typeof alvo?.closest==='function'&&alvo.closest(areaIgnorada))return;
   if(Math.abs(event.deltaY)<Math.abs(event.deltaX)*1.15||Math.abs(event.deltaY)<1)return;
   const agora=performance.now(),sentido=Math.sign(event.deltaY);
   if(agora-ultimoTempoRolagem>220||sentido!==ultimoSentidoRolagem)rolagemCamera=0;
@@ -797,8 +798,20 @@ function setupParedeEstante(){
   rolagemCamera+=event.deltaY*unidade;
   event.preventDefault();
   if(Math.abs(rolagemCamera)<42)return;
-  encaixar(rolagemCamera<0);rolagemCamera=0;
- },{passive:false,capture:true});
+   encaixar(rolagemCamera>0);rolagemCamera=0;
+  };
+  addEventListener('wheel',tratarRolagemCamera,{passive:false,capture:true});
+  document.querySelectorAll('.lateral-edicao iframe').forEach(quadroLateral=>{
+   const conectar=()=>{
+    try{
+     const documentoQuadro=quadroLateral.contentDocument;
+     if(!documentoQuadro||documentoQuadro.documentElement.dataset.gestoCamera==='1')return;
+     documentoQuadro.documentElement.dataset.gestoCamera='1';
+     documentoQuadro.addEventListener('wheel',event=>tratarRolagemCamera(event,true),{passive:false,capture:true});
+    }catch{}
+   };
+   quadroLateral.addEventListener('load',conectar);conectar();
+  });
  requestAnimationFrame(()=>aplicar(0));
 }
 function setupAutoHideHeader(){

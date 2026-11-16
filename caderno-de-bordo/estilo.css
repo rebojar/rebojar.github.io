@@ -123,8 +123,8 @@ html.publico-sem-lateral .lateral-edicao{display:none!important}
   .lateral-edicao>.seletor-bau-caderno{height:110px;margin:0 0 1px}
   .lateral-edicao>.seletor-bau-caderno iframe{bottom:18px;transform:translateX(-50%) scale(.20)}
   .lateral-edicao>.publicacao-bau{margin:0 5px 2px!important;transform:none}
-  .lateral-edicao>.widget-estojo-caderno{height:210px;margin-top:0}
-  .widget-estojo-caderno iframe{transform:translateX(-50%) scale(.323)}
+  .lateral-edicao>.widget-estojo-caderno{height:228px;margin-top:0}
+  .widget-estojo-caderno iframe{transform:translateX(-50%) scale(.35)}
   .lateral-edicao>.publicacao-estojo{order:initial;margin:0 5px 2px!important}
   .lateral-edicao>.acoes-caderno{position:absolute;right:223px;bottom:4px;z-index:12;width:205px;margin:0;padding:0;transform:none}
 }
