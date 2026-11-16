@@ -1,15 +1,17 @@
-import { GaitClock } from '../engine/gait.mjs?v=5514966d6c52';
-import { MicroInteractionAudio } from './interactions.mjs?v=5514966d6c52';
-import { MICRO_KINDS } from '../engine/interaction.mjs?v=5514966d6c52';
-import { earringEventForStep } from '../engine/body.mjs?v=5514966d6c52';
-import { BodyEarringAudio } from './body.mjs?v=5514966d6c52';
-import { TrafficPlanner } from '../engine/world.mjs?v=5514966d6c52';
-import { DistantTrafficAudio } from './traffic.mjs?v=5514966d6c52';
+import { GaitClock } from '../engine/gait.mjs?v=09ca7f68094d';
+import { MicroInteractionAudio } from './interactions.mjs?v=09ca7f68094d';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=09ca7f68094d';
+import { earringEventForStep } from '../engine/body.mjs?v=09ca7f68094d';
+import { BodyEarringAudio } from './body.mjs?v=09ca7f68094d';
+import { TrafficPlanner } from '../engine/world.mjs?v=09ca7f68094d';
+import { DistantTrafficAudio } from './traffic.mjs?v=09ca7f68094d';
+import { AMBIENT_KINDS, AmbientBeds, EnvironmentAcoustics } from './ambience.mjs?v=09ca7f68094d';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
-const MIX_CHANNELS = Object.freeze(['steps', 'dry_flower', 'dry_leaf', 'pebble', 'traffic']);
-const SPEAKER_BOOST = Object.freeze({ steps: 2.2, dry_flower: 3.4, dry_leaf: 3.4, pebble: 3.4, traffic: 2.4 });
+const MIX_CHANNELS = Object.freeze(['steps', 'dry_flower', 'dry_leaf', 'pebble', 'traffic', ...AMBIENT_KINDS]);
+const ENV_CHANNELS = new Set(['traffic', ...AMBIENT_KINDS]);
+const SPEAKER_BOOST = Object.freeze({ steps: 2.2, dry_flower: 3.4, dry_leaf: 3.4, pebble: 3.4, traffic: 2.4, breeze: 1.8, rain: 1.8, storm: 1.5, fireplace: 1.8 });
 
 function noiseBuffer(context, index) {
   const length = Math.ceil(context.sampleRate * 0.13);
@@ -49,6 +51,9 @@ export class FootstepAudio {
     this.trafficEnabled = false;
     this.trafficCount = 0;
     this.trafficScheduledIndex = 0;
+    this.ambience = new AmbientBeds();
+    this.environmentMode = 'outdoor';
+    this.environmentAcoustics = null;
     this.walkStartedAt = 0;
     this.channelVolumes = Object.fromEntries(MIX_CHANNELS.map((channel) => [channel, 1]));
     this.channelOutputs = new Map();
@@ -120,7 +125,10 @@ export class FootstepAudio {
     if (!output) {
       output = this.context.createGain();
       output.gain.value = this.channelGain(channel);
-      output.connect(this.masterFor());
+      if (ENV_CHANNELS.has(channel) && this.context.createBiquadFilter && this.context.createDelay) {
+        this.environmentAcoustics ??= new EnvironmentAcoustics(this.context, this.masterFor(), this.environmentMode);
+        output.connect(this.environmentAcoustics.input);
+      } else output.connect(this.masterFor());
       this.channelOutputs.set(channel, output);
     }
     return output;
@@ -154,6 +162,20 @@ export class FootstepAudio {
     if (typeof enabled !== 'boolean') throw new TypeError('Estado do trânsito deve ser booleano.');
     this.trafficEnabled = enabled;
     if (!enabled) this.traffic.cancelVoices(this.context);
+  }
+
+  setEnvironmentMode(mode) {
+    if (!['outdoor', 'indoor'].includes(mode)) throw new RangeError('Tipo de ambiente desconhecido.');
+    this.environmentMode = mode;
+    this.environmentAcoustics?.setMode(mode);
+  }
+
+  async setAmbientEnabled(kind, enabled) {
+    this.ambience.setEnabled(kind, enabled);
+    if (enabled && this.active) {
+      await this.ambience.load(this.context, [kind]);
+      if (this.active && this.ambience.enabled[kind]) this.ambience.tick();
+    }
   }
 
   async ensureContext() {
@@ -220,6 +242,7 @@ export class FootstepAudio {
     if (this.active) return performance.now() / 1000;
     this.previewVersion++;
     await this.ensureContext();
+    await this.ambience.load(this.context);
     this.interactions.cancelVoices(true, this.context);
     this.body.cancelVoices(true, this.context);
     this.traffic.cancelVoices(this.context);
@@ -237,6 +260,7 @@ export class FootstepAudio {
     this.trafficCount = 0;
     this.walkStartedAt = time;
     this.active = true;
+    this.ambience.start(this.context, (kind) => this.outputFor(kind));
     this.tick();
     this.timer = setInterval(() => this.tick(), POLL_MS);
     return time;
@@ -270,6 +294,7 @@ export class FootstepAudio {
 
   tick() {
     if (!this.active) return;
+    this.ambience.tick();
     const now = performance.now() / 1000;
     const horizon = now + LOOKAHEAD_SECONDS;
     for (const event of this.gait.eventsBetween(this.scheduledThrough, horizon)) this.play(event);
@@ -363,6 +388,7 @@ export class FootstepAudio {
     // A current earring resonance fades naturally; future collisions are cancelled.
     this.body.cancelVoices(false, this.context);
     this.traffic.cancelVoices(this.context);
+    this.ambience.stop();
     if (!this.active) return;
     this.active = false;
     this.moving = false;

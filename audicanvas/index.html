@@ -7,7 +7,7 @@
   <meta name="description" content="AUDICANVAS: componha uma cena sonora e acompanhe o movimento na cabine de escuta.">
   <title>AUDICANVAS · Cabine de escuta</title>
   <link rel="icon" href="./toca-discos-v01.ico" type="image/x-icon">
-  <link rel="stylesheet" href="./style.css?v=5514966d6c52">
+  <link rel="stylesheet" href="./style.css?v=09ca7f68094d">
 </head>
 <body>
   <a class="skip-link" href="#escuta">Ir para a tela de escuta</a>
@@ -21,8 +21,8 @@
   <main>
     <div class="studio-room">
       <div class="studio-layout">
-        <aside id="painel-estudio" class="control-rail rail-left" aria-label="Painel do estúdio: movimento e chão">
-          <p class="rail-heading">PAINEL DO ESTÚDIO <span>01–03</span></p>
+        <aside id="painel-estudio" class="control-rail rail-left" aria-label="Painel do estúdio: movimento, chão, corpo e ambiente">
+          <p class="rail-heading">PAINEL DO ESTÚDIO <span>01–04</span></p>
           <details id="drawer-movement" class="control-drawer" name="studio-controls">
             <summary><span class="drawer-number">01</span><span class="drawer-name">Movimento</span><span class="drawer-symbol" aria-hidden="true">+</span></summary>
             <div class="drawer-content play-controls">
@@ -91,6 +91,34 @@
               <p id="body-status" class="note" role="status">Brincos desligados. Ligue para ajustar o volume.</p>
             </section>
           </details>
+          <details id="drawer-world" class="control-drawer" name="studio-controls">
+            <summary><span class="drawer-number">04</span><span class="drawer-name">Ambiente</span><span class="drawer-symbol" aria-hidden="true">+</span></summary>
+            <section class="drawer-content composition-card world-card" aria-labelledby="world-title">
+              <p class="card-index">AMBIENTE / 03</p>
+              <h2 id="world-title">Onde a cena acontece</h2>
+              <label for="environment-type">Tipo de espaço</label>
+              <select id="environment-type"><option value="outdoor">Externo · ar livre</option><option value="indoor">Interno · sala fechada</option></select>
+              <p id="environment-note" class="note">Ao ar livre: sons ambientais mais abertos, sem reflexões de sala.</p>
+              <p class="note">Combine as camadas. Cada uma tem volume próprio.</p>
+              <label class="choice choice-feature" for="world-traffic"><input id="world-traffic" type="checkbox" checked disabled><span>Trânsito distante</span></label>
+              <label class="range-label" for="traffic-volume">Volume do trânsito <output id="traffic-volume-value" for="traffic-volume">100%</output></label>
+              <input id="traffic-volume" type="range" min="0" max="1" step="0.05" value="1" disabled>
+              <label class="choice choice-feature" for="world-breeze"><input id="world-breeze" type="checkbox" data-ambient-kind="breeze" disabled><span>Brisa calma <small>com pássaros</small></span></label>
+              <label class="range-label" for="breeze-volume">Volume da brisa <output id="breeze-volume-value" for="breeze-volume">45%</output></label>
+              <input id="breeze-volume" type="range" min="0" max="1" step="0.05" value="0.45" data-ambient-volume="breeze" disabled>
+              <label class="choice choice-feature" for="world-rain"><input id="world-rain" type="checkbox" data-ambient-kind="rain" disabled><span>Chuva suave</span></label>
+              <label class="range-label" for="rain-volume">Volume da chuva <output id="rain-volume-value" for="rain-volume">45%</output></label>
+              <input id="rain-volume" type="range" min="0" max="1" step="0.05" value="0.45" data-ambient-volume="rain" disabled>
+              <label class="choice choice-feature" for="world-storm"><input id="world-storm" type="checkbox" data-ambient-kind="storm" disabled><span>Tempestade</span></label>
+              <label class="range-label" for="storm-volume">Volume da tempestade <output id="storm-volume-value" for="storm-volume">45%</output></label>
+              <input id="storm-volume" type="range" min="0" max="1" step="0.05" value="0.45" data-ambient-volume="storm" disabled>
+              <label class="choice choice-feature" for="world-fireplace"><input id="world-fireplace" type="checkbox" data-ambient-kind="fireplace" disabled><span>Lareira</span></label>
+              <label class="range-label" for="fireplace-volume">Volume da lareira <output id="fireplace-volume-value" for="fireplace-volume">45%</output></label>
+              <input id="fireplace-volume" type="range" min="0" max="1" step="0.05" value="0.45" data-ambient-volume="fireplace" disabled>
+              <p id="traffic-status" class="note" role="status">Preparando a cena de ambiente…</p>
+              <p id="ambience-status" class="note" role="status">As novas gravações são amostras em revisão de escuta.</p>
+            </section>
+          </details>
         </aside>
 
         <section id="escuta" class="central-screen" aria-labelledby="screen-title">
@@ -103,8 +131,10 @@
           <div class="soundstage">
             <div class="window-view">
               <div id="walk-view" class="visual-mode">
-                <p class="stage-label">RUA QUIETA <span aria-hidden="true">/</span> <span id="stage-action">CAMINHADA</span></p>
+                <p class="stage-label"><span id="stage-place">RUA QUIETA</span> <span aria-hidden="true">/</span> <span id="stage-action">CAMINHADA</span></p>
                 <div class="walk-visual" aria-hidden="true" data-moving="false" data-animate="false" data-flower="false" data-leaf="false" data-pebble="false" data-traffic="false">
+                  <div class="weather-view"><span class="weather-cloud"></span><span class="weather-rain"></span></div>
+                  <div class="room-view"><span class="room-window"></span><span class="room-fireplace"></span></div>
                   <div class="distant-road"><span class="road-stripe"></span><span class="traffic-car car-one" data-phase="0.25"></span><span class="traffic-car car-two" data-phase="0.75"></span></div>
                   <div class="path-way">
                     <span class="path-object flower flower-one" data-phase="0.14"></span><span class="path-object flower flower-two" data-phase="0.7"></span>
@@ -139,20 +169,8 @@
           <p id="screen-footnote" class="screen-footnote">Passos também tocam nos alto-falantes; fones estéreo melhoram a direção.</p>
         </section>
 
-        <aside class="control-rail rail-right" aria-label="Painel do estúdio: ambiente e ensaios">
-          <p class="rail-heading">CAMADAS &amp; ENSAIOS <span>04–05</span></p>
-          <details id="drawer-world" class="control-drawer" name="studio-controls">
-            <summary><span class="drawer-number">04</span><span class="drawer-name">Ambiente</span><span class="drawer-symbol" aria-hidden="true">+</span></summary>
-            <section class="drawer-content composition-card world-card" aria-labelledby="world-title">
-              <p class="card-index">AMBIENTE / 03</p>
-              <h2 id="world-title">Ao longe</h2>
-              <p>Um veículo ocasional atravessa o fundo da cena, à direita, em espaço aberto.</p>
-              <label class="choice choice-feature" for="world-traffic"><input id="world-traffic" type="checkbox" checked disabled><span>Ouvir trânsito distante</span></label>
-              <label class="range-label" for="traffic-volume">Volume do trânsito <output id="traffic-volume-value" for="traffic-volume">100%</output></label>
-              <input id="traffic-volume" type="range" min="0" max="1" step="0.05" value="1" disabled>
-              <p id="traffic-status" class="note" role="status">Preparando a cena de trânsito…</p>
-            </section>
-          </details>
+        <aside class="control-rail rail-right" aria-label="Painel do estúdio: ensaios espaciais">
+          <p class="rail-heading">ENSAIOS <span>05</span></p>
           <details id="drawer-trajectory" class="control-drawer lab-panel" name="studio-controls">
             <summary><span class="drawer-number">05</span><span class="drawer-name">Comparar trajetórias espaciais</span><span class="drawer-symbol" aria-hidden="true">+</span></summary>
             <div class="drawer-content lab-content">
@@ -191,11 +209,11 @@
         <p>Os números representam eventos programados; não provam o que chegou aos seus ouvidos.</p>
         <p>Passos calculados: <output id="step-count">0</output> · Tilintares: <output id="body-count">0</output> · Veículos: <output id="traffic-count">0</output></p>
         <p>Contatos programados: flores <output id="flower-count">0</output> · folhas <output id="leaf-count">0</output> · pedras <output id="pebble-count">0</output></p>
-        <p>Flor e folha usam gravações CC0 experimentais: <a href="https://freesound.org/people/Anthousai/sounds/399334/">estalo por Anthousai</a> e <a href="https://lpc.opengameart.org/content/20-rustles-dry-leaves">folhas por qubodup</a>. Passos, brincos, pedra e trânsito são sintéticos. Os sons gravados ainda não constituem um lote comercial aprovado.</p>
+        <p>Flor e folha usam gravações CC0 experimentais: <a href="https://freesound.org/people/Anthousai/sounds/399334/">estalo por Anthousai</a> e <a href="https://lpc.opengameart.org/content/20-rustles-dry-leaves">folhas por qubodup</a>. As amostras de <a href="https://commons.wikimedia.org/wiki/File:Gentle_breeze_and_birds_singing.ogg">brisa</a>, <a href="https://commons.wikimedia.org/wiki/File:Rain.ogg">chuva</a>, <a href="https://commons.wikimedia.org/wiki/File:Rain_and_thunder.ogg">tempestade</a> e <a href="https://commons.wikimedia.org/wiki/File:Dry_grass_burning_in_open_fireplace.ogg">lareira</a> estão em domínio público. Passos, brincos, pedra e trânsito são sintéticos. As gravações ainda não constituem um lote comercial aprovado.</p>
       </div>
     </details>
   </main>
   <footer class="site-footer"><span>AUDICANVAS · laboratório sonoro do Rebojar</span><a href="https://rebojar.github.io/">Voltar ao Rebojar ↗</a></footer>
-  <script type="module" src="./main.mjs?v=5514966d6c52"></script>
+  <script type="module" src="./main.mjs?v=09ca7f68094d"></script>
 </body>
 </html>

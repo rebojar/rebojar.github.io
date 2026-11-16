@@ -109,6 +109,10 @@ button:disabled { opacity: .47; cursor: default; box-shadow: none; }
 .choice input:checked::after { content: ""; display: block; width: 5px; height: 9px; margin-left: 4px; border: solid var(--green); border-width: 0 2px 2px 0; transform: rotate(45deg); }
 .choice input:disabled { cursor: wait; }
 .choice-feature { margin: 1rem 0; }
+.world-card .choice-feature { margin: .75rem 0 .2rem; }
+.world-card .range-label { margin: .2rem 0 0; font-size: .74rem; }
+.world-card input[type="range"] { margin: 0 0 .35rem; }
+.world-card .choice small { display: block; color: #bddbe2; font-size: .7rem; font-weight: 400; }
 .body-card:has(#body-volume:disabled) .range-label { opacity: .55; }
 .card-details, .inner-details { margin-top: 1rem; padding-top: .8rem; border-top: 1px solid #b6d5dc66; }
 .card-details summary, .inner-details summary { color: var(--blue); font-weight: 750; }
@@ -136,6 +140,25 @@ select { width: 100%; min-height: 44px; padding: .6rem; border: 1px solid #91b4b
 .stage-label span { color: var(--orange); padding-inline: .35em; }
 .walk-visual { --walk-duration: 1.25s; position: relative; flex: 1; min-height: 240px; overflow: hidden; margin: .9rem 0; background: linear-gradient(#12344b11, #2eaee811); }
 .walk-visual::before { content: ""; position: absolute; inset: 8% 4% 0; border-top: 1px solid #b6dce338; background: repeating-linear-gradient(0deg, transparent 0 33px, #a9deeb12 34px 35px); }
+.weather-view { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.weather-cloud { position: absolute; top: 7%; left: 13%; width: 24%; height: 12%; border-radius: 50%; background: #a7c9d166; box-shadow: 24px 6px 0 #c0dce277, -16px 8px 0 #9bbec866; display: none; }
+.weather-rain { position: absolute; inset: 0; background: repeating-linear-gradient(105deg, transparent 0 23px, #b3e0ee77 24px 25px, transparent 26px 48px); background-size: 70px 90px; opacity: .42; animation: rain-fall .8s linear infinite; display: none; }
+@keyframes rain-fall { to { background-position: -70px 90px; } }
+.walk-visual[data-breeze="true"] .weather-cloud, .walk-visual[data-rain="true"] .weather-cloud, .walk-visual[data-storm="true"] .weather-cloud { display: block; }
+.walk-visual[data-rain="true"] .weather-rain, .walk-visual[data-storm="true"] .weather-rain { display: block; }
+.walk-visual[data-storm="true"] .weather-cloud { background: #536a80bb; box-shadow: 24px 6px 0 #6a7a8bbb, -16px 8px 0 #536a80bb; }
+.walk-visual[data-storm="true"] .weather-rain { opacity: .8; animation-duration: .45s; }
+.walk-visual:not([data-playing="true"]) .weather-rain { animation-play-state: paused; }
+.walk-visual[data-animate="false"] .weather-rain { animation: none; }
+.room-view { position: absolute; z-index: 3; inset: 2%; border: 12px solid #2c4a5d; border-bottom-width: 24px; box-shadow: inset 0 0 0 3px #88a9b65c, inset 0 0 50px #06111d88; pointer-events: none; display: none; }
+.room-window { position: absolute; top: 6%; right: 7%; width: 30%; height: 24%; border: 6px solid #638494; box-shadow: inset 0 0 0 2px #0c263d; }
+.room-window::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; border-left: 3px solid #638494; }
+.room-fireplace { position: absolute; bottom: 12%; left: 8%; width: 15%; height: 18%; border: 7px solid #745a4c; border-bottom-width: 12px; border-radius: 40% 40% 3px 3px; background: #0a1b28; display: none; }
+.room-fireplace::after { content: ""; position: absolute; left: 32%; bottom: 0; width: 35%; height: 75%; border-radius: 70% 10% 50% 50%; background: #f2992e; box-shadow: 0 0 18px #f2992e99; transform: rotate(18deg); }
+.walk-visual[data-environment="indoor"] .room-view, .walk-visual[data-fireplace="true"] .room-fireplace { display: block; }
+.walk-visual[data-fireplace="true"][data-environment="outdoor"] .room-view { display: block; border: 0; box-shadow: none; }
+.walk-visual[data-environment="outdoor"] .room-window { display: none; }
+.walk-visual[data-environment="indoor"] .path-way { background: repeating-linear-gradient(180deg, #bdccd52b 0 2px, transparent 2px 46px), linear-gradient(180deg, #29465a, #405b67); }
 .path-way { position: absolute; inset: 0 4%; clip-path: polygon(43% 0, 57% 0, 95% 100%, 5% 100%); background: repeating-linear-gradient(180deg, #b8e6f128 0 2px, transparent 2px 46px), linear-gradient(180deg, #1b4c66, #24617d); background-size: 100% 48px, auto; animation-name: path-flow; animation-duration: var(--walk-duration); animation-timing-function: linear; animation-iteration-count: infinite; animation-play-state: paused; }
 .walk-visual[data-moving="true"] .path-way { animation-play-state: running; }
 @keyframes path-flow { to { background-position-y: 48px, 0; } }

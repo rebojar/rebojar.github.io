@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=5514966d6c52';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=5514966d6c52';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=5514966d6c52';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=5514966d6c52';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=5514966d6c52';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=09ca7f68094d';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=09ca7f68094d';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=09ca7f68094d';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=09ca7f68094d';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=09ca7f68094d';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -40,6 +40,12 @@ const bodyCount = document.querySelector('#body-count');
 const bodyVolume = document.querySelector('#body-volume');
 const bodyVolumeValue = document.querySelector('#body-volume-value');
 const worldTraffic = document.querySelector('#world-traffic');
+const environmentType = document.querySelector('#environment-type');
+const environmentNote = document.querySelector('#environment-note');
+const ambientChoices = [...document.querySelectorAll('[data-ambient-kind]')];
+const ambientVolumes = new Map([...document.querySelectorAll('[data-ambient-volume]')].map((input) => [input.dataset.ambientVolume, input]));
+const ambienceStatus = document.querySelector('#ambience-status');
+const ambientRequests = new Map();
 const trafficVolume = document.querySelector('#traffic-volume');
 const trafficVolumeValue = document.querySelector('#traffic-volume-value');
 const passageVolume = document.querySelector('#passage-volume');
@@ -67,6 +73,7 @@ const stageMetrics = document.querySelector('.stage-metrics');
 const sceneTransport = document.querySelector('#scene-transport');
 const walkVisual = document.querySelector('.walk-visual');
 const stageAction = document.querySelector('#stage-action');
+const stagePlace = document.querySelector('#stage-place');
 const visualSummary = document.querySelector('#visual-summary');
 const animateScene = document.querySelector('#animate-scene');
 const screenFootnote = document.querySelector('#screen-footnote');
@@ -78,6 +85,8 @@ const audioTestStatus = document.querySelector('#audio-test-status');
 const mediaOutputCheck = new Audio(new URL('./audio-output-check.wav', document.baseURI).href);
 steps.setOutputMode(outputMode.value);
 steps.setMasterVolume(Number(masterVolume.value));
+steps.setEnvironmentMode(environmentType.value);
+for (const [kind, input] of ambientVolumes) steps.setChannelVolume(kind, Number(input.value));
 let interactionEngine = null;
 let surfaceReady = false;
 let frame;
@@ -199,9 +208,13 @@ hideTrack.addEventListener('change', () => {
   trackHiddenNote.hidden = !hideTrack.checked;
 });
 const volumePercent = (value) => `${Math.round(Number(value) * 100)}%`;
-const stationaryAudioNote = () => worldTraffic.checked && !isolateContacts.checked && Number(trafficVolume.value) > 0
-  ? 'Parada: passos, encontros e brincos pausados. Aguarde o trânsito ocasional ao longe.'
-  : 'Parada: nenhuma camada sonora ativa. Ligue o trânsito ou escolha Andando.';
+const hasStationaryAmbience = () => !isolateContacts.checked && (
+  (worldTraffic.checked && Number(trafficVolume.value) > 0)
+  || ambientChoices.some((choice) => choice.checked && Number(ambientVolumes.get(choice.dataset.ambientKind).value) > 0)
+);
+const stationaryAudioNote = () => hasStationaryAmbience()
+  ? 'Parada: passos, encontros e brincos pausados. As camadas de ambiente escolhidas continuam.'
+  : 'Parada: nenhuma camada sonora ativa. Ligue um som de ambiente ou escolha Andando.';
 stepsVolume.addEventListener('input', () => {
   steps.setChannelVolume('steps', Number(stepsVolume.value));
   stepsVolumeValue.textContent = volumePercent(stepsVolume.value);
@@ -278,6 +291,7 @@ isolateContacts.addEventListener('change', () => {
   steps.setFootstepsMuted(isolateContacts.checked);
   stepsVolume.disabled = isolateContacts.checked || movementMode.value === 'stationary';
   updateTrafficAudibility();
+  for (const choice of ambientChoices) void updateAmbientChoice(choice);
   updateBodyControls();
   if (steps.active) stepStatus.textContent = movementMode.value === 'stationary'
     ? stationaryAudioNote()
@@ -297,6 +311,43 @@ function updateTrafficAudibility() {
   updateVisualScene();
 }
 worldTraffic.addEventListener('change', updateTrafficAudibility);
+environmentType.addEventListener('change', () => {
+  steps.setEnvironmentMode(environmentType.value);
+  environmentNote.textContent = environmentType.value === 'indoor'
+    ? 'Em sala fechada: sons ambientais mais abafados e com reflexões curtas.'
+    : 'Ao ar livre: sons ambientais mais abertos, sem reflexões de sala.';
+  updateVisualScene();
+});
+async function updateAmbientChoice(choice) {
+  const kind = choice.dataset.ambientKind;
+  const request = (ambientRequests.get(kind) ?? 0) + 1;
+  ambientRequests.set(kind, request);
+  const enabled = choice.checked && !isolateContacts.checked;
+  ambientVolumes.get(kind).disabled = !surfaceReady || !enabled;
+  ambienceStatus.textContent = enabled ? 'Preparando a paisagem sonora…' : 'As camadas escolhidas podem ser combinadas e ajustadas separadamente.';
+  try {
+    await steps.setAmbientEnabled(kind, enabled);
+    if (ambientRequests.get(kind) !== request) return;
+    ambienceStatus.textContent = enabled
+      ? steps.active ? 'Paisagem sonora ligada. Ajuste o volume enquanto escuta.' : 'Paisagem selecionada. Reproduza a cena para ouvir.'
+      : 'As camadas escolhidas podem ser combinadas e ajustadas separadamente.';
+  } catch (error) {
+    if (ambientRequests.get(kind) !== request) return;
+    choice.checked = false;
+    ambientVolumes.get(kind).disabled = true;
+    await steps.setAmbientEnabled(kind, false);
+    ambienceStatus.textContent = `Não foi possível carregar este som: ${error.message}`;
+  }
+  if (steps.active && movementMode.value === 'stationary') stepStatus.textContent = stationaryAudioNote();
+  updateVisualScene();
+}
+for (const choice of ambientChoices) choice.addEventListener('change', () => { void updateAmbientChoice(choice); });
+for (const [kind, input] of ambientVolumes) input.addEventListener('input', () => {
+  steps.setChannelVolume(kind, Number(input.value));
+  document.querySelector(`#${input.id}-value`).textContent = volumePercent(input.value);
+  if (steps.active && movementMode.value === 'stationary') stepStatus.textContent = stationaryAudioNote();
+  updateVisualScene();
+});
 function updateBodyControls() {
   bodyVolume.disabled = !bodyEarrings.checked || isolateContacts.checked;
   bodyStatus.textContent = !bodyEarrings.checked
@@ -466,14 +517,26 @@ function updateVisualScene() {
   walkVisual.dataset.leaf = String(audible('dry_leaf'));
   walkVisual.dataset.pebble = String(audible('pebble'));
   walkVisual.dataset.traffic = String(worldTraffic.checked && !isolateContacts.checked && Number(trafficVolume.value) > 0);
+  walkVisual.dataset.environment = environmentType.value;
+  stagePlace.textContent = environmentType.value === 'indoor' ? 'SALA FECHADA' : 'RUA QUIETA';
+  for (const choice of ambientChoices) {
+    const kind = choice.dataset.ambientKind;
+    walkVisual.dataset[kind] = String(choice.checked && !isolateContacts.checked && Number(ambientVolumes.get(kind).value) > 0);
+  }
   const names = [
     audible('dry_flower') && 'flor seca',
     audible('dry_leaf') && 'folha seca',
     audible('pebble') && 'pedra',
   ].filter(Boolean);
   const ground = names.length ? `Ao caminhar: ${names.join(', ')}` : 'Ao caminhar: só asfalto';
-  const traffic = walkVisual.dataset.traffic === 'true' ? 'trânsito ao longe' : 'sem trânsito';
-  visualSummary.textContent = `${movementMode.value === 'stationary' ? 'Você está parada' : 'Você caminha'} · ${ground} · ${traffic}. Vista ilustrativa das escolhas.`;
+  const world = [
+    walkVisual.dataset.traffic === 'true' && 'trânsito ao longe',
+    walkVisual.dataset.breeze === 'true' && 'brisa',
+    walkVisual.dataset.rain === 'true' && 'chuva',
+    walkVisual.dataset.storm === 'true' && 'tempestade',
+    walkVisual.dataset.fireplace === 'true' && 'lareira',
+  ].filter(Boolean).join(', ') || 'sem sons de ambiente';
+  visualSummary.textContent = `${movementMode.value === 'stationary' ? 'Você está parada' : 'Você caminha'} · ${environmentType.value === 'indoor' ? 'sala fechada' : 'ar livre'} · ${ground} · ${world}. Vista ilustrativa das escolhas.`;
 }
 for (const choice of materialChoices) choice.addEventListener('change', () => {
   if (!interactionEngine) return;
@@ -524,6 +587,7 @@ async function loadSurfaceScene() {
     interactionDensity.disabled = false;
     for (const choice of materialChoices) choice.disabled = false;
     worldTraffic.disabled = false;
+    for (const choice of ambientChoices) choice.disabled = false;
     updateLayerControls();
     updateTrafficAudibility();
     updateEncounterRate();
