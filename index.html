@@ -888,11 +888,14 @@
       body:not(:has(.apresentacao-projeto:target)):not(:has(#privacidade-caderno-de-bordo:target)):not(:has(#termos-de-servico:target)) > main .porta-portal {
         position: absolute;
         z-index: 4;
-        top: 10%;
-        bottom: 7%;
+        top: 50%;
+        bottom: auto;
         left: var(--espaco-entre-widgets);
         display: block;
         width: 18rem;
+        aspect-ratio: 9 / 16;
+        overflow: hidden;
+        transform: translateY(-50%);
       }
 
       body > main::-webkit-scrollbar,
@@ -1371,7 +1374,7 @@
   </style>
   <script src="assets/rebojar-som.min.js?v=sound-nested-widgets-4" defer></script>
   <script src="assets/rebojar-traducao.js?v=translation-local-4" defer></script>
-  <script src="assets/widget-estante/rebojar-estante.min.js?v=20261014-17" defer></script>
+  <script src="assets/widget-estante/rebojar-estante.min.js?v=20261115-legibilidade" defer></script>
 </head>
 <body>
   <div class="scroll-indicador" aria-hidden="true"></div>
