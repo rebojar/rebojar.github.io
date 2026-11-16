@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=2a4391d833b8';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=2a4391d833b8';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=2a4391d833b8';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=2a4391d833b8';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=2a4391d833b8';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=ec0d62cea257';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=ec0d62cea257';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=ec0d62cea257';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=ec0d62cea257';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=ec0d62cea257';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -71,8 +71,6 @@ const trackHiddenNote = document.querySelector('#track-hidden-note');
 const stageMetrics = document.querySelector('.stage-metrics');
 const sceneTransport = document.querySelector('#scene-transport');
 const walkVisual = document.querySelector('.walk-visual');
-const stageAction = document.querySelector('#stage-action');
-const stagePlace = document.querySelector('#stage-place');
 const visualSummary = document.querySelector('#visual-summary');
 const animateScene = document.querySelector('#animate-scene');
 const audioError = document.querySelector('#audio-error');
@@ -81,6 +79,20 @@ const engineAudioTest = document.querySelector('#engine-audio-test');
 const stepsChannelTest = document.querySelector('#steps-channel-test');
 const audioTestStatus = document.querySelector('#audio-test-status');
 const mediaOutputCheck = new Audio(new URL('./audio-output-check.wav', document.baseURI).href);
+const playerChannel = typeof BroadcastChannel === 'function' ? new BroadcastChannel('rebojar-audicanvas-v1') : null;
+let playerMuted = false;
+function publishPlayerState() {
+  playerChannel?.postMessage({ type: 'player-state', playing: Boolean(steps.active || audio.active), muted: playerMuted });
+}
+if (playerChannel) playerChannel.onmessage = ({ data }) => {
+  if (data?.type === 'request-state') { publishPlayerState(); return; }
+  if (data?.type !== 'set-muted' || typeof data.muted !== 'boolean') return;
+  playerMuted = data.muted;
+  syncMasterVolume();
+  audio.setVolume(playerMuted ? 0 : Number(passageVolume.value));
+  publishPlayerState();
+};
+window.name = 'rebojar-audicanvas';
 syncOutputProfile();
 steps.setEnvironmentMode(environmentType.value);
 for (const [kind, input] of ambientVolumes) steps.setChannelVolume(kind, Number(input.value));
@@ -171,6 +183,7 @@ function halt(message = 'Passagem interrompida.') {
   status.textContent = message;
   signal.textContent = 'Sinal: —';
   syncScreen();
+  publishPlayerState();
 }
 function draw() {
   const sample = audio.sample();
@@ -193,12 +206,12 @@ async function beginPassage(restartFromBeginning = false) {
     else await audio.start(scene.value);
     if (request !== passageRequest) return;
     passagePaused = false;
-    if (document.hidden) { await pausePassage('Pausado ao sair da página.'); return; }
     start.textContent = 'Iniciar passagem';
     stop.disabled = false;
     restart.disabled = false;
     status.textContent = 'Ouça a trajetória selecionada.';
     draw();
+    publishPlayerState();
   } catch (error) { if (request === passageRequest) halt(`Não foi possível iniciar: ${error.message}`); }
 }
 async function pausePassage(message = 'Passagem pausada. Continue de onde parou.') {
@@ -216,6 +229,7 @@ async function pausePassage(message = 'Passagem pausada. Continue de onde parou.
     status.textContent = message;
     const sample = audio.sample();
     signal.textContent = `Pausado em ${sample.elapsed.toFixed(1)} s`;
+    publishPlayerState();
   } catch (error) { if (request === passageRequest) halt(`Não foi possível pausar: ${error.message}`); }
 }
 start.addEventListener('click', () => { void beginPassage(); });
@@ -252,7 +266,7 @@ trafficVolume.addEventListener('input', () => {
   updateTrafficAudibility();
 });
 passageVolume.addEventListener('input', () => {
-  audio.setVolume(Number(passageVolume.value));
+  audio.setVolume(playerMuted ? 0 : Number(passageVolume.value));
   passageVolumeValue.textContent = volumePercent(passageVolume.value);
 });
 
@@ -265,7 +279,6 @@ function renderMovementElapsed(time) {
 function renderMovement(snapshot) {
   walkVisual.dataset.moving = String(snapshot.moving);
   walkVisual.dataset.playing = String(steps.active);
-  stageAction.textContent = movementMode.value === 'stationary' ? 'PARADA' : environmentType.value === 'indoor' ? 'CIRCUITO' : 'CAMINHADA';
   const roomAngle = snapshot.position.z / 1.8;
   walkVisual.style.setProperty('--room-orbit-x', `${(Math.sin(roomAngle) * 30).toFixed(2)}%`);
   walkVisual.style.setProperty('--room-orbit-y', `${(Math.cos(roomAngle) * 23).toFixed(2)}%`);
@@ -310,6 +323,7 @@ function stopMovement(reason) {
   renderMovement(movement.stop(time));
   stepStatus.textContent = 'Cena parada. Pronta para reproduzir.';
   if (reason && movementElapsedSeconds > 0) movementStatus.textContent = reason;
+  publishPlayerState();
 }
 isolateContacts.addEventListener('change', () => {
   steps.setFootstepsMuted(isolateContacts.checked);
@@ -412,7 +426,7 @@ movementStart.addEventListener('click', async () => {
         : 'Passos sintéticos ligados. Ajuste um volume confortável.';
   } catch (error) {
     steps.stop(movementTime());
-    if (request !== movementStartRequest || document.hidden) return;
+    if (request !== movementStartRequest) return;
     movementStatus.textContent = 'Não foi possível começar.';
     stepStatus.textContent = 'Áudio indisponível. Tente novamente; se persistir, recarregue a página.';
     audioError.textContent = `Áudio indisponível: ${error.message}`;
@@ -420,7 +434,7 @@ movementStart.addEventListener('click', async () => {
     movementStart.disabled = false;
     return;
   }
-  if (request !== movementStartRequest || document.hidden) {
+  if (request !== movementStartRequest) {
     steps.stop(time);
     stepStatus.textContent = 'Cena pronta. Escolha a posição e reproduza.';
     movementStart.disabled = false;
@@ -431,6 +445,7 @@ movementStart.addEventListener('click', async () => {
   renderMovementElapsed(time);
   renderMovement(movementMode.value === 'walking' ? movement.start(time) : movement.stop(time));
   movementFrame = requestAnimationFrame(drawMovement);
+  publishPlayerState();
 });
 movementStop.addEventListener('click', () => stopMovement());
 movementMode.addEventListener('change', () => {
@@ -454,10 +469,10 @@ function syncOutputProfile() {
   syncMasterVolume();
 }
 function syncMasterVolume() {
-  steps.setMasterVolume(Number(masterVolume.value));
+  steps.setMasterVolume(playerMuted ? 0 : Number(masterVolume.value));
   const percent = `${Math.round(Number(masterVolume.value) * 100)}%`;
-  masterVolumeValue.textContent = percent;
-  masterVolume.setAttribute('aria-valuetext', percent);
+  masterVolumeValue.textContent = playerMuted ? 'MUDO' : percent;
+  masterVolume.setAttribute('aria-valuetext', playerMuted ? `Mudo; ajuste salvo em ${percent}` : percent);
   masterVolumeControl.style.setProperty('--knob-angle', `${(-135 + 270 * Number(masterVolume.value) / Number(masterVolume.max)).toFixed(1)}deg`);
 }
 masterVolume.addEventListener('input', syncMasterVolume);
@@ -559,7 +574,6 @@ function updateVisualScene() {
   walkVisual.dataset.pebble = String(audible('pebble'));
   walkVisual.dataset.traffic = String(worldTraffic.checked && !isolateContacts.checked && Number(trafficVolume.value) > 0);
   walkVisual.dataset.environment = environmentType.value;
-  stagePlace.textContent = environmentType.value === 'indoor' ? 'QUARTO' : 'RUA QUIETA';
   for (const choice of ambientChoices) {
     const kind = choice.dataset.ambientKind;
     walkVisual.dataset[kind] = String(choice.checked && !isolateContacts.checked && Number(ambientVolumes.get(kind).value) > 0);
@@ -602,9 +616,6 @@ for (const button of contactPreviewButtons) button.addEventListener('click', asy
       : 'Comparação interrompida por outro ensaio.';
   } catch (error) { contactPreviewStatus.textContent = `Não foi possível ouvir: ${error.message}`; }
   finally { for (const control of contactPreviewButtons) control.disabled = false; }
-});
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) { void pausePassage('Pausado ao sair da página.'); stopMovement('Ensaio interrompido ao sair da aba.'); }
 });
 window.addEventListener('pagehide', () => { halt(); stopMovement(); });
 renderScene();

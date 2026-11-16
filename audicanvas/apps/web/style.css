@@ -152,8 +152,6 @@ select { width: 100%; min-height: 44px; padding: .6rem; border: 1px solid #91b4b
 .walk-visual:not([data-playing="true"]) .weather-rain { animation-play-state: paused; }
 .walk-visual[data-animate="false"] .weather-rain { animation: none; }
 .room-view { position: absolute; z-index: 3; inset: 2%; border: 8px solid #2c4a5d; border-bottom-width: 12px; box-shadow: inset 0 0 0 3px #88a9b65c, inset 0 0 50px #06111d88; pointer-events: none; display: none; }
-.room-bed { position: absolute; top: 7%; left: 7%; width: clamp(62px, 15%, 120px); height: clamp(70px, 47%, 120px); border: 5px solid #74533e; border-radius: 10px; background: linear-gradient(180deg, #d8d9c7 0 30%, #668595 31% 64%, #3e6478 65%); box-shadow: 4px 5px 0 #1025379e, inset 0 0 0 3px #d9d2b186; }
-.room-bed::after { content: ""; position: absolute; top: 8%; left: 15%; width: 70%; height: 20%; border-radius: 40%; background: #eef0e4; box-shadow: 0 2px 4px #1a3446; }
 .room-window { position: absolute; top: 7%; right: 7%; width: clamp(88px, 23%, 180px); height: clamp(68px, 40%, 105px); border: 6px solid #638494; background: linear-gradient(180deg, #294e66a8, #112f43b8); box-shadow: inset 0 0 0 2px #0c263d, 2px 3px 0 #0b2433a8; }
 .room-window::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; border-top: 3px solid #638494; }
 .room-window::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; border-left: 3px solid #638494; }
@@ -162,7 +160,6 @@ select { width: 100%; min-height: 44px; padding: .6rem; border: 1px solid #91b4b
 .walk-visual[data-environment="indoor"] .room-view, .walk-visual[data-fireplace="true"] .room-fireplace { display: block; }
 .walk-visual[data-fireplace="true"][data-environment="outdoor"] .room-view { display: block; border: 0; box-shadow: none; }
 .walk-visual[data-environment="outdoor"] .room-window { display: none; }
-.walk-visual[data-environment="outdoor"] .room-bed { display: none; }
 .path-way { position: absolute; inset: 0 4%; clip-path: polygon(43% 0, 57% 0, 95% 100%, 5% 100%); background: repeating-linear-gradient(180deg, #b8e6f128 0 2px, transparent 2px 46px), linear-gradient(180deg, #1b4c66, #24617d); background-size: 100% 48px, auto; animation-name: path-flow; animation-duration: var(--walk-duration); animation-timing-function: linear; animation-iteration-count: infinite; animation-play-state: paused; }
 .walk-visual[data-moving="true"] .path-way { animation-play-state: running; }
 @keyframes path-flow { to { background-position-y: 48px, 0; } }
@@ -191,7 +188,7 @@ select { width: 100%; min-height: 44px; padding: .6rem; border: 1px solid #91b4b
 .walk-visual[data-animate="false"] .path-way, .walk-visual[data-animate="false"] .path-object, .walk-visual[data-animate="false"] .traffic-car { animation: none; }
 .walk-visual[data-environment="indoor"] { background: linear-gradient(180deg, #223e50 0 29%, #8098a0 29.2%, #263f4c 31%, #344e5a 100%); }
 .walk-visual[data-environment="indoor"]::before { inset: 30% 4% 0; border-top: 4px solid #8fa8a8; background: repeating-linear-gradient(90deg, #b7c5ba10 0 2px, transparent 3px 45px), linear-gradient(180deg, #3d5964, #273e4d); box-shadow: inset 0 14px 20px #10233066; }
-.walk-visual[data-environment="indoor"] .path-way { inset: 32% 17% 11%; clip-path: none; border: 2px dashed #c5d7c064; border-radius: 50%; background: radial-gradient(ellipse, #8da69e4d 0 43%, #233e4c66 66%, transparent 72%); box-shadow: 0 0 0 8px #b0c5af0d; animation: none; }
+.walk-visual[data-environment="indoor"] .path-way { inset: 32% 17% 11%; clip-path: none; border: 8px double #c59d73; border-radius: 50%; background: repeating-linear-gradient(0deg, #c49b721f 0 2px, transparent 2px 5px), repeating-linear-gradient(90deg, #d5ad7e1a 0 2px, transparent 2px 5px), radial-gradient(ellipse, #9b6d58 0 40%, #72514c 64%, #384b51 100%); box-shadow: 0 7px 14px #0b202b88, inset 0 0 0 3px #2c5660, inset 0 0 0 9px #c39c7399; animation: none; }
 .walk-visual[data-environment="indoor"] .path-object { animation: none; opacity: .85; scale: .9; }
 .walk-visual[data-environment="indoor"] .walk-marker { z-index: 4; bottom: auto; left: calc(50% + var(--room-orbit-x, 0%)); top: calc(59% + var(--room-orbit-y, 23%)); transform: translate(-50%, -50%); }
 .walk-visual[data-environment="indoor"][data-animate="false"] .walk-marker { left: 50%; top: 82%; }
