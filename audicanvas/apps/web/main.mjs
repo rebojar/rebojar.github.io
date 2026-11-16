@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=591128fa5ebf';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=591128fa5ebf';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=591128fa5ebf';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=591128fa5ebf';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=591128fa5ebf';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=6e457f236735';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=6e457f236735';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=6e457f236735';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=6e457f236735';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=6e457f236735';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -46,6 +46,14 @@ const flowerCount = document.querySelector('#flower-count');
 const leafCount = document.querySelector('#leaf-count');
 const pebbleCount = document.querySelector('#pebble-count');
 const contactPreviewButtons = document.querySelectorAll('[data-contact-kind]');
+const drawers = [...document.querySelectorAll('.control-drawer')];
+const trajectoryDrawer = document.querySelector('#drawer-trajectory');
+const walkView = document.querySelector('#walk-view');
+const trajectoryView = document.querySelector('#trajectory-view');
+const trajectorySceneLabel = document.querySelector('#trajectory-scene-label');
+const trackHiddenNote = document.querySelector('#track-hidden-note');
+const stageMetrics = document.querySelector('.stage-metrics');
+const walkVisual = document.querySelector('.walk-visual');
 let interactionEngine = null;
 let surfaceReady = false;
 let frame;
@@ -65,6 +73,7 @@ const descriptions = {
 function renderScene(progress = 0) {
   const selected = scene.value;
   description.textContent = descriptions[selected];
+  trajectorySceneLabel.textContent = scene.selectedOptions[0].textContent;
   source.textContent = [DIAGNOSTIC_SCENES.PASS_RIGHT, DIAGNOSTIC_SCENES.PASS_RIGHT_RICH].includes(selected) ? '◇ fonte à direita' : '◇ fonte';
   if (selected === DIAGNOSTIC_SCENES.CROSS) {
     listener.style.left = '50%';
@@ -74,6 +83,20 @@ function renderScene(progress = 0) {
     source.style.left = selected === DIAGNOSTIC_SCENES.FAR ? '33.3%' : '50%';
   }
 }
+function syncScreen() {
+  const showTrajectory = trajectoryDrawer.open || audio.active || passagePaused;
+  walkView.hidden = showTrajectory;
+  trajectoryView.hidden = !showTrajectory;
+  stageMetrics.hidden = showTrajectory;
+}
+for (const drawer of drawers) drawer.addEventListener('toggle', () => {
+  if (drawer.open) {
+    for (const other of drawers) if (other !== drawer) other.open = false;
+    if (drawer === trajectoryDrawer && movement.observe(movementTime()).moving) stopMovement();
+    if (drawer !== trajectoryDrawer && (audio.active || passagePaused)) halt('Passagem interrompida ao abrir outro painel.');
+  }
+  syncScreen();
+});
 function halt(message = 'Passagem interrompida.') {
   passageRequest++;
   cancelAnimationFrame(frame);
@@ -86,6 +109,7 @@ function halt(message = 'Passagem interrompida.') {
   scene.disabled = false;
   status.textContent = message;
   signal.textContent = 'Sinal: —';
+  syncScreen();
 }
 function draw() {
   const sample = audio.sample();
@@ -137,7 +161,10 @@ start.addEventListener('click', () => { void beginPassage(); });
 stop.addEventListener('click', () => { void pausePassage(); });
 restart.addEventListener('click', () => { void beginPassage(true); });
 scene.addEventListener('change', () => renderScene());
-hideTrack.addEventListener('change', () => { track.hidden = hideTrack.checked; });
+hideTrack.addEventListener('change', () => {
+  track.hidden = hideTrack.checked;
+  trackHiddenNote.hidden = !hideTrack.checked;
+});
 
 function movementTime() { return performance.now() / 1000; }
 function renderMovementElapsed(time) {
@@ -146,6 +173,8 @@ function renderMovementElapsed(time) {
   movementElapsed.textContent = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}${seconds >= 120 ? ' ✓' : ''}`;
 }
 function renderMovement(snapshot) {
+  walkVisual.dataset.moving = String(snapshot.moving);
+  walkVisual.style.setProperty('--walk-duration', `${Math.max(0.7, 2.2 / Math.max(0.2, snapshot.speed)).toFixed(2)}s`);
   movementSpeedValue.textContent = `${snapshot.speed.toFixed(1).replace('.', ',')} m/s`;
   movementDistance.textContent = `${snapshot.position.z.toFixed(2).replace('.', ',')} m`;
   stepCount.textContent = String(steps.scheduledCount);
@@ -340,3 +369,4 @@ async function loadSurfaceScene() {
   }
 }
 void loadSurfaceScene();
+syncScreen();

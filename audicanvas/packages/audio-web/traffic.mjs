@@ -1,4 +1,4 @@
-import { TRAFFIC_PASS_V0 } from '../engine/world.mjs?v=591128fa5ebf';
+import { TRAFFIC_PASS_V0 } from '../engine/world.mjs?v=6e457f236735';
 
 function trafficNoise(context, seed, duration) {
   const length = Math.ceil(context.sampleRate * duration);
