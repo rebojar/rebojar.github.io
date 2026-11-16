@@ -1,4 +1,4 @@
-import { TRAFFIC_PASS_V0 } from '../engine/world.mjs?v=6e457f236735';
+import { TRAFFIC_PASS_V0 } from '../engine/world.mjs?v=5514966d6c52';
 
 function trafficNoise(context, seed, duration) {
   const length = Math.ceil(context.sampleRate * duration);
@@ -21,9 +21,14 @@ function trafficNoise(context, seed, duration) {
 
 // Provisional dry, distant open-air traffic. No sample loop or room reverb.
 export class DistantTrafficAudio {
-  constructor() { this.voices = new Set(); }
+  constructor() { this.voices = new Set(); this.outputMode = 'headphones'; }
 
-  play(event, context, clockOffset) {
+  setOutputMode(mode) {
+    if (!['speakers', 'headphones'].includes(mode)) throw new RangeError('Saída de áudio desconhecida.');
+    this.outputMode = mode;
+  }
+
+  play(event, context, clockOffset, output = context.destination) {
     if (event?.schema !== TRAFFIC_PASS_V0) throw new TypeError('Passagem de trânsito inválida.');
     const scheduled = event.time - clockOffset;
     if (scheduled < context.currentTime - 0.03) return false;
@@ -33,9 +38,9 @@ export class DistantTrafficAudio {
     source.buffer = trafficNoise(context, event.index, event.duration);
     const filter = context.createBiquadFilter();
     filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(380, start);
-    filter.frequency.linearRampToValueAtTime(680, start + event.duration * 0.5);
-    filter.frequency.linearRampToValueAtTime(340, end);
+    filter.frequency.setValueAtTime(this.outputMode === 'speakers' ? 650 : 380, start);
+    filter.frequency.linearRampToValueAtTime(this.outputMode === 'speakers' ? 1200 : 680, start + event.duration * 0.5);
+    filter.frequency.linearRampToValueAtTime(this.outputMode === 'speakers' ? 550 : 340, end);
     const gain = context.createGain();
     gain.gain.setValueAtTime(0, start);
     gain.gain.linearRampToValueAtTime(0.11 * event.intensity, start + event.duration * 0.45);
@@ -44,15 +49,15 @@ export class DistantTrafficAudio {
     const pan = context.createPanner();
     pan.panningModel = 'HRTF';
     pan.distanceModel = 'inverse';
-    pan.refDistance = 2;
+    pan.refDistance = this.outputMode === 'speakers' ? 8 : 2;
     pan.maxDistance = 100;
-    pan.rolloffFactor = 0.8;
+    pan.rolloffFactor = this.outputMode === 'speakers' ? 0.45 : 0.8;
     pan.positionX.setValueAtTime(event.x, start);
     pan.positionY.setValueAtTime(0, start);
     // World +Z is Web Audio -Z. The vehicle stays on the far side of the street.
     pan.positionZ.setValueAtTime(-event.zFrom, start);
     pan.positionZ.linearRampToValueAtTime(-event.zTo, end);
-    source.connect(filter).connect(gain).connect(pan).connect(context.destination);
+    source.connect(filter).connect(gain).connect(pan).connect(output);
     const voice = { source, filter, gain, pan, start };
     this.voices.add(voice);
     source.onended = () => {

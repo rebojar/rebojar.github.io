@@ -1,4 +1,4 @@
-import { BODY_EARRING_V0 } from '../engine/body.mjs?v=6e457f236735';
+import { BODY_EARRING_V0 } from '../engine/body.mjs?v=5514966d6c52';
 
 // A short, low-level metallic double resonance close to the listener.
 export class BodyEarringAudio {
@@ -9,7 +9,7 @@ export class BodyEarringAudio {
     this.volume = volume;
   }
 
-  play(event, context, clockOffset) {
+  play(event, context, clockOffset, output = context.destination) {
     if (event?.schema !== BODY_EARRING_V0) throw new TypeError('Evento corporal inválido.');
     const start = Math.max(event.time - clockOffset, context.currentTime + 0.003);
     if (event.time - clockOffset < context.currentTime - 0.03) return false;
@@ -22,8 +22,8 @@ export class BodyEarringAudio {
     const pan = context.createStereoPanner?.();
     if (pan) {
       pan.pan.value = event.side === 'left' ? -0.32 : 0.32;
-      gain.connect(pan).connect(context.destination);
-    } else gain.connect(context.destination);
+      gain.connect(pan).connect(output);
+    } else gain.connect(output);
 
     const oscillators = [1, 1.43].map((ratio, index) => {
       const oscillator = context.createOscillator();

@@ -7,7 +7,7 @@
   <meta name="description" content="AUDICANVAS: componha uma cena sonora e acompanhe o movimento na cabine de escuta.">
   <title>AUDICANVAS · Cabine de escuta</title>
   <link rel="icon" href="./toca-discos-v01.ico" type="image/x-icon">
-  <link rel="stylesheet" href="./style.css?v=6e457f236735">
+  <link rel="stylesheet" href="./style.css?v=5514966d6c52">
 </head>
 <body>
   <a class="skip-link" href="#escuta">Ir para a tela de escuta</a>
@@ -28,14 +28,19 @@
             <div class="drawer-content play-controls">
               <p class="control-kicker">MOVIMENTO PLANO</p>
               <h2>Encontre o seu ritmo</h2>
-              <p>Ajuste a velocidade enquanto anda.</p>
-              <label for="movement-speed">Velocidade <output id="movement-speed-value" for="movement-speed">1,0 m/s</output></label>
+              <p>Escolha ficar parada ou caminhar; o trânsito pode continuar ao longe.</p>
+              <label for="output-mode">Saída de áudio</label>
+              <select id="output-mode"><option value="speakers">Alto-falantes</option><option value="headphones">Fones estéreo</option></select>
+              <label class="range-label" for="master-volume">Volume geral da cena <output id="master-volume-value" for="master-volume">100%</output></label>
+              <input id="master-volume" type="range" min="0" max="3" step="0.1" value="1">
+              <label for="movement-mode">Sua posição</label>
+              <select id="movement-mode"><option value="walking">Andando</option><option value="stationary">Parada</option></select>
+              <label for="movement-speed">Velocidade ao caminhar <output id="movement-speed-value" for="movement-speed">1,0 m/s</output></label>
               <input id="movement-speed" type="range" min="0.2" max="2" step="0.1" value="1">
-              <div class="buttons movement-buttons">
-                <button id="movement-start" aria-describedby="step-status" disabled>Começar a andar</button>
-                <button id="movement-stop" class="button-secondary" disabled>Parar</button>
-                <button id="movement-reset" class="button-quiet">Zerar distância</button>
-              </div>
+              <label class="range-label" for="steps-volume">Volume dos passos <output id="steps-volume-value" for="steps-volume">100%</output></label>
+              <input id="steps-volume" type="range" min="0" max="1" step="0.05" value="1">
+              <button id="movement-reset" class="button-quiet">Zerar distância</button>
+              <p class="note">Use “Reproduzir cena” na tela central para ouvir a combinação escolhida.</p>
               <p class="note">Passos, brincos e trânsito ainda são sons sintéticos.</p>
             </div>
           </details>
@@ -48,8 +53,14 @@
               <fieldset class="material-choice">
                 <legend>O que há no caminho</legend>
                 <label class="choice" for="material-flower"><input id="material-flower" type="checkbox" data-material-kind="dry_flower" checked disabled><span>Flores secas</span></label>
+                <label class="range-label" for="flower-volume">Volume das flores <output id="flower-volume-value" for="flower-volume">100%</output></label>
+                <input id="flower-volume" type="range" min="0" max="1" step="0.05" value="1" data-layer-volume="dry_flower" disabled>
                 <label class="choice" for="material-leaf"><input id="material-leaf" type="checkbox" data-material-kind="dry_leaf" checked disabled><span>Folhas secas</span></label>
+                <label class="range-label" for="leaf-volume">Volume das folhas <output id="leaf-volume-value" for="leaf-volume">100%</output></label>
+                <input id="leaf-volume" type="range" min="0" max="1" step="0.05" value="1" data-layer-volume="dry_leaf" disabled>
                 <label class="choice" for="material-pebble"><input id="material-pebble" type="checkbox" data-material-kind="pebble" checked disabled><span>Pedrinhas</span></label>
+                <label class="range-label" for="pebble-volume">Volume das pedras <output id="pebble-volume-value" for="pebble-volume">100%</output></label>
+                <input id="pebble-volume" type="range" min="0" max="1" step="0.05" value="1" data-layer-volume="pebble" disabled>
               </fieldset>
               <label class="range-label" for="interaction-density">Frequência dos encontros <output id="interaction-density-value" for="interaction-density">normal</output></label>
               <input id="interaction-density" type="range" min="0" max="2" step="0.1" value="1" disabled>
@@ -75,7 +86,7 @@
               <h2 id="body-title">Perto de você</h2>
               <p>Um tilintar leve acompanha os passos, como brincos que se movem com o corpo.</p>
               <label class="choice choice-feature" for="body-earrings"><input id="body-earrings" type="checkbox"><span>Ouvir brincos</span></label>
-              <label class="range-label" for="body-volume">Volume dos brincos <output id="body-volume-value" for="body-volume">baixo</output></label>
+              <label class="range-label" for="body-volume">Volume dos brincos <output id="body-volume-value" for="body-volume">40%</output></label>
               <input id="body-volume" type="range" min="0" max="1" step="0.1" value="0.4" disabled>
               <p id="body-status" class="note" role="status">Brincos desligados. Ligue para ajustar o volume.</p>
             </section>
@@ -84,19 +95,26 @@
 
         <section id="escuta" class="central-screen" aria-labelledby="screen-title">
           <div class="screen-heading">
-            <span class="section-index">CABINE / ESCUTA</span>
+            <div class="screen-heading-top"><span class="section-index">CABINE / ESCUTA</span><label class="motion-choice" for="animate-scene"><input id="animate-scene" type="checkbox" checked><span>Animar cenário</span></label></div>
             <h1 id="screen-title">AUDICANVAS</h1>
             <p>Monte o som nas laterais. Acompanhe aqui o movimento que ele sugere.</p>
           </div>
+          <div id="scene-transport" class="scene-transport"><button id="movement-start" aria-describedby="step-status" disabled>▶ Reproduzir cena</button><button id="movement-stop" class="button-secondary" disabled>■ Parar</button><p id="audio-error" role="alert" hidden></p></div>
           <div class="soundstage">
             <div class="window-view">
               <div id="walk-view" class="visual-mode">
-                <p class="stage-label">RUA QUIETA <span aria-hidden="true">/</span> CAMINHADA</p>
-                <div class="walk-visual" aria-hidden="true">
-                  <div class="path-way"></div>
+                <p class="stage-label">RUA QUIETA <span aria-hidden="true">/</span> <span id="stage-action">CAMINHADA</span></p>
+                <div class="walk-visual" aria-hidden="true" data-moving="false" data-animate="false" data-flower="false" data-leaf="false" data-pebble="false" data-traffic="false">
+                  <div class="distant-road"><span class="road-stripe"></span><span class="traffic-car car-one" data-phase="0.25"></span><span class="traffic-car car-two" data-phase="0.75"></span></div>
+                  <div class="path-way">
+                    <span class="path-object flower flower-one" data-phase="0.14"></span><span class="path-object flower flower-two" data-phase="0.7"></span>
+                    <span class="path-object leaf leaf-one" data-phase="0.3"></span><span class="path-object leaf leaf-two" data-phase="0.82"></span>
+                    <span class="path-object pebble pebble-one" data-phase="0.48"></span><span class="path-object pebble pebble-two" data-phase="0.92"></span>
+                  </div>
                   <div class="walk-marker"><span>VOCÊ</span></div>
                 </div>
-                <div class="screen-caption">
+                <p id="visual-summary" class="visually-hidden" role="status">Preparando a vista do caminho…</p>
+                <div class="screen-caption visually-hidden">
                   <p id="movement-status" class="stage-status" role="status">Parado.</p>
                   <p id="step-status" class="stage-substatus" role="status">Preparando a cena…</p>
                 </div>
@@ -113,12 +131,12 @@
                 </div>
               </div>
             </div>
-            <div class="stage-metrics" aria-label="Leitura da caminhada">
+            <div class="stage-metrics" aria-label="Tempo e distância da cena">
               <p><span>Tempo</span><strong id="movement-elapsed">0:00</strong></p>
               <p><span>Distância</span><strong><output id="movement-distance">0,00 m</output></strong></p>
             </div>
           </div>
-          <p class="screen-footnote">Use fones estéreo e escolha um volume confortável.</p>
+          <p id="screen-footnote" class="screen-footnote">Passos também tocam nos alto-falantes; fones estéreo melhoram a direção.</p>
         </section>
 
         <aside class="control-rail rail-right" aria-label="Painel do estúdio: ambiente e ensaios">
@@ -130,6 +148,8 @@
               <h2 id="world-title">Ao longe</h2>
               <p>Um veículo ocasional atravessa o fundo da cena, à direita, em espaço aberto.</p>
               <label class="choice choice-feature" for="world-traffic"><input id="world-traffic" type="checkbox" checked disabled><span>Ouvir trânsito distante</span></label>
+              <label class="range-label" for="traffic-volume">Volume do trânsito <output id="traffic-volume-value" for="traffic-volume">100%</output></label>
+              <input id="traffic-volume" type="range" min="0" max="1" step="0.05" value="1" disabled>
               <p id="traffic-status" class="note" role="status">Preparando a cena de trânsito…</p>
             </section>
           </details>
@@ -144,6 +164,8 @@
                 <option value="pass-right">Passagem mais à direita</option>
                 <option value="pass-right-rich">Mesmo trajeto, som mais rico</option>
               </select>
+              <label class="range-label" for="passage-volume">Volume da passagem <output id="passage-volume-value" for="passage-volume">100%</output></label>
+              <input id="passage-volume" type="range" min="0" max="1" step="0.05" value="1">
               <div class="buttons">
                 <button id="start">Iniciar passagem</button>
                 <button id="stop" class="button-secondary" disabled>Pausar</button>
@@ -160,6 +182,12 @@
     <details class="telemetry-panel">
       <summary>Notas e contadores deste protótipo</summary>
       <div class="telemetry-content">
+        <details class="audio-diagnostics">
+          <summary>Sem som? Testar a saída</summary>
+          <p>Ouça dois tons curtos em volume confortável. Compare o reprodutor do navegador, o motor de áudio e o canal dos passos.</p>
+          <div class="buttons"><button id="media-audio-test" type="button">Testar navegador</button><button id="engine-audio-test" type="button">Testar motor</button><button id="steps-channel-test" type="button">Testar canal dos passos</button></div>
+          <p id="audio-test-status" role="status">Nenhum teste iniciado.</p>
+        </details>
         <p>Os números representam eventos programados; não provam o que chegou aos seus ouvidos.</p>
         <p>Passos calculados: <output id="step-count">0</output> · Tilintares: <output id="body-count">0</output> · Veículos: <output id="traffic-count">0</output></p>
         <p>Contatos programados: flores <output id="flower-count">0</output> · folhas <output id="leaf-count">0</output> · pedras <output id="pebble-count">0</output></p>
@@ -168,6 +196,6 @@
     </details>
   </main>
   <footer class="site-footer"><span>AUDICANVAS · laboratório sonoro do Rebojar</span><a href="https://rebojar.github.io/">Voltar ao Rebojar ↗</a></footer>
-  <script type="module" src="./main.mjs?v=6e457f236735"></script>
+  <script type="module" src="./main.mjs?v=5514966d6c52"></script>
 </body>
 </html>

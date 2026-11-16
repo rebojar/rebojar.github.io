@@ -1,5 +1,5 @@
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES, diagnosticPose } from '../engine/diagnostic-scenes.mjs?v=6e457f236735';
-import { AUDIO_FORWARD, AUDIO_UP, toAudioPosition } from './coordinates.mjs?v=6e457f236735';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES, diagnosticPose } from '../engine/diagnostic-scenes.mjs?v=5514966d6c52';
+import { AUDIO_FORWARD, AUDIO_UP, toAudioPosition } from './coordinates.mjs?v=5514966d6c52';
 
 const STOP_FADE_SECONDS = 0.12;
 const STOP_TAIL_SECONDS = 0.05;
@@ -36,7 +36,17 @@ export function schedulePosition(node, fromWorld, toWorld, startTime, endTime) {
 
 // Diagnostic source only. Foley and event scheduling belong to later gates.
 export class SpatialSpike {
-  constructor() { this.context = null; this.active = null; this.silenceUntil = 0; this.requestId = 0; }
+  constructor() { this.context = null; this.active = null; this.silenceUntil = 0; this.requestId = 0; this.volume = 1; }
+
+  setVolume(volume) {
+    if (!Number.isFinite(volume) || volume < 0 || volume > 1) throw new RangeError('Volume da passagem inválido.');
+    this.volume = volume;
+    const gain = this.active?.level.gain;
+    if (gain) {
+      if (typeof gain.setTargetAtTime === 'function') gain.setTargetAtTime(volume, this.context.currentTime, 0.015);
+      else gain.value = volume;
+    }
+  }
 
   async start(scene = DIAGNOSTIC_SCENES.PASS) {
     const initialPose = diagnosticPose(scene, 0);
@@ -51,6 +61,8 @@ export class SpatialSpike {
     if (request !== this.requestId) return;
     const oscillator = ctx.createOscillator();
     const gain = ctx.createGain();
+    const level = ctx.createGain();
+    level.gain.value = this.volume;
     const panner = ctx.createPanner();
     const meter = ctx.createAnalyser();
     meter.fftSize = 256;
@@ -69,10 +81,10 @@ export class SpatialSpike {
     const sourceScheduled = schedulePosition(panner, initialPose.source, finalPose.source, startTime, endTime);
     gain.gain.setValueAtTime(0, startTime);
     gain.gain.linearRampToValueAtTime(peakGain, startTime + 0.05);
-    oscillator.connect(panner).connect(gain).connect(meter).connect(ctx.destination);
-    const active = { oscillator, gain, panner, meter, scene, start: startTime, listenerScheduled, sourceScheduled, paused: false, data: new Float32Array(256) };
+    oscillator.connect(panner).connect(gain).connect(level).connect(meter).connect(ctx.destination);
+    const active = { oscillator, gain, level, panner, meter, scene, start: startTime, listenerScheduled, sourceScheduled, paused: false, data: new Float32Array(256) };
     oscillator.onended = () => {
-      oscillator.disconnect(); panner.disconnect(); gain.disconnect(); meter.disconnect();
+      oscillator.disconnect(); panner.disconnect(); gain.disconnect(); level.disconnect(); meter.disconnect();
       if (this.active === active) this.active = null;
     };
     this.active = active;

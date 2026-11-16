@@ -59,7 +59,7 @@ export class MicroInteractionAudio {
     try { await this.loading; } finally { this.loading = null; }
   }
 
-  play(event, context, clockOffset) {
+  play(event, context, clockOffset, output = context.destination) {
     const when = event.time - clockOffset;
     if (when < context.currentTime - 0.03) return false;
     const start = Math.max(when, context.currentTime + 0.003);
@@ -88,8 +88,8 @@ export class MicroInteractionAudio {
     const pan = context.createStereoPanner?.();
     if (pan) {
       pan.pan.value = event.foot === 'left' ? -0.22 : 0.22;
-      gain.connect(pan).connect(context.destination);
-    } else gain.connect(context.destination);
+      gain.connect(pan).connect(output);
+    } else gain.connect(output);
 
     source.connect(gain);
     const voice = { source, gain, pan, start };

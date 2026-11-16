@@ -1,13 +1,15 @@
-import { GaitClock } from '../engine/gait.mjs?v=6e457f236735';
-import { MicroInteractionAudio } from './interactions.mjs?v=6e457f236735';
-import { MICRO_KINDS } from '../engine/interaction.mjs?v=6e457f236735';
-import { earringEventForStep } from '../engine/body.mjs?v=6e457f236735';
-import { BodyEarringAudio } from './body.mjs?v=6e457f236735';
-import { TrafficPlanner } from '../engine/world.mjs?v=6e457f236735';
-import { DistantTrafficAudio } from './traffic.mjs?v=6e457f236735';
+import { GaitClock } from '../engine/gait.mjs?v=5514966d6c52';
+import { MicroInteractionAudio } from './interactions.mjs?v=5514966d6c52';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=5514966d6c52';
+import { earringEventForStep } from '../engine/body.mjs?v=5514966d6c52';
+import { BodyEarringAudio } from './body.mjs?v=5514966d6c52';
+import { TrafficPlanner } from '../engine/world.mjs?v=5514966d6c52';
+import { DistantTrafficAudio } from './traffic.mjs?v=5514966d6c52';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
+const MIX_CHANNELS = Object.freeze(['steps', 'dry_flower', 'dry_leaf', 'pebble', 'traffic']);
+const SPEAKER_BOOST = Object.freeze({ steps: 2.2, dry_flower: 3.4, dry_leaf: 3.4, pebble: 3.4, traffic: 2.4 });
 
 function noiseBuffer(context, index) {
   const length = Math.ceil(context.sampleRate * 0.13);
@@ -29,6 +31,7 @@ export class FootstepAudio {
     this.voices = new Set();
     this.timer = null;
     this.active = false;
+    this.moving = false;
     this.scheduledThrough = 0;
     this.clockOffset = 0;
     this.scheduledCount = 0;
@@ -47,6 +50,80 @@ export class FootstepAudio {
     this.trafficCount = 0;
     this.trafficScheduledIndex = 0;
     this.walkStartedAt = 0;
+    this.channelVolumes = Object.fromEntries(MIX_CHANNELS.map((channel) => [channel, 1]));
+    this.channelOutputs = new Map();
+    this.outputMode = 'headphones';
+    this.masterVolume = 1;
+    this.masterOutput = null;
+  }
+
+  setMasterVolume(volume) {
+    if (!Number.isFinite(volume) || volume < 0 || volume > (this.outputMode === 'speakers' ? 3 : 1)) {
+      throw new RangeError('Volume geral inválido para a saída selecionada.');
+    }
+    this.masterVolume = volume;
+    if (this.masterOutput) {
+      if (typeof this.masterOutput.gain.setTargetAtTime === 'function') {
+        this.masterOutput.gain.setTargetAtTime(volume, this.context.currentTime, 0.025);
+      } else this.masterOutput.gain.value = volume;
+    }
+  }
+
+  masterFor() {
+    if (!this.masterOutput) {
+      const output = this.context.createGain();
+      output.gain.value = this.masterVolume;
+      const compressor = this.context.createDynamicsCompressor?.();
+      if (compressor) {
+        compressor.threshold.value = -9;
+        compressor.knee.value = 6;
+        compressor.ratio.value = 8;
+        compressor.attack.value = 0.003;
+        compressor.release.value = 0.15;
+        output.connect(compressor).connect(this.context.destination);
+      } else output.connect(this.context.destination);
+      this.masterOutput = output;
+    }
+    return this.masterOutput;
+  }
+
+  channelGain(channel) {
+    return this.channelVolumes[channel] * (this.outputMode === 'speakers' ? SPEAKER_BOOST[channel] : 1);
+  }
+
+  setOutputMode(mode) {
+    if (!['speakers', 'headphones'].includes(mode)) throw new RangeError('Saída de áudio desconhecida.');
+    this.outputMode = mode;
+    this.traffic.setOutputMode(mode);
+    if (mode === 'headphones' && this.masterVolume > 1) this.setMasterVolume(1);
+    for (const [channel, output] of this.channelOutputs) {
+      const gain = this.channelGain(channel);
+      if (typeof output.gain.setTargetAtTime === 'function') output.gain.setTargetAtTime(gain, this.context.currentTime, 0.025);
+      else output.gain.value = gain;
+    }
+  }
+
+  setChannelVolume(channel, volume) {
+    if (!MIX_CHANNELS.includes(channel)) throw new RangeError('Camada de áudio desconhecida.');
+    if (!Number.isFinite(volume) || volume < 0 || volume > 1) throw new RangeError('Volume da camada inválido.');
+    this.channelVolumes[channel] = volume;
+    const output = this.channelOutputs.get(channel);
+    if (output) {
+      const gain = this.channelGain(channel);
+      if (typeof output.gain.setTargetAtTime === 'function') output.gain.setTargetAtTime(gain, this.context.currentTime, 0.015);
+      else output.gain.value = gain;
+    }
+  }
+
+  outputFor(channel) {
+    let output = this.channelOutputs.get(channel);
+    if (!output) {
+      output = this.context.createGain();
+      output.gain.value = this.channelGain(channel);
+      output.connect(this.masterFor());
+      this.channelOutputs.set(channel, output);
+    }
+    return output;
   }
 
   setInteractionPlan(plan) {
@@ -94,6 +171,29 @@ export class FootstepAudio {
     await this.interactions.ensureSamples(this.context);
   }
 
+  async previewOutput(throughStepsChannel = false) {
+    if (this.active) throw new Error('Pare a cena antes de testar o motor.');
+    await this.ensureContext();
+    const context = this.context;
+    const first = context.currentTime + 0.04;
+    for (const [index, frequency] of [440, 660].entries()) {
+      const onset = first + index * 0.4;
+      const oscillator = context.createOscillator();
+      oscillator.type = 'sine';
+      oscillator.frequency.value = frequency;
+      const gain = context.createGain();
+      gain.gain.setValueAtTime(0, onset);
+      gain.gain.linearRampToValueAtTime(0.18, onset + 0.025);
+      gain.gain.setValueAtTime(0.18, onset + 0.28);
+      gain.gain.linearRampToValueAtTime(0, onset + 0.34);
+      oscillator.connect(gain).connect(throughStepsChannel ? this.outputFor('steps') : context.destination);
+      oscillator.onended = () => { oscillator.disconnect(); gain.disconnect(); };
+      oscillator.start(onset);
+      oscillator.stop(onset + 0.36);
+    }
+    return context.state;
+  }
+
   async previewInteraction(kind) {
     if (!MICRO_KINDS.includes(kind)) throw new RangeError('Contato desconhecido.');
     if (this.active) throw new Error('Pare a caminhada antes de ouvir o contato isolado.');
@@ -110,12 +210,13 @@ export class FootstepAudio {
       this.interactions.play({
         kind, stepIndex: index + 101, foot: index % 2 ? 'left' : 'right',
         time: time + 0.04 + index * interval, intensity: 0.8,
-      }, this.context, offset);
+      }, this.context, offset, this.outputFor(kind));
     }
     return true;
   }
 
-  async start(speed) {
+  async start(speed, moving = true) {
+    if (typeof moving !== 'boolean') throw new TypeError('Estado de movimento deve ser booleano.');
     if (this.active) return performance.now() / 1000;
     this.previewVersion++;
     await this.ensureContext();
@@ -124,7 +225,8 @@ export class FootstepAudio {
     this.traffic.cancelVoices(this.context);
     const time = performance.now() / 1000;
     this.clockOffset = time - this.context.currentTime;
-    this.gait.update(time, { moving: true, speed });
+    this.gait.update(time, { moving, speed: moving ? speed : 0 });
+    this.moving = moving;
     this.speed = speed;
     this.scheduledThrough = time;
     this.scheduledCount = 0;
@@ -142,11 +244,26 @@ export class FootstepAudio {
 
   setSpeed(speed, time) {
     if (!this.active) return;
-    this.gait.update(time, { moving: true, speed });
     this.speed = speed;
+    if (!this.moving) return;
+    this.gait.update(time, { moving: true, speed });
     this.cancelVoices(false);
     this.interactions.cancelVoices(false, this.context);
     this.body.cancelVoices(false, this.context);
+    this.scheduledThrough = time;
+    this.tick();
+  }
+
+  setMoving(moving, time) {
+    if (typeof moving !== 'boolean') throw new TypeError('Estado de movimento deve ser booleano.');
+    if (!this.active || this.moving === moving) return;
+    this.moving = moving;
+    this.gait.update(time, { moving, speed: moving ? this.speed : 0 });
+    if (!moving) {
+      this.cancelVoices(true);
+      this.interactions.cancelVoices(true, this.context);
+      this.body.cancelVoices(false, this.context);
+    }
     this.scheduledThrough = time;
     this.tick();
   }
@@ -161,7 +278,7 @@ export class FootstepAudio {
         if (event.index <= this.trafficScheduledIndex) continue;
         this.trafficScheduledIndex = event.index;
         if (this.trafficEnabled && this.traffic.play({ ...event, time: this.walkStartedAt + event.time },
-          this.context, this.clockOffset)) this.trafficCount++;
+          this.context, this.clockOffset, this.outputFor('traffic'))) this.trafficCount++;
       }
     }
     this.scheduledThrough = horizon;
@@ -181,19 +298,19 @@ export class FootstepAudio {
       source.playbackRate.value = event.pitch;
       const filter = ctx.createBiquadFilter();
       filter.type = 'lowpass';
-      filter.frequency.value = 850 * event.pitch;
+      filter.frequency.value = (this.outputMode === 'speakers' ? 2600 : 850) * event.pitch;
       const thump = ctx.createOscillator();
       thump.type = 'sine';
       thump.frequency.setValueAtTime(115 * event.pitch, start);
       thump.frequency.exponentialRampToValueAtTime(65 * event.pitch, end);
       const thumpGain = ctx.createGain();
-      thumpGain.gain.value = 0.3;
+      thumpGain.gain.value = this.outputMode === 'speakers' ? 0.22 : 0.3;
       const gain = ctx.createGain();
       gain.gain.setValueAtTime(0, start);
       // The footfall attacks first, then recedes to reveal the material it struck.
-      gain.gain.linearRampToValueAtTime(0.07 * event.intensity, start + 0.008);
+      gain.gain.linearRampToValueAtTime((this.outputMode === 'speakers' ? 0.14 : 0.07) * event.intensity, start + 0.008);
       if (plannedInteractions.length) {
-        gain.gain.linearRampToValueAtTime(0.045 * event.intensity, start + 0.032);
+        gain.gain.linearRampToValueAtTime((this.outputMode === 'speakers' ? 0.09 : 0.045) * event.intensity, start + 0.032);
       }
       gain.gain.exponentialRampToValueAtTime(0.001, end - 0.008);
       gain.gain.setValueAtTime(0, end);
@@ -202,8 +319,8 @@ export class FootstepAudio {
       thump.connect(thumpGain).connect(gain);
       if (pan) {
         pan.pan.value = event.foot === 'left' ? -0.22 : 0.22;
-        gain.connect(pan).connect(ctx.destination);
-      } else gain.connect(ctx.destination);
+        gain.connect(pan).connect(this.outputFor('steps'));
+      } else gain.connect(this.outputFor('steps'));
       const voice = { source, thump, filter, thumpGain, gain, pan, start };
       this.voices.add(voice);
       source.onended = () => {
@@ -216,11 +333,11 @@ export class FootstepAudio {
       thump.stop(end);
     }
     for (const interaction of plannedInteractions) {
-      if (this.interactions.play(interaction, ctx, this.clockOffset)) this.interactionCounts[interaction.kind]++;
+      if (this.interactions.play(interaction, ctx, this.clockOffset, this.outputFor(interaction.kind))) this.interactionCounts[interaction.kind]++;
     }
     if (this.bodyEnabled && !this.footstepsMuted) {
       const earring = earringEventForStep(event, { speed: this.speed });
-      if (earring && this.body.play(earring, ctx, this.clockOffset)) this.bodyCount++;
+      if (earring && this.body.play(earring, ctx, this.clockOffset, this.masterFor())) this.bodyCount++;
     }
   }
 
@@ -248,6 +365,7 @@ export class FootstepAudio {
     this.traffic.cancelVoices(this.context);
     if (!this.active) return;
     this.active = false;
+    this.moving = false;
     clearInterval(this.timer);
     this.timer = null;
     this.gait.update(time, { moving: false, speed: 0 });
