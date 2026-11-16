@@ -141,6 +141,7 @@ select { width: 100%; min-height: 44px; padding: .6rem; border: 1px solid #91b4b
 .walk-visual { --walk-duration: 1.25s; position: relative; flex: 1; min-height: 240px; overflow: hidden; margin: .9rem 0; background: linear-gradient(#12344b11, #2eaee811); }
 .walk-visual::before { content: ""; position: absolute; inset: 8% 4% 0; border-top: 1px solid #b6dce338; background: repeating-linear-gradient(0deg, transparent 0 33px, #a9deeb12 34px 35px); }
 .weather-view { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.walk-visual[data-environment="indoor"] .weather-view { clip-path: inset(9% 10% 68% 62%); }
 .weather-cloud { position: absolute; top: 7%; left: 13%; width: 24%; height: 12%; border-radius: 50%; background: #a7c9d166; box-shadow: 24px 6px 0 #c0dce277, -16px 8px 0 #9bbec866; display: none; }
 .weather-rain { position: absolute; inset: 0; background: repeating-linear-gradient(105deg, transparent 0 23px, #b3e0ee77 24px 25px, transparent 26px 48px); background-size: 70px 90px; opacity: .42; animation: rain-fall .8s linear infinite; display: none; }
 @keyframes rain-fall { to { background-position: -70px 90px; } }
@@ -153,7 +154,7 @@ select { width: 100%; min-height: 44px; padding: .6rem; border: 1px solid #91b4b
 .room-view { position: absolute; z-index: 3; inset: 2%; border: 12px solid #2c4a5d; border-bottom-width: 24px; box-shadow: inset 0 0 0 3px #88a9b65c, inset 0 0 50px #06111d88; pointer-events: none; display: none; }
 .room-window { position: absolute; top: 6%; right: 7%; width: 30%; height: 24%; border: 6px solid #638494; box-shadow: inset 0 0 0 2px #0c263d; }
 .room-window::after { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; border-left: 3px solid #638494; }
-.room-fireplace { position: absolute; bottom: 12%; left: 8%; width: 15%; height: 18%; border: 7px solid #745a4c; border-bottom-width: 12px; border-radius: 40% 40% 3px 3px; background: #0a1b28; display: none; }
+.room-fireplace { position: absolute; bottom: 12%; left: 8%; width: 15%; height: 18%; border: 7px solid #9c7557; border-bottom-width: 12px; border-radius: 40% 40% 3px 3px; background: #0a1b28; box-shadow: 0 0 16px #f2992e66; display: none; }
 .room-fireplace::after { content: ""; position: absolute; left: 32%; bottom: 0; width: 35%; height: 75%; border-radius: 70% 10% 50% 50%; background: #f2992e; box-shadow: 0 0 18px #f2992e99; transform: rotate(18deg); }
 .walk-visual[data-environment="indoor"] .room-view, .walk-visual[data-fireplace="true"] .room-fireplace { display: block; }
 .walk-visual[data-fireplace="true"][data-environment="outdoor"] .room-view { display: block; border: 0; box-shadow: none; }
