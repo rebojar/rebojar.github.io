@@ -1,8 +1,8 @@
-import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=9cd857aebddd';
-import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=9cd857aebddd';
-import { MovementSimulator } from '../../packages/engine/movement.mjs?v=9cd857aebddd';
-import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=9cd857aebddd';
-import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=9cd857aebddd';
+import { SpatialSpike } from '../../packages/audio-web/spike.mjs?v=d4434213fac6';
+import { DIAGNOSTIC_DURATION, DIAGNOSTIC_SCENES } from '../../packages/engine/diagnostic-scenes.mjs?v=d4434213fac6';
+import { MovementSimulator } from '../../packages/engine/movement.mjs?v=d4434213fac6';
+import { FootstepAudio } from '../../packages/audio-web/steps.mjs?v=d4434213fac6';
+import { InteractionEngine, densityScaleForSpeed } from '../../packages/engine/interaction.mjs?v=d4434213fac6';
 const audio = new SpatialSpike();
 const start = document.querySelector('#start');
 const stop = document.querySelector('#stop');
@@ -28,7 +28,6 @@ const stepsVolume = document.querySelector('#steps-volume');
 const stepsVolumeValue = document.querySelector('#steps-volume-value');
 const movementStart = document.querySelector('#movement-start');
 const movementStop = document.querySelector('#movement-stop');
-const movementReset = document.querySelector('#movement-reset');
 const movementStatus = document.querySelector('#movement-status');
 const movementDistance = document.querySelector('#movement-distance');
 const movementElapsed = document.querySelector('#movement-elapsed');
@@ -77,7 +76,6 @@ const stageAction = document.querySelector('#stage-action');
 const stagePlace = document.querySelector('#stage-place');
 const visualSummary = document.querySelector('#visual-summary');
 const animateScene = document.querySelector('#animate-scene');
-const screenFootnote = document.querySelector('#screen-footnote');
 const audioError = document.querySelector('#audio-error');
 const mediaAudioTest = document.querySelector('#media-audio-test');
 const engineAudioTest = document.querySelector('#engine-audio-test');
@@ -127,12 +125,34 @@ function syncScreen() {
 }
 function syncVisualMotion() {
   walkVisual.dataset.animate = String(animateScene.checked);
-  screenFootnote.textContent = animateScene.checked
-    ? 'Passos também tocam nos alto-falantes; fones estéreo melhoram a direção.'
-    : 'Animação desligada. Marque “Animar cenário” para ver o percurso se deslocar.';
 }
 animateScene.addEventListener('change', syncVisualMotion);
 syncVisualMotion();
+function setupAutoHideHeader() {
+  const header = document.querySelector('.site-header');
+  if (!header || !matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  let hideTimer = null;
+  const cancelHide = () => { clearTimeout(hideTimer); hideTimer = null; };
+  const show = () => { cancelHide(); header.classList.remove('header-hidden'); };
+  const scheduleHide = () => {
+    if (hideTimer || header.classList.contains('header-hidden')) return;
+    hideTimer = setTimeout(() => {
+      hideTimer = null;
+      if (!header.matches(':hover') && !header.contains(document.activeElement)) header.classList.add('header-hidden');
+    }, 2000);
+  };
+  header.addEventListener('pointerenter', show);
+  header.addEventListener('pointerleave', scheduleHide);
+  header.addEventListener('focusin', show);
+  header.addEventListener('focusout', scheduleHide);
+  window.addEventListener('pointermove', (event) => {
+    if (event.clientY <= Math.max(12, header.offsetHeight)) show();
+    else scheduleHide();
+  }, { passive: true });
+  window.addEventListener('blur', scheduleHide);
+  scheduleHide();
+}
+setupAutoHideHeader();
 for (const drawer of drawers) drawer.addEventListener('toggle', () => {
   if (drawer.open) {
     for (const other of drawers) if (other !== drawer) other.open = false;
@@ -248,7 +268,10 @@ function renderMovementElapsed(time) {
 function renderMovement(snapshot) {
   walkVisual.dataset.moving = String(snapshot.moving);
   walkVisual.dataset.playing = String(steps.active);
-  stageAction.textContent = movementMode.value === 'stationary' ? 'PARADA' : 'CAMINHADA';
+  stageAction.textContent = movementMode.value === 'stationary' ? 'PARADA' : environmentType.value === 'indoor' ? 'CIRCUITO' : 'CAMINHADA';
+  const roomAngle = snapshot.position.z / 1.8;
+  walkVisual.style.setProperty('--room-orbit-x', `${(Math.sin(roomAngle) * 30).toFixed(2)}%`);
+  walkVisual.style.setProperty('--room-orbit-y', `${(Math.cos(roomAngle) * 23).toFixed(2)}%`);
   const cycle = 2.2 / Math.max(0.2, snapshot.speed);
   const walkDuration = `${cycle.toFixed(2)}s`;
   if (walkVisual.style.getPropertyValue('--walk-duration') !== walkDuration) {
@@ -266,7 +289,9 @@ function renderMovement(snapshot) {
   pebbleCount.textContent = String(steps.interactionCounts.pebble);
   bodyCount.textContent = String(steps.bodyCount);
   trafficCount.textContent = String(steps.trafficCount);
-  const movementMessage = snapshot.moving ? 'Andando em terreno plano.' : steps.active ? 'Parada, ouvindo o ambiente.' : 'Parado.';
+  const movementMessage = snapshot.moving
+    ? environmentType.value === 'indoor' ? 'Caminhando em círculo pelo quarto.' : 'Andando em terreno plano.'
+    : steps.active ? 'Parada, ouvindo o ambiente.' : 'Parado.';
   if (movementStatus.textContent !== movementMessage) movementStatus.textContent = movementMessage;
   movementStart.disabled = steps.active || !surfaceReady;
   movementStop.disabled = !steps.active;
@@ -316,9 +341,10 @@ worldTraffic.addEventListener('change', updateTrafficAudibility);
 environmentType.addEventListener('change', () => {
   steps.setEnvironmentMode(environmentType.value);
   environmentNote.textContent = environmentType.value === 'indoor'
-    ? 'Em sala fechada: sons ambientais mais abafados e com reflexões curtas.'
+    ? 'No quarto: sons ambientais mais abafados e com reflexões curtas.'
     : 'Ao ar livre: sons ambientais mais abertos, sem reflexões de sala.';
   updateVisualScene();
+  renderMovement(movement.observe(movementTime()));
 });
 async function updateAmbientChoice(choice) {
   const kind = choice.dataset.ambientKind;
@@ -409,17 +435,6 @@ movementStart.addEventListener('click', async () => {
   movementFrame = requestAnimationFrame(drawMovement);
 });
 movementStop.addEventListener('click', () => stopMovement());
-movementReset.addEventListener('click', () => {
-  movementStartRequest++;
-  cancelAnimationFrame(movementFrame);
-  const time = movementTime();
-  steps.stop(time);
-  movementStartedAt = null;
-  movementElapsedSeconds = 0;
-  renderMovementElapsed(time);
-  renderMovement(movement.reset(time));
-  stepStatus.textContent = 'Cena parada. Pronta para reproduzir.';
-});
 movementMode.addEventListener('change', () => {
   const walking = movementMode.value === 'walking';
   const time = movementTime();
@@ -545,7 +560,7 @@ function updateVisualScene() {
   walkVisual.dataset.pebble = String(audible('pebble'));
   walkVisual.dataset.traffic = String(worldTraffic.checked && !isolateContacts.checked && Number(trafficVolume.value) > 0);
   walkVisual.dataset.environment = environmentType.value;
-  stagePlace.textContent = environmentType.value === 'indoor' ? 'SALA FECHADA' : 'RUA QUIETA';
+  stagePlace.textContent = environmentType.value === 'indoor' ? 'QUARTO' : 'RUA QUIETA';
   for (const choice of ambientChoices) {
     const kind = choice.dataset.ambientKind;
     walkVisual.dataset[kind] = String(choice.checked && !isolateContacts.checked && Number(ambientVolumes.get(kind).value) > 0);
@@ -563,7 +578,8 @@ function updateVisualScene() {
     walkVisual.dataset.storm === 'true' && 'tempestade',
     walkVisual.dataset.fireplace === 'true' && 'lareira',
   ].filter(Boolean).join(', ') || 'sem sons de ambiente';
-  visualSummary.textContent = `${movementMode.value === 'stationary' ? 'Você está parada' : 'Você caminha'} · ${environmentType.value === 'indoor' ? 'sala fechada' : 'ar livre'} · ${ground} · ${world}. Vista ilustrativa das escolhas.`;
+  const motion = movementMode.value === 'stationary' ? 'Você está parada' : environmentType.value === 'indoor' ? 'Você circula pelo quarto' : 'Você caminha';
+  visualSummary.textContent = `${motion} · ${environmentType.value === 'indoor' ? 'quarto fechado' : 'ar livre'} · ${ground} · ${world}. Vista ilustrativa das escolhas.`;
 }
 for (const choice of materialChoices) choice.addEventListener('change', () => {
   if (!interactionEngine) return;

@@ -7,7 +7,7 @@
   <meta name="description" content="AUDICANVAS: componha uma cena sonora e acompanhe o movimento na cabine de escuta.">
   <title>AUDICANVAS · Cabine de escuta</title>
   <link rel="icon" href="./toca-discos-v01.ico" type="image/x-icon">
-  <link rel="stylesheet" href="./style.css?v=9cd857aebddd">
+  <link rel="stylesheet" href="./style.css?v=d4434213fac6">
 </head>
 <body>
   <a class="skip-link" href="#escuta">Ir para a tela de escuta</a>
@@ -37,9 +37,6 @@
               <input id="movement-speed" type="range" min="0.2" max="2" step="0.1" value="1">
               <label class="range-label" for="steps-volume">Volume dos passos <output id="steps-volume-value" for="steps-volume">100%</output></label>
               <input id="steps-volume" type="range" min="0" max="1" step="0.05" value="1">
-              <button id="movement-reset" class="button-quiet">Zerar distância</button>
-              <p class="note">Use “Reproduzir cena” na tela central para ouvir a combinação escolhida.</p>
-              <p class="note">Passos, brincos e trânsito ainda são sons sintéticos.</p>
             </div>
           </details>
           <details id="drawer-ground" class="control-drawer" name="studio-controls">
@@ -111,8 +108,8 @@
               <label class="range-label" for="storm-volume">Volume da tempestade <output id="storm-volume-value" for="storm-volume">45%</output></label>
               <input id="storm-volume" type="range" min="0" max="1" step="0.05" value="0.45" data-ambient-volume="storm" disabled>
               <label class="choice choice-feature" for="world-fireplace"><input id="world-fireplace" type="checkbox" data-ambient-kind="fireplace" disabled><span>Lareira</span></label>
-              <label class="range-label" for="fireplace-volume">Volume da lareira <output id="fireplace-volume-value" for="fireplace-volume">45%</output></label>
-              <input id="fireplace-volume" type="range" min="0" max="1" step="0.05" value="0.45" data-ambient-volume="fireplace" disabled>
+              <label class="range-label" for="fireplace-volume">Volume da lareira <output id="fireplace-volume-value" for="fireplace-volume">70%</output></label>
+              <input id="fireplace-volume" type="range" min="0" max="1" step="0.05" value="0.7" data-ambient-volume="fireplace" disabled>
               <p id="traffic-status" class="note" role="status">Preparando a cena de ambiente…</p>
               <p id="ambience-status" class="note" role="status">As novas gravações são amostras em revisão de escuta.</p>
             </section>
@@ -124,14 +121,28 @@
             <div class="screen-heading-top"><h1 id="screen-title">AUDICANVAS</h1><label class="motion-choice" for="animate-scene"><input id="animate-scene" type="checkbox" checked><span>Animar cenário</span></label></div>
             <p>Monte o som nas laterais. Acompanhe aqui o movimento que ele sugere.</p>
           </div>
-          <div id="scene-transport" class="scene-transport"><button id="movement-start" aria-describedby="step-status" disabled>▶ Reproduzir cena</button><button id="movement-stop" class="button-secondary" disabled>■ Parar</button><p id="audio-error" role="alert" hidden></p></div>
+          <div id="scene-transport" class="scene-transport">
+            <div class="volume-console">
+              <label for="master-volume">Volume geral <output id="master-volume-value" for="master-volume">100%</output></label>
+              <div class="volume-dial-row">
+                <span class="volume-endpoint" aria-hidden="true">MÍN</span>
+                <div id="master-volume-control" class="rotary-control" style="--knob-angle: -45deg">
+                  <span class="rotary-face" aria-hidden="true"></span>
+                  <input id="master-volume" type="range" min="0" max="3" step="0.1" value="1" aria-label="Volume geral da cena" aria-describedby="rotary-help">
+                </div>
+                <span class="volume-endpoint" aria-hidden="true">MÁX</span>
+              </div>
+              <span id="rotary-help" class="visually-hidden">Gire arrastando o controle, ou use as setas do teclado.</span>
+            </div>
+            <button id="movement-start" aria-describedby="step-status" disabled>▶ Reproduzir cena</button><button id="movement-stop" class="button-secondary" disabled>■ Parar</button><p id="audio-error" role="alert" hidden></p>
+          </div>
           <div class="soundstage">
             <div class="window-view">
               <div id="walk-view" class="visual-mode">
                 <p class="stage-label"><span id="stage-place">RUA QUIETA</span> <span aria-hidden="true">/</span> <span id="stage-action">CAMINHADA</span></p>
                 <div class="walk-visual" aria-hidden="true" data-moving="false" data-animate="false" data-flower="false" data-leaf="false" data-pebble="false" data-traffic="false">
                   <div class="weather-view"><span class="weather-cloud"></span><span class="weather-rain"></span></div>
-                  <div class="room-view"><span class="room-window"></span><span class="room-fireplace"></span></div>
+                  <div class="room-view"><span class="room-bed"></span><span class="room-window"></span><span class="room-fireplace"></span></div>
                   <div class="distant-road"><span class="road-stripe"></span><span class="traffic-car car-one" data-phase="0.25"></span><span class="traffic-car car-two" data-phase="0.75"></span></div>
                   <div class="path-way">
                     <span class="path-object flower flower-one" data-phase="0.14"></span><span class="path-object flower flower-two" data-phase="0.7"></span>
@@ -158,20 +169,8 @@
                 </div>
               </div>
             </div>
-            <div class="radio-console">
-              <div class="speaker-grille" aria-hidden="true"></div>
-              <div class="volume-console">
-                <label for="master-volume">Volume geral <output id="master-volume-value" for="master-volume">100%</output></label>
-                <div id="master-volume-control" class="rotary-control" style="--knob-angle: -45deg">
-                  <span class="rotary-face" aria-hidden="true"></span>
-                  <input id="master-volume" type="range" min="0" max="3" step="0.1" value="1" aria-label="Volume geral da cena" aria-describedby="rotary-help">
-                </div>
-                <div class="volume-endpoints" aria-hidden="true"><span>MÍN</span><span>MÁX</span></div>
-                <span id="rotary-help" class="visually-hidden">Gire arrastando o controle, ou use as setas do teclado.</span>
-              </div>
-            </div>
+            <div class="radio-console"><div class="speaker-grille" aria-hidden="true"></div></div>
           </div>
-          <p id="screen-footnote" class="screen-footnote">Passos também tocam nos alto-falantes; fones estéreo melhoram a direção.</p>
         </section>
 
         <aside class="control-rail rail-right" aria-label="Painel do estúdio: ensaios espaciais">
@@ -223,6 +222,6 @@
     </details>
   </main>
   <footer class="site-footer"><span>AUDICANVAS · laboratório sonoro do Rebojar</span><a href="https://rebojar.github.io/">Voltar ao Rebojar ↗</a></footer>
-  <script type="module" src="./main.mjs?v=9cd857aebddd"></script>
+  <script type="module" src="./main.mjs?v=d4434213fac6"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import { passagePosition } from './pass.mjs?v=9cd857aebddd';
+import { passagePosition } from './pass.mjs?v=d4434213fac6';
 
 export const DIAGNOSTIC_DURATION = 12;
 export const DIAGNOSTIC_SCENES = Object.freeze({

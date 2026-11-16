@@ -1,17 +1,17 @@
-import { GaitClock } from '../engine/gait.mjs?v=9cd857aebddd';
-import { MicroInteractionAudio } from './interactions.mjs?v=9cd857aebddd';
-import { MICRO_KINDS } from '../engine/interaction.mjs?v=9cd857aebddd';
-import { earringEventForStep } from '../engine/body.mjs?v=9cd857aebddd';
-import { BodyEarringAudio } from './body.mjs?v=9cd857aebddd';
-import { TrafficPlanner } from '../engine/world.mjs?v=9cd857aebddd';
-import { DistantTrafficAudio } from './traffic.mjs?v=9cd857aebddd';
-import { AMBIENT_KINDS, AmbientBeds, EnvironmentAcoustics } from './ambience.mjs?v=9cd857aebddd';
+import { GaitClock } from '../engine/gait.mjs?v=d4434213fac6';
+import { MicroInteractionAudio } from './interactions.mjs?v=d4434213fac6';
+import { MICRO_KINDS } from '../engine/interaction.mjs?v=d4434213fac6';
+import { earringEventForStep } from '../engine/body.mjs?v=d4434213fac6';
+import { BodyEarringAudio } from './body.mjs?v=d4434213fac6';
+import { TrafficPlanner } from '../engine/world.mjs?v=d4434213fac6';
+import { DistantTrafficAudio } from './traffic.mjs?v=d4434213fac6';
+import { AMBIENT_KINDS, AmbientBeds, EnvironmentAcoustics } from './ambience.mjs?v=d4434213fac6';
 
 const LOOKAHEAD_SECONDS = 0.08;
 const POLL_MS = 25;
 const MIX_CHANNELS = Object.freeze(['steps', 'dry_flower', 'dry_leaf', 'pebble', 'traffic', ...AMBIENT_KINDS]);
 const ENV_CHANNELS = new Set(['traffic', ...AMBIENT_KINDS]);
-const SPEAKER_BOOST = Object.freeze({ steps: 2.2, dry_flower: 3.4, dry_leaf: 3.4, pebble: 3.4, traffic: 2.4, breeze: 1.8, rain: 1.8, storm: 1.5, fireplace: 1.8 });
+const SPEAKER_BOOST = Object.freeze({ steps: 2.2, dry_flower: 3.4, dry_leaf: 3.4, pebble: 3.4, traffic: 2.4, breeze: 1.8, rain: 1.8, storm: 1.5, fireplace: 2.4 });
 
 function noiseBuffer(context, index) {
   const length = Math.ceil(context.sampleRate * 0.13);
