@@ -1,4 +1,4 @@
-import { BODY_EARRING_V0 } from '../engine/body.mjs?v=ec0d62cea257';
+import { BODY_EARRING_V0 } from '../engine/body.mjs?v=228c1e899ea2';
 
 // A short, low-level metallic double resonance close to the listener.
 export class BodyEarringAudio {

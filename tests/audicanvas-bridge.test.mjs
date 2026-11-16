@@ -14,7 +14,7 @@ function setup() {
     matches(selector) { return selector === '.controle-som-site'; },
     click() { this.checked = this.checked === 'true' ? 'false' : 'true'; dispatch('click', { target: { closest: (selector) => selector === 'a[href]' ? null : button } }); },
   };
-  const link = { href: 'https://rebojar.github.io/audicanvas/', target: '', title: '' };
+  const link = { href: 'https://rebojar.github.io/audicanvas/', target: '', title: '', rel: '' };
   class Channel {
     postMessage(message) { messages.push(message); }
   }
@@ -36,6 +36,7 @@ test('fone conserva o portal e reutiliza uma guia de áudio', () => {
   app.dispatch('click', { target: { closest: (selector) => selector === 'a[href]' ? app.link : null } });
   assert.equal(app.window.name, 'rebojar-portal');
   assert.equal(app.link.target, 'rebojar-audicanvas');
+  assert.equal(app.link.rel, 'opener');
 });
 
 test('fone dentro do caderno preserva a guia principal do portal', () => {

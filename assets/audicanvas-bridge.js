@@ -13,6 +13,7 @@
     try { window.top.name = 'rebojar-portal'; }
     catch { window.name = 'rebojar-portal'; }
     link.target = 'rebojar-audicanvas';
+    link.rel = 'opener';
     link.title = 'Abrir o AUDICANVAS em outra guia e manter o som ao navegar';
   }, true);
 
